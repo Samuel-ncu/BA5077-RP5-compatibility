@@ -2,85 +2,26 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222899833) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> **部分實測**：已在 Thonny 對四影格影片逐格推論並寫入影片；長影片、即時速度和乾淨環境安裝待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
-## 學習目標
+## 學習目標與背景
 
-建立合成短影片，再以 YOLOv8n 對影片逐幀執行 CPU 推論。
+影片是按順序排列的影格。物件偵測程式逐格解碼、推論、畫框再編碼；輸出影片的播放 FPS 是時間設定，與電腦實際每秒處理影格的速度不同。本課練習讀取影片、保存每格的框數，並產生新影片和結果圖片。
 
-## 事前準備
+## 準備與素材
 
-需要 YOLO CPU 虛擬環境、模型與可用 MJPG 影片編碼器；會在目前目錄產生 lesson41-demo.avi。
+本次在這台 RP5 的既有 `/home/pi/myenv/bin/python3` 環境執行，含 Python 3.11.2、Ultralytics 8.3.50、PyTorch 2.5.1，以及 OpenCV。第 42、43 課另使用 Picamera2。這是本機既有混合環境；在全新虛擬環境透過 Thonny 安裝全部 YOLO 套件仍待實測，不能當成已驗證的乾淨安裝教學。
 
-依[安裝操作與實測紀錄](../安裝操作與實測紀錄.md#7-yolo-與-pytorch)建立並啟用 YOLO CPU 環境，再於練習目錄下載模型：
+在瀏覽器下載並解壓本倉庫，依[素材下載與使用說明](./練習素材/素材下載與使用.md)建立新的練習資料夾；模型由[第 39 課](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)的 Thonny 下載程式取得，並放入同一資料夾。
 
-```bash
-curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n.pt -o yolov8n.pt
-```
+將 [lesson42-input.avi](./練習素材/lesson42-input.avi) 和[本課程式](./範例程式/第41課-相機影片YOLO.py)複製到練習資料夾，與 `yolov8n.pt` 放在一起。影片由 RP5 相機拍攝螢幕上的 AI 生成物件圖，再裁切、校正並保存為四個影格；圖中的物件不是實體物品。執行會覆寫同名結果，請使用新的練習資料夾。
 
-不要使用原文的 CUDA 11.8 索引。
+## 在 Thonny 操作
 
-## 程式與執行
+1. 「工具 → 選項 → 直譯器」選擇已有上述套件的 Python；選「檔案 → 開啟」開啟本課程式。
+2. 按綠色執行鈕。觀察下方 Shell，並用檔案管理員開啟產生的 `lesson41-detected.avi` 與 `lesson41-detected-frame.png`。影片播放需適合的影片播放器。
 
-將下列已在 RP5 執行的程式存為 `第41課.py`，或使用[範例程式](./範例程式/第41課.py)。先確認目前目錄及檔案，避免覆蓋已有資料。
-
-```python
-import cv2
-import numpy as np
-from ultralytics import YOLO
-
-path = 'lesson41-demo.avi'
-writer = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*'MJPG'), 5.0, (320, 240))
-if not writer.isOpened():
-    raise RuntimeError('VideoWriter could not open')
-for _ in range(3):
-    writer.write(np.zeros((240, 320, 3), dtype=np.uint8))
-writer.release()
-model = YOLO('yolov8n.pt')
-results = list(model.predict(path, imgsz=320, device='cpu', stream=True, verbose=False))
-print('frames processed', len(results))
-```
-
-執行 `python3 第41課.py`。
-
-## 本機實際輸出
-
-```text
-frames processed 3
-```
-
-本機處理了 3 個合成影格；此測試未產生加框影片，也未評估長影片速度。
-
-## 背景與核心概念
-
-### 影片偵測和即時處理
-
-影片是一連串影格。逐幀推論需解碼、模型運算及必要的輸出編碼；每秒處理速度和影像品質、輸入尺寸、模型與硬體都有關。
-
-### 思考、練習與後續應用
-
-處理三個合成影格只能證明什麼？為何仍不能推論長影片速度與輸出影片的品質？
-
-影片檢測可延伸到排隊計數或設備監控；需處理來源授權、掉幀與儲存容量。
-
-進一步閱讀：[相關官方文件](https://docs.ultralytics.com/tasks/detect/)。請以下方實測狀態為準；尚未實作或測試的情境不能視為已通過。
-
-## 概念流程圖
-
-```mermaid
-flowchart LR
-    A["影片檔"]
-    B["解碼為多張影格"]
-    C["逐幀 YOLO 推論"]
-    D["顯示或保存結果"]
-    A --> B --> C --> D
-```
-
-此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
-
-## 進階實測：對相機短影片逐影格偵測
-
-本次先由 RP5 相機拍攝顯示在螢幕上的 AI 生成蘋果、香蕉和杯子圖片，經裁切與透視校正後保存成[四張影格的測試影片](./練習素材/lesson42-input.avi)。下載該影片為 `lesson42-input.avi`，並把 `yolov8n.pt` 與[範例程式](./範例程式/第41課-相機影片YOLO.py)放在相同練習目錄；啟用本篇上方的 YOLO CPU 環境。
+完整程式：
 
 ```python
 import cv2
@@ -119,11 +60,7 @@ print('detections per frame:', counts)
 print('saved: lesson41-detected.avi, lesson41-detected-frame.png')
 ```
 
-```bash
-python3 第41課-相機影片YOLO.py
-```
-
-本次 RP5 實際輸出：
+## 本次 Thonny 實際輸出
 
 ```text
 frames processed: 4
@@ -131,17 +68,17 @@ detections per frame: [3, 3, 3, 3]
 saved: lesson41-detected.avi, lesson41-detected-frame.png
 ```
 
-![RP5 相機影片經 YOLO 處理的第一張影格](./圖檔/lesson41-detected-frame.png)
+![Thonny 處理影片及實際輸出](./圖檔/lesson41-thonny.png)
 
-本次每張影格各有 3 個偵測框；圖片是第一張處理後的標註影格，並非安裝截圖。程式將影片逐張讀取、執行模型推論、畫框並寫成新影片。播放速率設定為 3 FPS，並非實際運算速度；本次沒有量測長影片速度或不同編碼器相容性。
+![影片第一個影格的偵測結果](./圖檔/lesson41-detected-frame.png)
 
-練習：比較原始影片與輸出影格，找出 3 個框。若輸入影片為空或輸出無法建立，檢查檔名、影片編碼器及寫入權限。AI 生成圖案只有一種場景，不能代表真實物件的偵測準確率。
+四個影格各有三個框；結果圖為先前處理同一練習影片所保存的第一個影格。Thonny 右側靜態檢查曾提示 `VideoWriter_fourcc` 屬性，但本次程式實際成功執行與寫檔，應同時查看 Shell 和產生的檔案。
+
+## 練習與應用
+
+觀察四影格的框是否一致；再自行更換影片並記錄框數。為什麼四影格成功不能保證長影片效能？可延伸到物品計數，並比較漏檢、誤檢與每秒處理速度。
 
 ## 與原文章的差異
 
-- 原文處理使用者影片；本版先用短合成影片驗證讀取與逐幀推論。
-- 真實場景的準確率、速度和操作畫面尚未完整驗證。
-- 尚未保存操作畫面截圖。
-- 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
-- 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
-- 新增 RP5 相機拍攝生成素材的四影格影片、逐幀推論、輸出影片及結果圖；長影片與即時效能仍待測。
+- 以 RP5 CPU 和 Thonny 執行，採可下載的四影格練習影片；並非原文所有影片及即時情境。
+- 新增輸出影片、實測文字和 Thonny 截圖；長影片與乾淨安裝仍待驗證。
