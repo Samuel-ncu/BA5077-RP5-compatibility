@@ -128,3 +128,77 @@ Choose this interpreter in Thonny and restart the backend.
 ![Thonny 在新環境執行 TFLite 分類](./圖檔/thonny-tflite-clean-test.png)
 
 新環境只驗證這個單張圖片範例；其預設不包含系統 Picamera2，即時相機分類需要另行整合和測試。套件版本與來源會變動，遇到安裝失敗應記錄實際錯誤。
+
+
+## 補充 8：在 Thonny 建立可使用相機的 TFLite 環境
+
+### 這是什麼環境？
+
+2026-10-29 在現有 RP5 上新建一個 Python 虛擬環境，使用 `system_site_packages=True` 讀取系統的 Picamera2 與 OpenCV，再於環境內安裝 NumPy 1.26.4 和 TFLite Runtime 2.14.0。這是**新建環境、沿用現有系統套件**，並不是從全新刷寫的作業系統完成全新安裝；系統套件升級後結果也可能改變。
+
+執行當下測得的來源如下：
+
+| 模組 | 本機版本 | 匯入位置 |
+| --- | --- | --- |
+| Picamera2 | 0.3.31 | `/usr/lib/python3/dist-packages` |
+| OpenCV | 4.10.0-dev | `/usr/lib/python3/dist-packages/cv2` |
+| NumPy | 1.26.4 | 新環境的 `site-packages` |
+| TFLite Runtime | 2.14.0 | 新環境的 `site-packages` |
+
+特別注意：本機套件管理器登記的 `python3-opencv` 版本是 `4.6.0+dfsg-12`，但 Python 實際匯入的是上述 `4.10.0-dev`，而 `dpkg -S` 找不到該 `cv2/__init__.py` 的套件歸屬。不要以此推斷全新 Raspberry Pi OS 也會有相同的 OpenCV 版本；全新系統重測仍待備用 microSD。
+
+### 用 Thonny 建立和選擇
+
+1. 確認系統已具備 Python 3 的 venv 支援及能正常使用的 Picamera2、OpenCV，並有網路與足夠空間。這些是系統層前提，本次沿用現有安裝；其他學生的系統前提若不同，應先完成基本系統設定。
+2. 下載[環境建立程式](./範例程式/Thonny建立TFLite相機環境.py)，在 Thonny 開啟並按綠色執行鈕。程式在目前使用者家目錄建立 `ba5077-tflite-camera-20261029`；名稱已存在時會停止，請在程式裡改成新的名稱，勿覆蓋其他環境。
+3. 等 Shell 顯示 `Environment created:`。選擇「工具 → 選項 → 直譯器」，設定為新環境 `bin/python3`。若學生的帳號不是 `pi`，路徑會以自己的家目錄為準。
+4. 在同一練習目錄準備模型、標籤及[補充 8 相機程式](./範例程式/補充8-Thonny相機TFLite.py)，在此直譯器按執行。模型下載與使用方式見補充 8。
+
+完整建立程式：
+
+```python
+from pathlib import Path
+import subprocess
+import venv
+
+folder = Path.home() / 'ba5077-tflite-camera-20261029'
+if folder.exists():
+    raise FileExistsError(f'{folder} 已存在，請更改資料夾名稱後重新執行')
+print('creating:', folder, flush=True)
+print('Inherit Raspberry Pi OS system packages for Picamera2 and OpenCV', flush=True)
+venv.EnvBuilder(with_pip=True, system_site_packages=True).create(folder)
+python = folder / 'bin' / 'python'
+subprocess.run([str(python), '-m', 'pip', 'install',
+                'numpy==1.26.4', 'tflite-runtime==2.14.0'], check=True)
+print('Environment created:', python, flush=True)
+```
+
+本次 Thonny 的安裝輸出摘錄：
+
+```text
+Found existing installation: numpy 1.24.2
+Not uninstalling numpy at /usr/lib/python3/dist-packages, outside environment /home/pi/ba5077-tflite-camera-20261029
+Can't uninstall 'numpy'. No files were found to uninstall.
+Successfully installed numpy-1.26.4 tflite-runtime-2.14.0
+Environment created: /home/pi/ba5077-tflite-camera-20261029/bin/python
+```
+
+![Thonny 新建 TFLite 相機環境的實際安裝畫面](./圖檔/tflite-camera-env-install.png)
+
+這段 pip 訊息表示它沒有移除虛擬環境外的系統 NumPy，而是在新環境中安裝自己的版本。上圖右下角仍顯示執行安裝程式時原本使用的 `myenv`；環境建立後必須另行選擇新直譯器，才能使用新安裝的套件。安裝過程可能使用本機 pip 快取，不能宣稱所有套件均在本次從網路重新下載。
+
+選取新直譯器後，實際執行補充 8 的相機分類，Shell 摘錄如下：
+
+```text
+frame 10: desktop computer 0.6680
+frame 25: desktop computer 0.6641
+frame 50: desktop computer 0.5977
+frames: 50
+elapsed seconds: 2.62
+average FPS: 19.12
+camera released
+```
+
+![Thonny 選用新相機環境後執行 50 張分類](./圖檔/tflite-camera-env-run.png)
+
+這次處理約 2.62 秒，並非長時間穩定性或準確率測試。因為模型是封閉類別分類器，即使沒有想要的目標也會給出最高分標籤；空白背景負例、提前按 Q 及全新作業系統安裝仍待測。
