@@ -167,7 +167,7 @@ camera released
 
 ![另一輪相機分類的 Thonny 與預覽實測畫面](./圖檔/tflite-live-preview.png)
 
-第二張是**操作截圖與相機實拍**，取自另一輪測試，畫面顯示桌上瓶子與正在顯示程式的螢幕，標籤 `desktop computer 0.227` 為當時的模型結果。速度與分數會依場景和系統負載變化；本次約 2.77 秒的測試不能證明長時間穩定，也不是準確率測試。要觀察未含目標物的情況，可拍空白背景並記下模型仍輸出的最高分，但此負例尚未完成正式重測。
+第二張是**操作截圖與相機實拍**，取自另一輪測試，畫面顯示桌上瓶子與正在顯示程式的螢幕，標籤 `desktop computer 0.227` 為當時的模型結果。速度與分數會依場景和系統負載變化；本次約 2.77 秒的測試不能證明長時間穩定，也不是準確率測試。下節另以程式產生全黑、全白輸入，測試沒有物體時的最高分類分數；這不是相機拍攝的空白背景。
 
 ### 新建相機環境後重新測試
 
@@ -185,7 +185,51 @@ camera released
 
 ![新建相機環境中的 Thonny 分類實測](./圖檔/tflite-camera-env-run.png)
 
-此新環境借用現有系統 Picamera2 0.3.31 與 OpenCV 4.10.0-dev，並非全新系統驗證；系統 OpenCV 的實際版本與套件管理器登記版本不同，細節見環境安裝說明。未測 Q 提前停止及空白負例。
+此新環境借用現有系統 Picamera2 0.3.31 與 OpenCV 4.10.0-dev，並非全新系統驗證；系統 OpenCV 的實際版本與套件管理器登記版本不同，細節見環境安裝說明。未測 Q 提前停止；程式產生的黑白空白負例見下節。
+
+## 負例：全黑與全白圖片仍會出現分類標籤
+
+影像分類器會在模型既有的類別中挑出最高分，不會因為畫面是空白就必然回報「沒有物體」。這個實驗以 NumPy 直接建立 224 × 224 的全黑與全白影像，不使用相機，也不需要另外下載圖片。
+
+1. 將[負例程式](./範例程式/補充8-Thonny分類負例.py)、前文下載的 `mobilenet.tflite` 和 `labels.txt` 放在同一練習資料夾。
+2. 在 Thonny 選擇具備 NumPy 及 TFLite Runtime 的直譯器，開啟程式按綠色執行鈕。這次使用上節新建的相機環境，但本例不使用相機。
+
+```python
+import numpy as np
+from tflite_runtime.interpreter import Interpreter
+
+with open('labels.txt', encoding='utf-8') as f:
+    labels = [line.strip() for line in f]
+model = Interpreter(model_path='mobilenet.tflite')
+model.allocate_tensors()
+inp = model.get_input_details()[0]
+out = model.get_output_details()[0]
+if tuple(inp['shape']) != (1, 224, 224, 3) or inp['dtype'] != np.uint8:
+    raise RuntimeError('需要 uint8 224x224 MobileNetV1')
+if out['quantization'][0] <= 0:
+    raise RuntimeError('模型輸出量化參數無效')
+for pixel, name in [(0, 'black'), (255, 'white')]:
+    model.set_tensor(inp['index'], np.full((1, 224, 224, 3), pixel, dtype=np.uint8))
+    model.invoke()
+    raw = model.get_tensor(out['index'])[0]
+    scale, zero = out['quantization']
+    scores = (raw.astype(np.float32) - zero) * scale
+    if len(labels) != len(scores):
+        raise RuntimeError('標籤數與輸出數不一致')
+    i = int(np.argmax(scores))
+    print(f'{name} blank: {i} {labels[i]} {scores[i]:.4f}')
+```
+
+本次實際輸出：
+
+```text
+black blank: 112 nematode 0.0898
+white blank: 550 envelope 0.0156
+```
+
+![Thonny 實測全黑、全白影像的分類結果](./圖檔/tflite-blank-thonny.png)
+
+兩張圖都是程式產生的空白資料，並沒有線蟲或信封；標籤只是模型在既有類別中選出最高分。分數不是物體確實存在的證明。若要設計「不確定」門檻，應蒐集不同正例與負例實測，不能根據這兩張圖隨意宣稱準確率或決定通用門檻。實際相機拍攝的空白背景仍待測。
 
 ## 練習與後續應用
 

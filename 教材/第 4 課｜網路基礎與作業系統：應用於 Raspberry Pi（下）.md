@@ -62,7 +62,7 @@ APT 的套件來源、版本和網路狀況都會影響安裝結果。先確認�
 
 1. 解釋 `systemctl is-active ssh` 回傳 `active` 所表示的事，以及它不能保證什麼。
 2. 說明 `command -v apt` 找得到程式，和某個套件已安裝，為什麼不是同一件事。
-3. 設計一個本地網頁顯示感測資料的情境，寫出可能需要的輸入、處理方式與使用者；本次尚未依原文完成網頁伺服器實作。
+3. 設計一個本地網頁顯示感測資料的情境，寫出可能需要的輸入、處理方式與使用者；本次已測本機 Python HTTP 範例，原文 Apache 情境尚未完成。
 
 遠端操作適用於沒有螢幕的感測節點，也讓維護人員能檢查狀態。正式部署還要考量帳號認證、連線範圍、軟體更新與裝置失聯時的處置。[Raspberry Pi 遠端存取文件](https://www.raspberrypi.com/documentation/computers/remote-access.html)可供後續學習。
 
@@ -108,18 +108,14 @@ finally:
     server.server_close()
 ```
 
-在程式所在目錄執行：
-
-```bash
-python3 第04課-本機網頁.py
-```
-
-本次在 RP5 的實際輸出：
+在 RP5 的 Thonny 選「檔案 → 開啟」開啟上方範例，按綠色執行按鈕。2026-10-29 在此 RP5 的 Thonny 實際輸出：
 
 ```text
 HTTP status: 200
 response: Hello, AIoT!
 ```
+
+![Thonny 實際執行本機 HTTP 範例](./圖檔/lesson04-http-thonny.png)
 
 ### 讀懂結果
 
@@ -138,6 +134,6 @@ response: Hello, AIoT!
 
 - 新增本機實測的 Linux、ARM64、APT 與 SSH 服務檢查。
 - 不將全面升級或啟動網頁伺服器視為閱讀文章的必要步驟。
-- 尚未補拍本課畫面。
+- 新增本機 HTTP 範例的 Thonny 操作截圖；SSH 與 Apache 設定步驟未補拍。
 - 補充 SSH、套件管理、連線流程圖及學生練習；原文網頁伺服器情境仍未在本篇完整實測。
 - 新增本機回送 HTTP 的實作及真實輸出；原文的 Apache 和對外網頁伺服器仍未完成實測。
