@@ -60,9 +60,64 @@ polygon vertices 4
 
 進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
 
+## 進階實測：分析 RP5 相機拍攝的圖形
+
+### 準備與操作
+
+下載[第 29 課的校正相機影像](./圖檔/shapes-board.png)，存為 `shapes-board.png`；影像是 RP5 拍攝螢幕上的圓形、矩形與三角形後校正所得。 與[範例程式](./範例程式/第34課-相機多邊形.py)放在 RP5 練習目錄，並確認 OpenCV 和 NumPy 可用；執行前檢查輸出檔名以免覆蓋。
+
+```python
+import cv2
+import numpy as np
+
+image = cv2.imread('shapes-board.png')
+if image is None:
+    raise RuntimeError('找不到第 29 課產生的 shapes-board.png')
+hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+mask = cv2.inRange(hsv, (0, 110, 80), (179, 255, 255))
+mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+large = sorted((c for c in contours if cv2.contourArea(c) > 4000), key=lambda c: cv2.boundingRect(c)[0])
+vertices = []
+for contour in large:
+    approx = cv2.approxPolyDP(contour, 0.02 * cv2.arcLength(contour, True), True)
+    vertices.append(len(approx))
+    cv2.polylines(image, [approx], True, (0, 0, 0), 4)
+    for point in approx[:, 0]:
+        cv2.circle(image, tuple(int(x) for x in point), 6, (0, 255, 255), -1)
+if not cv2.imwrite('lesson34-camera-polygons.png', image):
+    raise RuntimeError('無法儲存結果')
+print('contours:', len(large))
+print('polygon vertex counts:', vertices)
+print('saved: lesson34-camera-polygons.png')
+```
+
+```bash
+python3 第34課-相機多邊形.py
+```
+
+程式直接讀取第 29 課的校正影像。
+
+### 本次 RP5 實際輸出
+
+```text
+contours: 3
+polygon vertex counts: [8, 4, 3]
+saved: lesson34-camera-polygons.png
+```
+
+![RP5 相機拍攝圖形後的處理結果](./圖檔/lesson34-camera-polygons.png)
+
+`approxPolyDP` 依周長的 2% 作為允許誤差近似邊界。由左到右，本次圓形近似為 8 點、矩形 4 點、三角形 3 點；黃色圓點表示近似頂點。圓形得到 8 點不表示它實際是八邊形，而是這個參數下的近似結果。 圖案是螢幕上的測試素材，圖片由 RP5 相機拍攝後裁切、校正與處理，不是操作截圖。原始照片的周圍環境未公開。
+
+### 學生練習與限制
+
+修改近似誤差或面積／深度門檻前，先預測哪些點可能消失，再記錄實際結果。單一生成測試圖不能證明演算法對其他形狀、光線、反光或視角都有相同效果。
+
 ## 與原文章的差異
 
 - 原文使用外部圖片；本版使用合成矩形，並列出此機器的實際頂點數。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
 - 尚未保存操作畫面截圖。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
+- 新增 RP5 相機拍攝螢幕圖形的實測；圖片經校正，尚未驗證原文外部圖片。

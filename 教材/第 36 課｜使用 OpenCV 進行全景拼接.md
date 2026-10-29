@@ -61,9 +61,50 @@ panorama produced True
 
 進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/d8/d19/tutorial_stitcher.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
 
+## 進一步實驗：兩張相機照片的拼接模式
+
+將第 31 至 33 課使用的兩張相機實拍、裁切校正圖 [feature-board-a.png](./圖檔/feature-board-a.png) 和 [feature-board-b.png](./圖檔/feature-board-b.png) 下載到練習目錄，再保存[程式檔](./範例程式/第36課-相機影像拼接.py)，執行 `python3 第36課-相機影像拼接.py`。兩張圖是同一測試板以不同顯示大小分別拍攝；它們不是相鄰的真實風景照片。
+
+```python
+import cv2
+
+first = cv2.imread('feature-board-a.png')
+second = cv2.imread('feature-board-b.png')
+if first is None or second is None:
+    raise RuntimeError('請準備 feature-board-a.png 與 feature-board-b.png')
+for label, mode in [('PANORAMA', cv2.Stitcher_PANORAMA), ('SCANS', cv2.Stitcher_SCANS)]:
+    status, output = cv2.Stitcher_create(mode).stitch([first, second])
+    print(label, 'status:', status)
+    print(label, 'image produced:', output is not None)
+    if output is not None:
+        name = f'lesson36-camera-{label.lower()}.png'
+        if not cv2.imwrite(name, output):
+            raise RuntimeError('無法存檔')
+        print('saved:', name, 'shape:', output.shape)
+```
+
+RP5 本次輸出：
+
+```text
+PANORAMA status: 0
+PANORAMA image produced: True
+saved: lesson36-camera-panorama.png shape: (420, 642, 3)
+SCANS status: 0
+SCANS image produced: True
+saved: lesson36-camera-scans.png shape: (482, 857, 3)
+```
+
+![PANORAMA 模式的實際結果](./圖檔/lesson36-camera-panorama.png)
+
+![SCANS 模式的實際結果](./圖檔/lesson36-camera-scans.png)
+
+這兩張是程式輸出的圖，不是操作截圖。雖然兩次狀態皆為 0，結果仍有彎曲、裁切或黑邊；成功狀態不保證視覺品質，也未證明擴大視野的風景全景已成功。比較兩種模式的形變，思考相片重疊率、鏡頭旋轉及重複圖案會如何影響結果。
+
 ## 與原文章的差異
 
-- 原文以實際圖片檔進行拼接；本版先以重疊的合成影像驗證流程。
+- 新增兩張相機拍攝測試板的 PANORAMA 與 SCANS 結果；它們不是相鄰風景照。
+
+- 原文以實際圖片檔進行拼接；本版使用合成影像及兩張相機拍攝的同一測試板驗證流程。
 - 真實場景的準確率、速度和操作畫面尚未完整驗證。
 - 尚未保存操作畫面截圖。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。

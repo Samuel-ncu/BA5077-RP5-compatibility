@@ -64,9 +64,78 @@ APT 的套件來源、版本和網路狀況都會影響安裝結果。先確認�
 
 遠端操作適用於沒有螢幕的感測節點，也讓維護人員能檢查狀態。正式部署還要考量帳號認證、連線範圍、軟體更新與裝置失聯時的處置。[Raspberry Pi 遠端存取文件](https://www.raspberrypi.com/documentation/computers/remote-access.html)可供後續學習。
 
+## 綜合實作：讓 RP5 回應一次本機網頁請求
+
+原文包含架設網頁伺服器的情境。這裡先用 Python 內建工具理解「請求與回應」，不需要另安裝 Apache，也不對區域網路開放服務。這個練習會啟動一個暫時的本機服務、送出一次請求，再自行關閉。
+
+### 事前準備
+
+需要能在 RP5 執行 Python 3。下方程式沒有額外第三方套件；把它存為 `第04課-本機網頁.py`，也可使用[範例程式](./範例程式/第04課-本機網頁.py)。
+
+```python
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from threading import Thread
+from urllib.request import urlopen
+
+
+class DemoHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = b'Hello, AIoT!'
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/plain; charset=utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, format, *args):
+        pass
+
+
+# 只監聽 RP5 本機，並讓系統選擇一個可用的連接埠。
+server = HTTPServer(('127.0.0.1', 0), DemoHandler)
+thread = Thread(target=server.serve_forever)
+thread.start()
+try:
+    url = f'http://127.0.0.1:{server.server_port}/'
+    with urlopen(url, timeout=5) as response:
+        print('HTTP status:', response.status)
+        print('response:', response.read().decode('utf-8'))
+finally:
+    server.shutdown()
+    thread.join()
+    server.server_close()
+```
+
+在程式所在目錄執行：
+
+```bash
+python3 第04課-本機網頁.py
+```
+
+本次在 RP5 的實際輸出：
+
+```text
+HTTP status: 200
+response: Hello, AIoT!
+```
+
+### 讀懂結果
+
+`127.0.0.1` 指向執行程式的 RP5 本身；連接埠設為 `0` 時，由系統選一個目前可用的連接埠。程式以 `urlopen` 對自己的服務提出請求，`200` 表示這次請求收到成功回應，後面一行是回應內容。最後的 `shutdown` 與 `server_close` 負責關閉服務。
+
+這個測試證明 RP5 本機內的 HTTP 請求和回應可運作，**不證明其他電腦能連到 RP5，也不代表 Apache 已安裝或對外提供服務**。
+
+### 練習與問題排除
+
+1. 修改 `body` 裡的英文訊息，再執行一次；記下輸出如何改變。若要使用中文字，需先用 UTF-8 編碼成 bytes，並注意 `Content-Length` 使用的是位元組數。
+2. 試著解釋服務、連接埠、請求與回應各自扮演什麼角色。
+3. 若看到 `ModuleNotFoundError`，確認是在 RP5 的 Python 3 執行；若埠綁定失敗，檢查環境是否限制本機網路。
+
+延伸到感測器時，回應內容可以由固定文字改為溫度或其他數值。但在讓其他裝置連入之前，還需考慮誰能存取、資料是否敏感以及服務失敗時的處理方式。
 ## 與原文章的差異
 
 - 新增本機實測的 Linux、ARM64、APT 與 SSH 服務檢查。
 - 不將全面升級或啟動網頁伺服器視為閱讀文章的必要步驟。
 - 尚未補拍本課畫面。
 - 補充 SSH、套件管理、連線流程圖及學生練習；原文網頁伺服器情境仍未在本篇完整實測。
+- 新增本機回送 HTTP 的實作及真實輸出；原文的 Apache 和對外網頁伺服器仍未完成實測。

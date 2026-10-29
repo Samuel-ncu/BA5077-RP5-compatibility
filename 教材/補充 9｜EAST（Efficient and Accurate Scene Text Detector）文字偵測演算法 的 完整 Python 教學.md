@@ -62,7 +62,60 @@ EAST 偵測影像中可能有文字的區域；它本身不保證輸出文字內
 
 進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/d2/d58/tutorial_table_of_content_dnn.html)。請以下方實測狀態為準；尚未實作或測試的情境不能視為已通過。
 
+## 進一步實驗：RP5 相機拍攝英文測試板
+
+### 準備與執行
+
+1. 在螢幕顯示[相機測試畫面](./練習素材/RP5相機測試.html)的「文字偵測」，由 RP5 相機拍攝，再依[實拍與校正流程](./練習素材/相機實拍與校正流程.md)裁切校正。這次得到的[實拍輸入圖 text-board.png](./圖檔/text-board.png)可供重現。
+2. 將該圖片、[east_helpers.py](./範例程式/east_helpers.py) 和[本範例程式](./範例程式/補充9至11-相機文字.py)放入同一個練習目錄，依本文事前準備放入 EAST 模型，並依[安裝紀錄](../安裝操作與實測紀錄.md#6-tesseract-ocr)準備 OpenCV、NumPy、Tesseract 及英文語言資料。
+3. 在該目錄執行 `python3 補充9至11-相機文字.py`。模型和語言資料缺失時先依安裝紀錄處理，不要以其他模型的結果替代。
+
+```python
+import cv2
+import subprocess
+from east_helpers import detect_text
+
+# 讀取已裁切並校正的相機照片；EAST 尋找文字區域，Tesseract 嘗試辨認文字。
+image = cv2.imread('text-board.png')
+if image is None:
+    raise RuntimeError('找不到 text-board.png')
+net = cv2.dnn.readNet('frozen_east_text_detection.pb')
+boxes = detect_text(net, image)
+annotated = image.copy()
+for x1, y1, x2, y2 in boxes:
+    cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 2)
+if not cv2.imwrite('supplement9-camera-east.png', annotated):
+    raise RuntimeError('無法儲存結果')
+print('EAST boxes:', len(boxes))
+print('saved: supplement9-camera-east.png')
+result = subprocess.run(['tesseract', 'text-board.png', 'stdout', '-l', 'eng', '--psm', '6'],
+                        check=True, capture_output=True, text=True)
+print('Tesseract output:')
+print(result.stdout.strip())
+```
+
+RP5 本次實際輸出：
+
+```text
+EAST boxes: 10
+saved: supplement9-camera-east.png
+Tesseract output:
+TEXT DETECTION
+RASPBERRY PI 5
+HELLO CAMERA
+AIOT 2026
+OPEN CV 12345
+```
+
+![RP5 相機照片中的 EAST 文字框](./圖檔/supplement9-camera-east.png)
+
+這是對相機實拍圖片畫出的結果圖，並非操作截圖。EAST 的綠框在部分文字有切割或漏框；10 個框不能解讀為 10 行文字，也不是準確率。此程式的 Tesseract 是**直接辨識整張圖片**，不是以 EAST 的每個框裁切後再辨識；前文合成圖片例子才有框選後 OCR。這次只測清楚的英文單張畫面，未測中文、真實街景、連續即時預覽或整體準確率。
+
+練習：比較輸入圖和綠框，指出未被完整涵蓋的字；把「框定位是否正確」與「OCR 字元是否正確」分開評估。
+
 ## 與原文章的差異
+
+- 新增對相機拍攝的英文測試板執行 EAST 及整圖 Tesseract；與原文即時流程的差異仍見下方。
 
 - 原文使用外部圖片並顯示視窗；本版使用可重現的合成圖片、保存結果並附上實測輸出。
 - 本機測試範圍僅限上述流程；尚未保存操作畫面截圖。

@@ -68,9 +68,50 @@ getent hosts localhost
 
 參考：[Raspberry Pi 遠端存取文件](https://www.raspberrypi.com/documentation/computers/remote-access.html)。
 
+## 進一步認識 Linux 與檔案
+
+Linux 是核心：負責協調處理器、記憶體和裝置等資源。以 Linux 為核心、搭配工具和套件組成的系統通常稱為 Linux 發行版；Debian 與 Raspberry Pi OS 是相關的系統環境。圖形桌面（GUI）提供視窗與選單，終端機則讓使用者透過 shell 輸入文字命令；兩者都可操作同一台電腦。
+
+RP5 的檔案系統可用樹狀結構理解：`/` 是根目錄，`/home` 常放使用者資料，`/tmp` 常供暫存，這台機器的開機檔掛載於 `/boot/firmware`。不同系統的設定可能不同，不能假設所有資料都位於同一位置。
+
+```mermaid
+flowchart TD
+    A["/ 根目錄"] --> B["/home 使用者目錄"]
+    A --> C["/tmp 暫存目錄"]
+    A --> D["/boot/firmware 開機檔"]
+```
+
+這是本課說明用的簡化示意圖，不是完整檔案清單或操作截圖。
+
+### 本機實際查詢
+
+```bash
+uname -s
+uname -m
+python3 -c 'import os; print(os.path.isdir("/home")); print(os.path.isdir("/tmp"))'
+test -d /boot/firmware && echo boot-firmware-present
+```
+
+本次 RP5 實際輸出：
+
+```text
+Linux
+aarch64
+True
+True
+boot-firmware-present
+```
+
+第一、二行分別表示核心名稱和架構。接下來兩行 `True` 只表示測試時這兩個目錄存在；最後一行表示此時 `/boot/firmware` 是目錄，不代表其中每個開機檔都正確。
+
+### 練習
+
+比較 Windows 的圖形檔案管理與 RP5 的 Linux 目錄樹：兩者如何讓使用者找到檔案？再說明終端機查詢成功是否足以證明圖形桌面也能正常啟動。
+
 ## 與原文章的差異
 
 - 增加電腦直連 RP5 的情境，並分開說明介面狀態、IP 位址與名稱解析。
 - 命令與輸出取自本次 RP5 實測；未將實際區網位址寫入公開教材。
 - 尚未補拍本課畫面。
 - 加入作業系統、IP、名稱解析與服務入口的初學者背景、示意圖和練習。
+- 依原文作業系統主題增加核心、發行版、GUI 與檔案系統，並補上目錄查詢實測。

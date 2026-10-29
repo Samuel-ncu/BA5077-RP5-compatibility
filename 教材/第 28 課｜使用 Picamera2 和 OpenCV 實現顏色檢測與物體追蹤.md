@@ -153,9 +153,91 @@ result: lesson28-camera-mask.png
 
 應用可以是產線顏色分揀、實驗室標記追蹤或展示模型輸入前的影像分割。實際部署需要考慮光線變化、誤判、相機畫面與隱私，以及失敗時的處理方式。
 
+## 進階實測：相機拍攝螢幕上的移動目標
+
+### 準備與操作
+
+1. 下載[相機測試畫面](./練習素材/RP5相機測試.html)和同目錄的圖片素材，在電腦上開啟測試頁，選「移動追蹤」，讓紅色圓形移動；將 RP5 相機對準螢幕並固定。
+2. 在 RP5 使用已驗證的 Picamera2、OpenCV 和 NumPy。確認沒有其他程式使用相機；程式只取得有限張影格，結束後會釋放相機。
+3. 將[範例程式](./範例程式/第28課-相機移動色塊.py)存到自己的練習目錄。程式中的四個 `source` 座標只適用本次相機位置與 1920 × 1080 的照片。請先查看自己的拍攝畫面並重新量測測試圖的左上、右上、右下、左下座標；錯誤座標會造成偵測失敗，或把不希望公開的周圍環境留在圖中。
+
+```python
+import time
+import cv2
+import numpy as np
+from picamera2 import Picamera2
+
+# 此座標對應本次 1920×1080 相機畫面中的螢幕；移動設備後須重新量測。
+source = np.float32([[755, 270], [1385, 65], [1484, 412], [856, 604]])
+target = np.float32([[0, 0], [599, 0], [599, 337], [0, 337]])
+matrix = cv2.getPerspectiveTransform(source, target)
+camera = Picamera2()
+panels, centers = [], []
+try:
+    camera.configure(camera.create_still_configuration(main={'size': (1920, 1080), 'format': 'RGB888'}))
+    camera.start()
+    time.sleep(1)
+    for index in range(6):
+        frame = camera.capture_array()
+        board = cv2.warpPerspective(frame, matrix, (600, 338))
+        hsv = cv2.cvtColor(board, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv, (0, 130, 100), (10, 255, 255))
+        mask |= cv2.inRange(hsv, (170, 130, 100), (179, 255, 255))
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        candidates = [c for c in contours if cv2.contourArea(c) > 300]
+        if candidates:
+            x, y, w, h = cv2.boundingRect(max(candidates, key=cv2.contourArea))
+            centers.append((x + w // 2, y + h // 2))
+            cv2.rectangle(board, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        else:
+            centers.append(None)
+        cv2.putText(board, f'frame {index+1}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
+        if index in (0, 2, 5):
+            panels.append(board)
+        time.sleep(0.5)
+finally:
+    camera.stop()
+    camera.close()
+
+if not cv2.imwrite('lesson28-motion.png', cv2.hconcat(panels)):
+    raise RuntimeError('無法儲存結果圖')
+print('frames captured:', len(centers))
+print('red detections:', sum(point is not None for point in centers))
+print('centers (x, y):', centers)
+print('saved: lesson28-motion.png')
+```
+
+在 RP5 的練習目錄執行：
+
+```bash
+python3 第28課-相機移動色塊.py
+```
+
+### 本次實際輸出
+
+```text
+frames captured: 6
+red detections: 6
+centers (x, y): [(207, 171), (286, 171), (368, 170), (439, 170), (487, 169), (502, 169)]
+saved: lesson28-motion.png
+```
+
+![RP5 相機拍攝移動目標並產生的結果](./圖檔/lesson28-motion.png)
+
+圖片由本機相機拍攝螢幕上的動畫後，裁切並透視校正，程式再標示目標；畫面中的框線是本次實測輸出，並非操作截圖。照片不顯示原始鏡頭所拍到的螢幕外環境。
+
+### 理解與實驗
+
+程式對六張影格各自產生 HSV 紅色遮罩、找出最大輪廓並計算外接框中心；這是逐幀偵測同一顏色的簡單位置紀錄，沒有多目標身分關聯。圖由左至右顯示第 1、3、6 張；座標是校正後 600 × 338 影像內的像素位置。
+
+上述成果只是固定相機、螢幕上單一紅色圓形、有限張影格的測試。移動速度、光線、相機位置、目標遮擋或其他紅色物品都可能影響結果；不要把此次成功次數當作一般場景的準確率。
+
+練習：先預測目標移到畫面邊緣或被遮住時的結果，再自行測試並記錄成功與失敗。若測不到，檢查測試頁是否正在動畫、相機是否被占用、四角座標和目標顏色是否正確。
+
 ## 與原文章的差異
 
-- 原文以相機追蹤顏色；本版先驗證固定合成圖的遮罩與像素數，未測即時追蹤。
+- 原文以相機追蹤顏色；本版包含合成圖、單張實拍及六張連續影格的有限測試，尚未驗證持續即時顯示與多目標追蹤。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
 - 尚未保存操作畫面截圖。
 - 追加 RP5 實拍螢幕色塊的單張照片偵測；尚未完成原文的即時追蹤。
+- 新增六張相機影格的連續色彩偵測；未測試長時間即時視窗、多目標或穩定幀率。

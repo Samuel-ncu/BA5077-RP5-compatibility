@@ -72,6 +72,60 @@ flowchart LR
 
 此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
 
+## 進階實測：對相機拍攝的生成素材執行 DNN 人臉偵測
+
+本次素材是 AI 生成的虛構人物，先顯示於電腦螢幕，再由 RP5 相機拍照並截取校正；詳見[相機實拍與校正流程](./練習素材/相機實拍與校正流程.md)。圖片不是實拍真人。可下載[本次校正後影像](./圖檔/facehand-board.png)作為 `facehand-board.png`，與本篇上方準備的兩個模型檔及[範例程式](./範例程式/第37課-相機DNN人臉.py)放在同一練習目錄。
+
+```python
+import cv2
+
+image = cv2.imread('facehand-board.png')
+if image is None:
+    raise RuntimeError('找不到 facehand-board.png')
+net = cv2.dnn.readNetFromTensorflow('opencv_face_detector_uint8.pb', 'opencv_face_detector.pbtxt')
+blob = cv2.dnn.blobFromImage(image, 1.0, (300, 300), (104, 117, 123), swapRB=False, crop=False)
+net.setInput(blob)
+output = net.forward()
+height, width = image.shape[:2]
+scores = []
+for detection in output[0, 0]:
+    confidence = float(detection[2])
+    if confidence < 0.5:
+        continue
+    x1, y1, x2, y2 = (detection[3:7] * [width, height, width, height]).astype(int)
+    x1, y1 = max(0, x1), max(0, y1)
+    x2, y2 = min(width-1, x2), min(height-1, y2)
+    cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 3)
+    scores.append(round(confidence, 3))
+if not cv2.imwrite('lesson37-camera-dnn.png', image):
+    raise RuntimeError('無法儲存結果')
+print('output shape:', output.shape)
+print('faces above threshold:', len(scores))
+print('confidence scores:', scores)
+print('saved: lesson37-camera-dnn.png')
+```
+
+```bash
+python3 第37課-相機DNN人臉.py
+```
+
+本次 RP5 實際輸出：
+
+```text
+output shape: (1, 1, 200, 7)
+faces above threshold: 1
+confidence scores: [0.967]
+saved: lesson37-camera-dnn.png
+```
+
+![RP5 相機拍攝生成素材後的 DNN 人臉偵測結果](./圖檔/lesson37-camera-dnn.png)
+
+綠框是本次程式輸出的候選位置。`blobFromImage` 將輸入調整為模型所需的資料格式，`forward` 產生候選結果；程式只畫出信心分數至少 0.5 的候選框。0.967 是此候選的模型分數，不能當作模型在所有人臉上的準確率或判斷身分的證據。
+
+### 練習與應用
+
+比較[第 22 課的 Haar Cascade](./第%2022%20課｜使用%20OpenCV%20進行臉部檢測.md)與本課 DNN：兩者都回答「臉大約在哪裡」，模型輸入和演算法不同。自行調整門檻，記錄候選框變化；真實環境須以獲授權的多樣測試資料評估光線、角度與遮擋，不能只用這一張生成圖。實際人物照片涉及隱私，不要直接公開。
+
 ## 與原文章的差異
 
 - 原文使用相機即時檢測，來源程式含非標準空白；本版重新寫入程式並以空白圖測試模型。
@@ -79,3 +133,4 @@ flowchart LR
 - 尚未保存操作畫面截圖。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
+- 新增相機拍攝 AI 生成素材後的單張 DNN 偵測；未宣稱完成即時視訊或真人資料準確率驗證。

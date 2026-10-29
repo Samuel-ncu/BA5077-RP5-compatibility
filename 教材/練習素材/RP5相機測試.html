@@ -9,13 +9,14 @@
 </style>
 </head>
 <body>
-<header><h1>RP5 相機測試畫面</h1><label>畫面 <select id="scene"><option value="calibrate">對準與尺寸</option><option value="colors">色彩偵測</option><option value="shapes">形狀與輪廓</option><option value="motion">移動追蹤</option><option value="text">文字偵測</option><option value="features">特徵匹配</option><option value="objects">AI 生成物件圖</option></select></label><label>大小 <input id="scale" type="range" min="35" max="100" value="90"> <span id="scaleValue">90%</span></label><button id="motion">暫停動畫</button><button id="fullscreen">全螢幕</button><span class="help">方向鍵切換畫面；↑↓ 調整大小；空白鍵暫停；Esc 離開全螢幕</span></header>
+<header><h1>RP5 相機測試畫面</h1><label>畫面 <select id="scene"><option value="calibrate">對準與尺寸</option><option value="colors">色彩偵測</option><option value="shapes">形狀與輪廓</option><option value="concave">凸包與凹缺陷</option><option value="motion">移動追蹤</option><option value="text">文字偵測</option><option value="features">特徵匹配</option><option value="objects">AI 生成物件圖</option><option value="facehand">AI 生成人臉與手</option></select></label><label>大小 <input id="scale" type="range" min="35" max="100" value="90"> <span id="scaleValue">90%</span></label><button id="motion">暫停動畫</button><button id="fullscreen">全螢幕</button><span class="help">方向鍵切換畫面；↑↓ 調整大小；空白鍵暫停；Esc 離開全螢幕</span></header>
 <main><canvas id="board" width="1600" height="900" aria-label="相機測試圖案"></canvas></main>
 <script>
 'use strict';
 const canvas=document.querySelector('#board'), ctx=canvas.getContext('2d');
 const select=document.querySelector('#scene'), scale=document.querySelector('#scale');
 const objectsImage=new Image();objectsImage.src='AI生成物件測試.png';
+const faceHandImage=new Image();faceHandImage.src='AI生成臉與手.png';
 let running=true, t=0, last=performance.now();
 function size(){const area=document.querySelector('main'), s=Number(scale.value)/100, ratio=Math.min(area.clientWidth/1600,area.clientHeight/900)*s; canvas.style.width=(1600*ratio)+'px';canvas.style.height=(900*ratio)+'px';document.querySelector('#scaleValue').textContent=scale.value+'%'}
 function box(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h)}
@@ -26,10 +27,12 @@ function render(now){if(running)t+=(now-last)/1000;last=now;box(0,0,1600,900,'#f
 if(scene==='calibrate'){box(20,20,1560,860,'#111');box(40,40,1520,820,'#fff');for(let x=200;x<1600;x+=200){box(x,40,2,820,'#d5dbe1')}for(let y=150;y<900;y+=150){box(40,y,1520,2,'#d5dbe1')}circle(800,450,130,'#111');circle(800,450,110,'#fff');box(795,250,10,400,'#111');box(600,445,400,10,'#111');text('ALIGN CAMERA',800,110,55);text('KEEP ALL FOUR CORNERS VISIBLE',800,820,37);for(const [x,y] of [[60,60],[1500,60],[60,780],[1500,780]])box(x,y,40,40,'#e32222')}
 if(scene==='colors'){text('COLOR DETECTION',800,100,55);for(const [i,c,name] of [[0,'#e71919','RED'],[1,'#16a34a','GREEN'],[2,'#1659ea','BLUE'],[3,'#facc15','YELLOW']]){let x=100+i*360;box(x,220,280,300,c);text(name,x+140,610,42)}text('Large color blocks for HSV testing',800,780,36)}
 if(scene==='shapes'){text('SHAPES AND CONTOURS',800,100,55);circle(280,430,155,'#dc2626');box(620,275,310,310,'#2563eb');triangle();text('CIRCLE',280,700,38);text('RECTANGLE',775,700,38);text('TRIANGLE',1320,700,38)}
+if(scene==='concave'){text('CONVEX HULL AND DEFECTS',800,100,55);ctx.beginPath();ctx.moveTo(400,220);ctx.lineTo(1200,220);ctx.lineTo(1200,670);ctx.lineTo(800,420);ctx.lineTo(400,670);ctx.closePath();ctx.fillStyle='#151515';ctx.fill();text('CONCAVE POLYGON',800,810,40)}
 if(scene==='motion'){text('MOTION AND TRACKING',800,100,55);box(150,170,1300,530,'#e8edf1');let x=300+(1000*(0.5+0.5*Math.sin(t*0.8)));circle(x,435,100,'#e11d25');text('Moving red circle',800,800,40)}
 if(scene==='text'){text('TEXT DETECTION',800,125,75);text('RASPBERRY PI 5',800,310,105);text('HELLO CAMERA',800,470,95);text('AIOT 2026',800,630,95);text('OPEN CV 12345',800,780,72)}
 if(scene==='features'){text('FEATURE MATCHING',800,100,55);for(let y=0;y<7;y++)for(let x=0;x<12;x++){let a=((x*137+y*71+17)%255),b=((x*59+y*181+83)%255),c=((x*191+y*43+19)%255);box(100+x*115,155+y*88,90,68,`rgb(${a},${b},${c})`);text(String((x*13+y*17)%100),145+x*115,200+y*88,20,'#fff')}text('Move or rotate camera slightly between images',800,850,30)}
 if(scene==='objects'){if(objectsImage.complete&&objectsImage.naturalWidth){ctx.drawImage(objectsImage,145,10,1310,873)}else{text('IMAGE LOADING',800,450,55)}}
+if(scene==='facehand'){if(faceHandImage.complete&&faceHandImage.naturalWidth){const h=873,w=h*faceHandImage.naturalWidth/faceHandImage.naturalHeight;ctx.drawImage(faceHandImage,(1600-w)/2,10,w,h)}else{text('IMAGE LOADING',800,450,55)}}
 requestAnimationFrame(render)}
 document.querySelector('#motion').onclick=()=>{running=!running;document.querySelector('#motion').textContent=running?'暫停動畫':'播放動畫'};
 document.querySelector('#fullscreen').onclick=()=>document.documentElement.requestFullscreen?.();

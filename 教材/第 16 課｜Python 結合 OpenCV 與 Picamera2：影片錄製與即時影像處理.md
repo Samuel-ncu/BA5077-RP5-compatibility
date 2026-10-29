@@ -78,6 +78,98 @@ flowchart LR
 
 此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
 
+## 進階實測：相機影格轉灰階並寫入短影片
+
+這個實驗使用 RP5 相機拍攝螢幕上移動的紅色圓形。程式連續取得 12 張影格，裁切與透視校正測試圖後轉成灰階，寫入 MJPG 影片，再重新讀取影片檢查影格數。這是有限張數的拍攝與寫檔測試，**不是已驗證的長時間錄影、同步音訊或即時預覽**。
+
+### 事前準備
+
+1. 下載[相機測試畫面](./練習素材/RP5相機測試.html)，在電腦螢幕選「移動追蹤」，並讓 RP5 相機對準該畫面。相機應固定，且不能同時被其他程式占用。
+2. 確認系統 Python 能使用 Picamera2、OpenCV、NumPy 及 MJPG 編碼器。在自己的空練習目錄放入[範例程式](./範例程式/第16課-相機影格與影片.py)。程式會建立 `lesson16-camera.avi` 與 `lesson16-frames.png`；先確認不會覆蓋已有檔案。
+3. `source` 四個座標只對應本次 1920 × 1080 的相機位置。更換相機、畫面大小或位置後，須重新量測測試圖的四角；公開圖片前也要確認是否仍含周圍環境。
+
+```python
+import time
+import cv2
+import numpy as np
+from picamera2 import Picamera2
+
+# 本次相機位置的測試圖四角；不同位置或尺寸須重新量測。
+source = np.float32([[755, 270], [1385, 65], [1484, 412], [856, 604]])
+target = np.float32([[0, 0], [599, 0], [599, 337], [0, 337]])
+matrix = cv2.getPerspectiveTransform(source, target)
+camera = Picamera2()
+writer = None
+panels = []
+written = 0
+try:
+    camera.configure(camera.create_still_configuration(main={'size': (1920, 1080), 'format': 'RGB888'}))
+    camera.start()
+    time.sleep(1)
+    writer = cv2.VideoWriter('lesson16-camera.avi', cv2.VideoWriter_fourcc(*'MJPG'), 5, (600, 338))
+    if not writer.isOpened():
+        raise RuntimeError('無法建立 MJPG 影片')
+    for index in range(12):
+        frame = camera.capture_array()
+        board = cv2.warpPerspective(frame, matrix, (600, 338))
+        gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
+        processed = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+        cv2.putText(processed, f'frame {index+1}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
+        writer.write(processed)
+        written += 1
+        if index in (0, 5, 11):
+            panels.append(processed)
+        time.sleep(0.2)
+finally:
+    if writer is not None:
+        writer.release()
+    camera.stop()
+    camera.close()
+
+video = cv2.VideoCapture('lesson16-camera.avi')
+read_count = 0
+first_shape = None
+try:
+    while True:
+        ok, image = video.read()
+        if not ok:
+            break
+        if first_shape is None:
+            first_shape = image.shape
+        read_count += 1
+finally:
+    video.release()
+if not cv2.imwrite('lesson16-frames.png', cv2.hconcat(panels)):
+    raise RuntimeError('無法儲存結果圖')
+print('frames written:', written)
+print('frames read:', read_count)
+print('first video frame:', first_shape)
+print('saved: lesson16-camera.avi, lesson16-frames.png')
+```
+
+```bash
+python3 第16課-相機影格與影片.py
+```
+
+### RP5 實際輸出
+
+```text
+frames written: 12
+frames read: 12
+first video frame: (338, 600, 3)
+saved: lesson16-camera.avi, lesson16-frames.png
+```
+
+![RP5 相機拍攝後轉為灰階的三張影格](./圖檔/lesson16-frames.png)
+
+圖由左到右為本次擷取的第 1、6、12 張影格，經透視校正、灰階轉換並標示影格編號。這是程式結果圖，不是操作截圖。[下載本次處理後的短影片](./練習素材/lesson16-camera.avi)可練習第 26、27 課；完整原始相機畫面未上傳。
+
+### 如何理解與繼續實驗
+
+`VideoWriter` 設定的 5 是影片播放的標稱每秒影格數；程式每次拍攝與處理還需要時間，`sleep(0.2)` 不能證明相機或整條流程實際達到 5 FPS。`frames read: 12` 證明本次重新讀到 12 張影格，不代表畫面一定適用其他編碼器或播放器。
+
+請比較三張影格中的圓形位置；再調整拍攝張數或等待時間，記錄檔案大小和輸出。若影片無法建立，檢查編碼器、磁碟空間、輸出路徑與寫入權限；若相機無法啟動，先檢查是否被其他程式占用。不要把測試照片或影片中不應公開的內容上傳。
+
 ## 與原文章的差異
 
 - 原文示範相機即時錄影；本版先用可重現的合成影格測試影片流程，未聲稱已驗證即時錄影。
@@ -85,3 +177,4 @@ flowchart LR
 - 尚未補拍操作畫面；圖檔（若有）是程式產生的結果，不冒充螢幕截圖。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
+- 新增 RP5 相機實拍 12 張影格、寫入 MJPG 並重新讀取的測試；尚未驗證長時間錄影和即時預覽。

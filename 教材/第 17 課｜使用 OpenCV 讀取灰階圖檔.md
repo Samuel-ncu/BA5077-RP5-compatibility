@@ -58,9 +58,46 @@ saved True
 
 進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
 
+## 進階實作：把相機實拍圖片讀成灰階
+
+上面的初步範例建立合成圖片並轉換灰階；原文主題則是**讀取圖片檔**。本次另使用第 40 課由 RP5 拍攝螢幕測試素材、裁切並校正的[實拍影像](./圖檔/objects-board.png)。請下載該圖，存為 `objects-board.png`，放在下列[範例程式](./範例程式/第17課-讀取實拍灰階.py)的練習目錄。
+
+```python
+import cv2
+
+# objects-board.png 是第 40 課的相機實拍測試圖，已裁切並透視校正。
+image = cv2.imread('objects-board.png', cv2.IMREAD_GRAYSCALE)
+if image is None:
+    raise RuntimeError('無法讀取 objects-board.png，請確認檔案與目錄')
+print('gray shape', image.shape)
+print('gray dtype', image.dtype)
+print('saved', cv2.imwrite('lesson17-camera-gray.png', image))
+```
+
+```bash
+python3 第17課-讀取實拍灰階.py
+```
+
+本次 RP5 實際輸出：
+
+```text
+gray shape (675, 1200)
+gray dtype uint8
+saved True
+```
+
+![相機實拍素材讀為灰階的結果](./圖檔/lesson17-camera-gray.png)
+
+`cv2.IMREAD_GRAYSCALE` 在讀檔時取得單通道影像。圖中的物件原本由 AI 生成，先顯示於螢幕，再由 RP5 相機拍攝，最後裁切、校正和讀成灰階；它不是實拍真實水果，也不是操作截圖。`image is None` 用來檢查讀檔失敗，避免後續處理空資料。
+
+### 練習
+
+比較[彩色輸入](./圖檔/objects-board.png)與灰階輸出，說明哪些顏色資訊消失。將圖片檔名改成不存在的名稱，觀察程式如何提示，再改回正確名稱。
+
 ## 與原文章的差異
 
 - 原文讀取外部 `demo.jpeg`；本版使用合成圖像，不依賴未提供的圖片。
 - 上述文字輸出是本次實機紀錄，其他版本或環境可能不同。
 - 尚未補拍操作畫面；圖檔（若有）是程式產生的結果，不冒充螢幕截圖。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
+- 新增使用 `cv2.imread(..., cv2.IMREAD_GRAYSCALE)` 讀取 RP5 實拍後校正影像的實測；原文即時圖形視窗仍未驗證。
