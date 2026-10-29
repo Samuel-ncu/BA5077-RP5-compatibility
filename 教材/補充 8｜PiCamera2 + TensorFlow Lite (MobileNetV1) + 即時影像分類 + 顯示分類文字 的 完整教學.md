@@ -2,11 +2,11 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223038310) · 更新日期：2026-10-29
 
-> **部分實測**：模型和標籤已在 Thonny 下載，單張分類也已在 Thonny 重測。已建立並實測獨立單圖分類環境；即時相機分類與顯示待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
+> **部分實測**：模型和標籤已在 Thonny 下載，單張分類也已在 Thonny 重測。已建立並實測獨立單圖分類環境；另於既有環境實測 50 張相機分類與預覽。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
 
-理解 MobileNet 圖像分類，並以相機拍攝後的單張圖片測試。即時攝影機和畫面文字顯示仍待完成。
+理解 MobileNet 圖像分類，先以相機照片測試，再將相機的連續影格送入模型並在畫面顯示分類文字。
 
 圖像分類根據整張圖產生各類別分數；它與物件偵測不同，通常不提供物件位置。TFLite Interpreter 載入模型並配置輸入輸出張量，資料的尺寸、型別與模型必須一致。本例使用量化模型：輸出需依 scale 與 zero point 換算；標籤列表必須與模型對應。
 
@@ -85,11 +85,95 @@ top class: 957 custard apple 0.0625
 
 這些是模型對這張生成圖片給出的分數，不能用來確認水果品種或估計整體準確率。不同版本與輸入可能改變結果。
 
+## 即時相機分類：Thonny 實測 50 張影格
+
+本實驗由 Picamera2 持續取影格，縮放為模型要求的 224 × 224 RGB，量化模型推論後把最高分標籤畫在預覽上；每一張影格都是**整張畫面的分類**，不是把瓶子框起來。模型即使沒有明確目標也會從既有類別選最高分，因此低分或不相關的標籤不能當成「偵測到」的證明。
+
+1. 請依前節下載模型和標籤，並把 [相機分類程式](./範例程式/補充8-Thonny相機TFLite.py)、`mobilenet.tflite`、`labels.txt` 放在同一個練習資料夾。
+2. 本次選擇既有 `/home/pi/myenv/bin/python3`，其中同時可匯入 Picamera2、OpenCV、NumPy 和 TFLite。前節的新獨立環境只驗證了單圖分類，**尚未驗證能使用 Picamera2**，不能直接當成已完成的相機環境安裝。
+3. 在 Thonny 開啟程式、按綠色執行鈕，觀察預覽左上角文字與分數；程式最多處理 50 張影格，自動結束並釋放相機。程式提供預覽視窗按 `q` 提前結束的分支，但這項操作尚未單獨驗證；若需確保安全結束，先等待自動完成。
+4. Shell 出現 `camera released` 後，才啟動下一個相機程式。請勿同時開啟其他使用相機的程式。
+
+完整程式：
+
+```python
+import time
+import cv2
+import numpy as np
+from picamera2 import Picamera2
+from tflite_runtime.interpreter import Interpreter
+
+with open('labels.txt', encoding='utf-8') as f:
+    labels = [line.strip() for line in f]
+interpreter = Interpreter(model_path='mobilenet.tflite')
+interpreter.allocate_tensors()
+inp = interpreter.get_input_details()[0]
+out = interpreter.get_output_details()[0]
+if tuple(inp['shape']) != (1, 224, 224, 3) or inp['dtype'] != np.uint8:
+    raise RuntimeError('此程式需要 uint8 224x224 RGB 的 MobileNetV1 模型')
+
+camera = Picamera2()
+count = 0
+try:
+    camera.configure(camera.create_preview_configuration(
+        main={'size': (640, 480), 'format': 'RGB888'}))
+    camera.start()
+    time.sleep(1)
+    start = time.perf_counter()
+    while count < 50:
+        frame = camera.capture_array()
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        rgb = cv2.resize(rgb, (224, 224))
+        interpreter.set_tensor(inp['index'], np.expand_dims(rgb, 0))
+        interpreter.invoke()
+        raw = interpreter.get_tensor(out['index'])[0]
+        scale, zero = out['quantization']
+        scores = (raw.astype(np.float32) - zero) * scale
+        if len(labels) != len(scores):
+            raise RuntimeError('標籤數與模型輸出數不一致')
+        i = int(np.argmax(scores))
+        count += 1
+        cv2.putText(frame, f'{labels[i]} {scores[i]:.3f}', (10, 35),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        cv2.imshow('TFLite camera - Q to stop', frame)
+        if count in (1, 10, 25, 50):
+            print(f'frame {count}: {labels[i]} {scores[i]:.4f}', flush=True)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    elapsed = time.perf_counter() - start
+    print('frames:', count)
+    print('elapsed seconds:', round(elapsed, 2))
+    print('average FPS:', round(count / elapsed, 2))
+finally:
+    camera.stop()
+    camera.close()
+    cv2.destroyAllWindows()
+    print('camera released')
+```
+
+本次第一輪的 Shell 輸出摘錄：
+
+```text
+frame 10: desktop computer 0.3711
+frame 25: desktop computer 0.4258
+frame 50: desktop computer 0.2656
+frames: 50
+elapsed seconds: 2.77
+average FPS: 18.08
+camera released
+```
+
+![Thonny 執行相機分類的實際輸出](./圖檔/tflite-live-thonny.png)
+
+![另一輪相機分類的 Thonny 與預覽實測畫面](./圖檔/tflite-live-preview.png)
+
+第二張是**操作截圖與相機實拍**，取自另一輪測試，畫面顯示桌上瓶子與正在顯示程式的螢幕，標籤 `desktop computer 0.227` 為當時的模型結果。速度與分數會依場景和系統負載變化；本次約 2.77 秒的測試不能證明長時間穩定，也不是準確率測試。要觀察未含目標物的情況，可拍空白背景並記下模型仍輸出的最高分，但此負例尚未完成正式重測。
+
 ## 練習與後續應用
 
 解釋為何模型需要 224 × 224 的輸入；比較分類結果與第 40 課的物件偵測框。準備其他圖片測試前，先確認標籤順序及模型輸出是否一致，再紀錄結果與人工觀察差異。
 
 ## 與原文章的差異
 
-- 本版在 Thonny 實測模型下載及單張圖片分類。原文的完整即時分類、畫面顯示與模型轉換尚未重做。
-- 新增相機拍攝生成圖、模型和標籤下載方式及可核對的檔案資訊；即時相機分類待驗證。
+- 本版在 Thonny 實測模型下載、單張圖片分類，以及 50 張影格的即時相機分類和畫面顯示；模型轉換仍未重做。
+- 新增相機拍攝生成圖、模型和標籤下載方式及可核對的檔案資訊；相機範例使用既有環境，獨立相機環境和長時間穩定性待驗證。
