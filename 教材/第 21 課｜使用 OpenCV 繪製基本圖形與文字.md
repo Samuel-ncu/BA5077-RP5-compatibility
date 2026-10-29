@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886387) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md)
+> 本課已在 Thonny 實測：合成畫布上繪製圖形及文字，並存檔。完整原文情境及其他舊案例仍須依下文標示重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -29,13 +29,17 @@ cv2.putText(image, "OpenCV", (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 
 print("saved", cv2.imwrite("lesson21-drawing.png", image))
 ```
 
-在該檔案所在的目錄執行 `python3 第21課.py`。
+在 Thonny 選 **File → Open** 開啟 `第21課.py`，確認右下角是包含所需套件的 Python 環境，再點綠色執行鈕。若程式會輸出檔案，先在新的練習目錄操作，避免覆寫。
 
-## 本機實際輸出
+## Thonny 實測輸出
 
 ```text
 saved True
 ```
+
+![第 21 課在 Thonny 的程式與 Shell 實際畫面](./圖檔/lesson21-thonny2.png)
+
+本次選用既有環境 `/home/pi/myenv/bin/python3`。基本繪圖與存檔已在 Thonny 重測；後面的圖形視窗案例仍待 Thonny 重測。 相機或影像相關套件的準備及可重現環境請參考[Thonny 環境指南](./Thonny環境與套件安裝.md)。
 
 檢查生成的圖片是否包含圖形和文字；圖片可自行以圖形檢視器開啟。這是程式產生的結果，不是安裝畫面截圖。
 
@@ -57,7 +61,7 @@ saved True
 
 進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
 
-## 進一步實驗：顯示圖形與文字
+## 舊實驗紀錄（終端機；待 Thonny 重測）：顯示圖形與文字
 
 完成本課程式後，將[圖形視窗程式](./範例程式/OpenCV-圖形視窗.py)和 `lesson21-drawing.png` 放在同一目錄，在 RP5 圖形桌面執行：
 
@@ -95,6 +99,8 @@ window closed
 這是 RP5 圖形桌面的實際視窗截圖，經裁切保留視窗。需要有圖形顯示與支援 GUI 的 OpenCV；純 SSH 或 headless 安裝環境不一定能顯示。
 
 ## 與原文章的差異
+
+- 新增以 Thonny 操作的實測與截圖：合成畫布上繪製圖形及文字，並存檔。
 
 - 原文以圖形視窗顯示；本版先存圖，再補測 RP5 圖形視窗並附實際截圖。
 - 上述文字輸出是本次實機紀錄，其他版本或環境可能不同。

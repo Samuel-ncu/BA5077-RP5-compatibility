@@ -64,3 +64,25 @@ Center BGR: [0, 255, 0]
 ![從 Thonny 開啟 OpenCV 影像視窗](./圖檔/thonny-opencv-window.png)
 
 若看到 `ModuleNotFoundError`，先核對右下角解譯器與安裝程式顯示的 Python 路徑，再確認安裝是否成功。不同課程的套件版本不一定能放在同一環境；不要自行將所有套件無差別混裝。進一步閱讀：[Thonny 官方套件安裝說明](https://github.com/thonny/thonny/wiki/InstallingPackages)。
+
+## 相機課：在 Thonny 建立可讀取系統套件的環境
+
+上面的獨立環境不會自動看到 Raspberry Pi OS 安裝的 Picamera2。這台 RP5 的系統已具備 Picamera2 與 OpenCV；本次在 Thonny 開啟[建立相機環境的程式](./範例程式/Thonny建立相機環境.py)，按綠色執行鈕，建立一個允許讀取系統套件的新環境。建立前請確認 `target` 指向不存在的新目錄；若目錄已存在，程式會停止，請修改名稱後再執行。
+
+本次 Thonny Shell 的實際輸出：
+
+```text
+建立環境： /home/pi/ba5077-camera-20261029
+執行環境： /home/pi/myenv/bin/python3
+完成。請在 Thonny 選擇： /home/pi/ba5077-camera-20261029/bin/python3
+```
+
+![在 Thonny 建立相機虛擬環境與輸出](./圖檔/thonny2-camera-env.png)
+
+接著選 **Tools → Options → Interpreter → Local Python 3**，按 Python executable 旁的 `…`，依序進入自己建立的環境、`bin`，選擇 `python3`，按 **OK**。選取後再檢查右下角的路徑。這個環境會讀取系統套件，系統更新可能改變其中可見的版本；它不是完全隔離的環境。建立環境本身也不會替尚未安裝的系統安裝 Picamera2。
+
+選用該新環境後，本機實際從 Thonny 執行[第 15 課範例](./範例程式/第15課.py)，取得彩色與灰階陣列的尺寸。圖中的紅字是相機輸出訊息；最下方有程式的 `frame` 與 `gray` 結果。
+
+![Thonny 在新相機環境執行 Picamera2 和 OpenCV](./圖檔/thonny2-camera-env-test.png)
+
+本機新環境看到系統 Picamera2、NumPy 1.24.2 與 OpenCV 4.10.0-dev；其他機器的版本可能不同。系統先決條件缺少時，先依教師提供的 Raspberry Pi OS 基本設定完成，再回到 Thonny 檢查與執行。已安裝的套件或其他虛擬環境不要任意覆寫。

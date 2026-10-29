@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886366) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md)
+> 本課已在 Thonny 實測：合成彩色圖轉灰階並存檔。完整原文情境及其他舊案例仍須依下文標示重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -30,15 +30,19 @@ print("grayscale", gray.shape, str(gray.dtype))
 print("saved", cv2.imwrite("lesson17-gray.png", gray))
 ```
 
-在該檔案所在的目錄執行 `python3 第17課.py`。
+在 Thonny 選 **File → Open** 開啟 `第17課.py`，確認右下角是包含所需套件的 Python 環境，再點綠色執行鈕。若程式會輸出檔案，先在新的練習目錄操作，避免覆寫。
 
-## 本機實際輸出
+## Thonny 實測輸出
 
 ```text
 color (240, 320, 3)
 grayscale (240, 320) uint8
 saved True
 ```
+
+![第 17 課在 Thonny 的程式與 Shell 實際畫面](./圖檔/lesson17-thonny2.png)
+
+本次選用既有環境 `/home/pi/myenv/bin/python3`。本次基本範例先產生合成圖；下方另以 Thonny 讀取先前的相機實拍素材。圖形視窗顯示仍待重測。 相機或影像相關套件的準備及可重現環境請參考[Thonny 環境指南](./Thonny環境與套件安裝.md)。
 
 `saved True` 表示 OpenCV 成功寫入圖片。灰階圖片只有一個通道；若寫入失敗，檢查目前資料夾權限。
 
@@ -60,7 +64,7 @@ saved True
 
 進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
 
-## 進階實作：把相機實拍圖片讀成灰階
+## Thonny 進階實測：把相機實拍圖片讀成灰階
 
 上面的初步範例建立合成圖片並轉換灰階；原文主題則是**讀取圖片檔**。本次另使用第 40 課由 RP5 拍攝螢幕測試素材、裁切並校正的[實拍影像](./圖檔/objects-board.png)。請下載該圖，存為 `objects-board.png`，放在下列[範例程式](./範例程式/第17課-讀取實拍灰階.py)的練習目錄。
 
@@ -76,9 +80,7 @@ print('gray dtype', image.dtype)
 print('saved', cv2.imwrite('lesson17-camera-gray.png', image))
 ```
 
-```bash
-python3 第17課-讀取實拍灰階.py
-```
+在 Thonny 選擇 **File → Open** 開啟 `第17課-讀取實拍灰階.py`，確認素材和程式位於同一個練習目錄，再按綠色執行按鈕。
 
 本次 RP5 實際輸出：
 
@@ -96,7 +98,9 @@ saved True
 
 比較[彩色輸入](./圖檔/objects-board.png)與灰階輸出，說明哪些顏色資訊消失。將圖片檔名改成不存在的名稱，觀察程式如何提示，再改回正確名稱。
 
-## 進一步實驗：在桌面顯示合成灰階圖
+![Thonny 中讀取灰階圖片的程式與輸出](./圖檔/thonny2-lesson17-read.png)
+
+## 舊實驗紀錄（終端機；待 Thonny 重測）：在桌面顯示合成灰階圖
 
 先用本文範例產生 `lesson17-gray.png`，把[圖形視窗程式](./範例程式/OpenCV-圖形視窗.py)放在同一練習目錄，在 RP5 桌面執行：
 
@@ -134,6 +138,8 @@ window closed
 這是遠端桌面擷取並裁切的操作截圖；圖中的灰色矩形是合成資料，滑鼠游標也出現在視窗中。顯示灰階圖需要圖形桌面與支援 GUI 的 OpenCV；本次沒有測試原文外部圖片。視窗程式在取得按鍵或等待 60 秒後結束。
 
 ## 與原文章的差異
+
+- 新增以 Thonny 操作的實測與截圖：合成彩色圖轉灰階並存檔。
 
 - 原文讀取外部 `demo.jpeg`；本版使用合成圖像，不依賴未提供的圖片。
 - 上述文字輸出是本次實機紀錄，其他版本或環境可能不同。
