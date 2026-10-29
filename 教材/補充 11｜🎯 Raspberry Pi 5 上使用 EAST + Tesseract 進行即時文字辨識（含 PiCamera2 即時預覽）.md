@@ -84,7 +84,7 @@ flowchart LR
 
 1. 在螢幕顯示[相機測試畫面](./練習素材/RP5相機測試.html)的「文字偵測」，由 RP5 相機拍攝，再依[實拍與校正流程](./練習素材/相機實拍與校正流程.md)裁切校正。這次得到的[實拍輸入圖 text-board.png](./圖檔/text-board.png)可供重現。
 2. 將該圖片、[east_helpers.py](./範例程式/east_helpers.py) 和[本範例程式](./範例程式/補充9至11-相機文字.py)放入同一個練習目錄，依本文事前準備放入 EAST 模型，並依[安裝紀錄](../安裝操作與實測紀錄.md#6-tesseract-ocr)準備 OpenCV、NumPy、Tesseract 及英文語言資料。
-3. 先前在該目錄以終端機執行此程式；此相機照片流程尚待用 Thonny 重測。模型和語言資料缺失時先依安裝紀錄處理，不要以其他模型的結果替代。
+3. 此段為先前的終端機測試；本次 Thonny 重測請參考下方獨立段落。模型和語言資料缺失時先依安裝紀錄處理，不要以其他模型的結果替代。
 
 ```python
 import cv2
@@ -159,7 +159,28 @@ OCR output (chi_tra+eng):
 
 ![初次測試中數字字型缺字的合成輸入](./圖檔/supplement11-missing-glyphs.png)
 
+## Thonny 實測：已保存的相機文字照片
+
+本次以 Thonny 右下角選取既有 `/home/pi/myenv/bin/python3`；此環境含 OpenCV，系統已有 Tesseract 英文資料。模型檔 `frozen_east_text_detection.pb` 使用先前已下載的副本，本次**沒有重新測試模型下載或全新安裝**。先取得[相機校正照片](./圖檔/text-board.png)、[文字框輔助程式](./範例程式/east_helpers.py)及[本次範例](./範例程式/補充9至11-相機文字.py)，連同 EAST 模型放在同一新練習資料夾，在 Thonny 開啟範例並按綠色執行鈕。詳細下載方式見[素材說明](./練習素材/素材下載與使用.md)。
+
+```text
+EAST boxes: 10
+saved: supplement9-camera-east.png
+Tesseract output:
+TEXT DETECTION
+RASPBERRY PI 5
+HELLO CAMERA
+AIOT 2026
+OPEN CV 12345
+```
+
+![Thonny 執行相機文字照片的 EAST 和 OCR](./圖檔/supp-east-ocr-thonny.png)
+
+此圖為先前由 RP5 拍攝文字測試畫面並校正的照片；EAST 偵測文字框，Tesseract 本次對**整張圖片**辨識，沒有逐框送入 OCR。該結果不代表相機持續預覽、逐框辨識或不同場景均已驗證；上述文字為本次觀察的完整輸出，截圖因視窗高度只顯示其中一部分。
+
 ## 與原文章的差異
+
+- 新增 Thonny 單張相機校正照片的 EAST 框選與整圖英文 OCR 實測；即時相機、逐框 OCR 和模型下載仍待測。
 
 - 新增 Thonny 執行繁中合成圖片 OCR 的結果與畫面；沒有宣稱這是 EAST 加相機的即時流程。
 - 新增對相機拍攝的英文測試板執行 EAST 及整圖 Tesseract；與原文即時流程的差異仍見下方。

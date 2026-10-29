@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223038205) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> **部分實測。** 已在 Thonny 使用本機既有模型推論；Ollama 全新安裝與模型下載仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -62,7 +62,7 @@ flowchart LR
 Ollama 是模型執行服務；服務程式與模型檔是兩回事。這台 RP5 測試時已裝好 Ollama 0.9.0，且 `ollama list` 已列出 `tinyllama:latest`（約 637 MB），因此本次**沒有重新安裝服務或下載模型**。當模型不在清單中時，需要足夠儲存空間與網路，另行下載並核對模型來源。
 
 1. 使用 `ollama list` 檢查模型、`systemctl is-active ollama` 檢查服務，應先確認模型與服務可用。
-2. 下載[本實驗程式](./範例程式/補充7-Ollama本機推論.py)，執行 `python3 補充7-Ollama本機推論.py`。這次請求送到 RP5 本機 `127.0.0.1` 的 Ollama 服務，完成後要求卸載本次模型以釋放資源。
+2. 依[素材下載說明](./練習素材/素材下載與使用.md)下載[本實驗程式](./範例程式/補充7-Ollama本機推論.py)，用 Thonny 的「檔案 → 開啟」載入，按綠色執行鈕。這次請求送到 RP5 本機 `127.0.0.1` 的 Ollama 服務，完成後要求卸載本次模型以釋放資源。
 3. `stream: False` 表示等完整回應；`num_predict: 40` 限制生成 token 數。token 不是固定的一個中文字或一個英文單字。參見 [Ollama 官方 Generate API 文件](https://docs.ollama.com/api/generate)。
 
 ```python
@@ -87,7 +87,7 @@ print('done:', result['done'])
 print('generated tokens:', result.get('eval_count'))
 ```
 
-這台 RP5 一次實際輸出：
+這台 RP5 在 Thonny 的實際輸出：
 
 ```text
 model: tinyllama:latest
@@ -95,6 +95,8 @@ response: An IoT temperature sensor measures the temperature in real-time and pr
 done: True
 generated tokens: 40
 ```
+
+![Thonny 執行 Ollama 推論的實際畫面](./圖檔/supp-ollama-thonny.png)
 
 回答在 `or` 處截斷，顯示 `done: True` 只表示生成已結束，不保證句子完整或內容正確。模型聲稱「準確讀數」也需依實際感測器校準與量測驗證，不能只因模型說了就相信。不同版本、設定和硬體可能得到不同文字。本次未量測效能，也未驗證教材原本的安裝及下載過程。
 
@@ -105,6 +107,6 @@ generated tokens: 40
 - 新增已存在模型的本機 API 推論；不代表原文安裝與下載流程已重新驗證。
 
 - 原文以安裝 Ollama 為主；本版先檢查已安裝版本，不重複執行安裝或宣稱已完成模型推論。
-- 本機測試範圍僅限上述流程；尚未保存操作畫面截圖。
+- 本機測試範圍僅限上述流程；已保存 Thonny 推論畫面；安裝與下載截圖仍待補。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。

@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223038310) · 更新日期：2026-10-29
 
-> **部分實測**：模型和標籤已在 Thonny 下載；下方分類輸出目前是 RP5 終端機實測，**尚未在 Thonny 重跑**。新環境安裝、即時分類與顯示待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
+> **部分實測**：模型和標籤已在 Thonny 下載，單張分類也已在 Thonny 重測。已建立並實測獨立單圖分類環境；即時相機分類與顯示待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
 
@@ -12,7 +12,7 @@
 
 ## 環境與素材
 
-本次沿用 RP5 的 `/home/pi/myenv/bin/python3`：Python 3.11.2、NumPy 1.24.2、`tflite_runtime` 2.14.0 及 OpenCV。從全新虛擬環境透過 Thonny 安裝上述套件尚未驗證。模型和標籤來自 TensorFlow；標籤網址追蹤上游 master，日後內容可能改變。
+本次另以 Thonny 建立並選取獨立環境，安裝 NumPy 1.26.4、OpenCV 4.10.0.84 與 `tflite_runtime` 2.14.0，並實測單張分類；請依 [TFLite 環境安裝說明](./Thonny環境與套件安裝.md)操作。此獨立環境尚未整合 Picamera2。模型和標籤來自 TensorFlow；標籤網址追蹤上游 master，日後內容可能改變。
 
 依[素材下載與使用說明](./練習素材/素材下載與使用.md)取得本倉庫，將[模型下載程式](./範例程式/補充3和8-Thonny下載模型.py)、[分類範例](./範例程式/補充3和8-Thonny照片分類.py)和[相機照片裁切圖](./圖檔/lesson24-camera-roi.png)放在同一個新練習資料夾。照片是 RP5 拍攝螢幕上的 AI 生成物件後裁切所得，不是真實水果。
 
@@ -32,9 +32,9 @@ Download complete.
 
 ![Thonny 下載分類模型及標籤的真實畫面](./圖檔/supp-tflite-download-thonny.png)
 
-## 單張分類範例：終端機已測、Thonny 待重測
+## 單張分類範例：Thonny 實測
 
-在同一資料夾準備好模型、標籤與圖片後，可在 Thonny 開啟以下範例並執行；**本次這一步尚未透過 Thonny 驗證**，不能把以下輸出視為 Thonny 實測結果。程式先讀取圖片、轉換色彩和尺寸，然後呼叫 Interpreter 並列出前三個類別：
+在同一資料夾準備好模型、標籤與圖片後，在 Thonny 開啟以下範例並按綠色執行鈕。程式先讀取圖片、轉換色彩和尺寸，然後呼叫 Interpreter 並列出前三個類別：
 
 ```python
 import cv2
@@ -69,7 +69,7 @@ for index in np.argsort(scores)[-3:][::-1]:
     print(f'top class: {index} {labels[index]} {scores[index]:.4f}')
 ```
 
-同一程式及模型在這台 RP5 的終端機實際輸出：
+同一程式及模型在這台 RP5 的 Thonny Shell 實際輸出：
 
 ```text
 input shape: (1, 224, 224, 3)
@@ -81,6 +81,8 @@ top class: 955 banana 0.1055
 top class: 957 custard apple 0.0625
 ```
 
+![Thonny 在獨立環境執行 TFLite 圖片分類](./圖檔/thonny-tflite-clean-test.png)
+
 這些是模型對這張生成圖片給出的分數，不能用來確認水果品種或估計整體準確率。不同版本與輸入可能改變結果。
 
 ## 練習與後續應用
@@ -89,5 +91,5 @@ top class: 957 custard apple 0.0625
 
 ## 與原文章的差異
 
-- 本版在 Thonny 實測模型下載；分類只完成終端機實測。原文的完整即時分類、畫面顯示與模型轉換尚未重做。
-- 新增相機拍攝生成圖、模型和標籤下載方式及可核對的檔案資訊；乾淨環境安裝與 Thonny 分類待驗證。
+- 本版在 Thonny 實測模型下載及單張圖片分類。原文的完整即時分類、畫面顯示與模型轉換尚未重做。
+- 新增相機拍攝生成圖、模型和標籤下載方式及可核對的檔案資訊；即時相機分類待驗證。

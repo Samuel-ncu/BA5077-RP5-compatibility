@@ -108,3 +108,23 @@ Select this interpreter in Thonny and restart the backend.
 ![在 RP5 的 Thonny 建立環境並安裝擴充套件](./圖檔/thonny-contrib-install.png)
 
 本次另在選取的新環境中實測第 25 課 CSRT 與第 26、27 課短影片處理；各課截圖右下角可核對解譯器。先前的 `/home/pi/myenv` 同時含兩種 OpenCV 套件，雖然也能執行測試，**不建議當成學生建立環境的範例**。
+
+## 補充 3、8：Thonny 建立獨立 TFLite 單圖環境
+
+這次在 RP5 Bookworm 64 位元、Python 3.11.2，從 Thonny 執行[環境建立程式](./範例程式/Thonny建立TFLite環境.py)。它在家目錄建立新的獨立環境，安裝 NumPy 1.26.4、opencv-python 4.10.0.84 與 tflite-runtime 2.14.0；執行前確認程式中的 `target` 指向不存在的新資料夾。已有資料夾時程式停止，不會覆蓋。這次使用套件快取，其他機器首次安裝可能需要網路。
+
+在 Thonny 開啟程式並按綠色執行鈕，本機 Shell 實際輸出節錄：
+
+```text
+Successfully installed numpy-1.26.4 opencv-python-4.10.0.84 tflite-runtime-2.14.0
+Installation completed: /home/pi/ba5077-tflite-clean-20261029/bin/python3
+Choose this interpreter in Thonny and restart the backend.
+```
+
+![Thonny 建立 TFLite 環境的實際輸出](./圖檔/thonny-tflite-clean-install.png)
+
+選擇「Tools → Options → Interpreter → Local Python 3」，點 Python executable 旁的 `...`，進入自己建立的資料夾、`bin`、選擇 `python3`，按 OK 並確認右下角路徑。依[補充 3](./補充%203｜🧠%20TensorFlow%20Lite%20%28TFLite%29%20教學入門指南.md)下載模型、標籤與圖片，在 Thonny 開啟分類範例執行。本次已在該新環境測出分類結果：
+
+![Thonny 在新環境執行 TFLite 分類](./圖檔/thonny-tflite-clean-test.png)
+
+新環境只驗證這個單張圖片範例；其預設不包含系統 Picamera2，即時相機分類需要另行整合和測試。套件版本與來源會變動，遇到安裝失敗應記錄實際錯誤。

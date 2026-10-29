@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223038337) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> **部分 Thonny 實測。** 已測已保存的相機文字照片；新環境安裝、模型下載及即時相機仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -115,7 +115,28 @@ OPEN CV 12345
 
 練習：比較輸入圖和綠框，指出未被完整涵蓋的字；把「框定位是否正確」與「OCR 字元是否正確」分開評估。
 
+## Thonny 實測：已保存的相機文字照片
+
+本次以 Thonny 右下角選取既有 `/home/pi/myenv/bin/python3`；此環境含 OpenCV，系統已有 Tesseract 英文資料。模型檔 `frozen_east_text_detection.pb` 使用先前已下載的副本，本次**沒有重新測試模型下載或全新安裝**。先取得[相機校正照片](./圖檔/text-board.png)、[文字框輔助程式](./範例程式/east_helpers.py)及[本次範例](./範例程式/補充9至11-相機文字.py)，連同 EAST 模型放在同一新練習資料夾，在 Thonny 開啟範例並按綠色執行鈕。詳細下載方式見[素材說明](./練習素材/素材下載與使用.md)。
+
+```text
+EAST boxes: 10
+saved: supplement9-camera-east.png
+Tesseract output:
+TEXT DETECTION
+RASPBERRY PI 5
+HELLO CAMERA
+AIOT 2026
+OPEN CV 12345
+```
+
+![Thonny 執行相機文字照片的 EAST 和 OCR](./圖檔/supp-east-ocr-thonny.png)
+
+此圖為先前由 RP5 拍攝文字測試畫面並校正的照片；EAST 偵測文字框，Tesseract 本次對**整張圖片**辨識，沒有逐框送入 OCR。該結果不代表相機持續預覽、逐框辨識或不同場景均已驗證；上述文字為本次觀察的完整輸出，截圖因視窗高度只顯示其中一部分。
+
 ## 與原文章的差異
+
+- 新增 Thonny 單張相機校正照片的 EAST 框選與整圖英文 OCR 實測；即時相機、逐框 OCR 和模型下載仍待測。
 
 - 新增對相機拍攝的英文測試板執行 EAST 及整圖 Tesseract；與原文即時流程的差異仍見下方。
 
