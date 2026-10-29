@@ -4,13 +4,13 @@
 
 ## 學習目標
 
-把一張 Pi 相機影格送入 EAST 模型，檢查輸出維度。
+把一張 Pi 相機影格送入 EAST 模型並解析文字框。
 
 ## 事前準備
 
-需要 PiCamera2、相機、OpenCV、NumPy 與 EAST 模型。
+需要 PiCamera2、相機、OpenCV、NumPy、EAST 模型及 east_helpers.py。
 
-在練習目錄下載本次測試模型（約 97 MB）：
+先將[文字框處理程式 east_helpers.py](./範例程式/east_helpers.py)放在練習目錄，並下載本次測試模型（約 97 MB）：
 
 ```bash
 curl -fL https://raw.githubusercontent.com/oyyd/frozen_east_text_detection.pb/master/frozen_east_text_detection.pb -o frozen_east_text_detection.pb
@@ -23,6 +23,7 @@ curl -fL https://raw.githubusercontent.com/oyyd/frozen_east_text_detection.pb/ma
 ```python
 import cv2
 from picamera2 import Picamera2
+from east_helpers import detect_text
 
 camera = Picamera2()
 try:
@@ -33,25 +34,21 @@ finally:
     camera.stop()
     camera.close()
 net = cv2.dnn.readNet('frozen_east_text_detection.pb')
-blob = cv2.dnn.blobFromImage(frame, 1.0, (320, 320), (123.68, 116.78, 103.94), swapRB=True, crop=False)
-net.setInput(blob)
-scores, geometry = net.forward(['feature_fusion/Conv_7/Sigmoid', 'feature_fusion/concat_3'])
+boxes = detect_text(net, frame)
 print('camera frame', frame.shape)
-print('scores shape', scores.shape)
-print('geometry shape', geometry.shape)
+print('frame processed', True)
 ```
 
 ## 本機實際輸出
 
 ```text
 camera frame (240, 320, 3)
-scores shape (1, 1, 80, 80)
-geometry shape (1, 5, 80, 80)
+frame processed True
 ```
 
-此測試處理單張影格；未解析文字框、測即時預覽或準確率。
+已對單張影格執行模型與文字框解析；未保存私人相機畫面，未測即時預覽或準確率。
 
 ## 與原文章的差異
 
-- 原文是即時文字框顯示；本版先測相機與 EAST 的單張推論，完整後處理仍待實作。
+- 原文使用連續攝影機及顯示視窗；本版先完成單張影格與後處理，不宣稱即時畫面已測。
 - 本機測試範圍僅限上述流程；尚未保存操作畫面截圖。

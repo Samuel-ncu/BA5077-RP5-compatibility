@@ -4,11 +4,17 @@
 
 ## 學習目標
 
-以 Tesseract 辨識自行產生的英文測試圖片。
+使用 EAST 找到合成圖片的文字區域，再交給 Tesseract 辨識。
 
 ## 事前準備
 
-需要已安裝的 Tesseract、pytesseract 與 DejaVu Sans 字型。
+需要 OpenCV、NumPy、EAST 模型、east_helpers.py、Tesseract 和 pytesseract。
+
+先將[文字框處理程式 east_helpers.py](./範例程式/east_helpers.py)放在練習目錄，並下載本次測試模型（約 97 MB）：
+
+```bash
+curl -fL https://raw.githubusercontent.com/oyyd/frozen_east_text_detection.pb/master/frozen_east_text_detection.pb -o frozen_east_text_detection.pb
+```
 
 依[安裝操作與實測紀錄](../安裝操作與實測紀錄.md#6-tesseract-ocr)建立 OCR 環境；本機的 Tesseract 已安裝。
 
@@ -17,26 +23,33 @@
 將以下程式存為 `補充11.py`，或使用[已測試的範例程式](./範例程式/補充11.py)。在檔案所在目錄執行 `python3 補充11.py`。
 
 ```python
-from PIL import Image, ImageDraw, ImageFont
+import cv2
+import numpy as np
 import pytesseract
+from east_helpers import detect_text
 
-image = Image.new('RGB', (600, 120), 'white')
-draw = ImageDraw.Draw(image)
-font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 48)
-draw.text((15, 15), 'HELLO 123', font=font, fill='black')
-result = pytesseract.image_to_string(image, config='--psm 7').strip()
-print('OCR:', result)
+image = np.full((320, 320, 3), 255, dtype=np.uint8)
+cv2.putText(image, 'HELLO 123', (15, 160), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 0, 0), 2)
+net = cv2.dnn.readNet('frozen_east_text_detection.pb')
+boxes = detect_text(net, image)
+texts = []
+for x1, y1, x2, y2 in sorted(boxes, key=lambda box: box[0]):
+    crop = image[max(0, y1-5):min(image.shape[0], y2+5), max(0, x1-5):min(image.shape[1], x2+5)]
+    texts.append(pytesseract.image_to_string(crop, config='--psm 7').strip())
+print('text boxes', len(boxes))
+print('OCR:', ' '.join(texts))
 ```
 
 ## 本機實際輸出
 
 ```text
+text boxes 2
 OCR: HELLO 123
 ```
 
-英文合成文字成功辨識；本機目前只有 eng、osd 語言資料。此例不含 EAST 偵測、相機即時影像或中文辨識。
+本機合成英文文字成功辨識；目前只有 eng、osd 語言資料。相機即時 OCR 與中文準確率未測。
 
 ## 與原文章的差異
 
-- 原文結合 EAST、Tesseract 與相機；本版先隔離驗證 OCR，完整即時整合與中文仍待測試。
+- 原文結合 EAST、Tesseract 與相機；本版以合成圖片實測完整偵測到 OCR 的流程，尚未測相機即時整合。
 - 本機測試範圍僅限上述流程；尚未保存操作畫面截圖。

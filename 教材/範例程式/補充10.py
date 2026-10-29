@@ -1,5 +1,6 @@
 import cv2
 from picamera2 import Picamera2
+from east_helpers import detect_text
 
 camera = Picamera2()
 try:
@@ -10,9 +11,6 @@ finally:
     camera.stop()
     camera.close()
 net = cv2.dnn.readNet('frozen_east_text_detection.pb')
-blob = cv2.dnn.blobFromImage(frame, 1.0, (320, 320), (123.68, 116.78, 103.94), swapRB=True, crop=False)
-net.setInput(blob)
-scores, geometry = net.forward(['feature_fusion/Conv_7/Sigmoid', 'feature_fusion/concat_3'])
+boxes = detect_text(net, frame)
 print('camera frame', frame.shape)
-print('scores shape', scores.shape)
-print('geometry shape', geometry.shape)
+print('frame processed', True)
