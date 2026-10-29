@@ -9,12 +9,13 @@
 </style>
 </head>
 <body>
-<header><h1>RP5 相機測試畫面</h1><label>畫面 <select id="scene"><option value="calibrate">對準與尺寸</option><option value="colors">色彩偵測</option><option value="shapes">形狀與輪廓</option><option value="motion">移動追蹤</option><option value="text">文字偵測</option><option value="features">特徵匹配</option></select></label><label>大小 <input id="scale" type="range" min="35" max="100" value="90"> <span id="scaleValue">90%</span></label><button id="motion">暫停動畫</button><button id="fullscreen">全螢幕</button><span class="help">方向鍵切換畫面；↑↓ 調整大小；空白鍵暫停；Esc 離開全螢幕</span></header>
+<header><h1>RP5 相機測試畫面</h1><label>畫面 <select id="scene"><option value="calibrate">對準與尺寸</option><option value="colors">色彩偵測</option><option value="shapes">形狀與輪廓</option><option value="motion">移動追蹤</option><option value="text">文字偵測</option><option value="features">特徵匹配</option><option value="objects">AI 生成物件圖</option></select></label><label>大小 <input id="scale" type="range" min="35" max="100" value="90"> <span id="scaleValue">90%</span></label><button id="motion">暫停動畫</button><button id="fullscreen">全螢幕</button><span class="help">方向鍵切換畫面；↑↓ 調整大小；空白鍵暫停；Esc 離開全螢幕</span></header>
 <main><canvas id="board" width="1600" height="900" aria-label="相機測試圖案"></canvas></main>
 <script>
 'use strict';
 const canvas=document.querySelector('#board'), ctx=canvas.getContext('2d');
 const select=document.querySelector('#scene'), scale=document.querySelector('#scale');
+const objectsImage=new Image();objectsImage.src='AI生成物件測試.png';
 let running=true, t=0, last=performance.now();
 function size(){const area=document.querySelector('main'), s=Number(scale.value)/100, ratio=Math.min(area.clientWidth/1600,area.clientHeight/900)*s; canvas.style.width=(1600*ratio)+'px';canvas.style.height=(900*ratio)+'px';document.querySelector('#scaleValue').textContent=scale.value+'%'}
 function box(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h)}
@@ -28,6 +29,7 @@ if(scene==='shapes'){text('SHAPES AND CONTOURS',800,100,55);circle(280,430,155,'
 if(scene==='motion'){text('MOTION AND TRACKING',800,100,55);box(150,170,1300,530,'#e8edf1');let x=300+(1000*(0.5+0.5*Math.sin(t*0.8)));circle(x,435,100,'#e11d25');text('Moving red circle',800,800,40)}
 if(scene==='text'){text('TEXT DETECTION',800,125,75);text('RASPBERRY PI 5',800,310,105);text('HELLO CAMERA',800,470,95);text('AIOT 2026',800,630,95);text('OPEN CV 12345',800,780,72)}
 if(scene==='features'){text('FEATURE MATCHING',800,100,55);for(let y=0;y<7;y++)for(let x=0;x<12;x++){let a=((x*137+y*71+17)%255),b=((x*59+y*181+83)%255),c=((x*191+y*43+19)%255);box(100+x*115,155+y*88,90,68,`rgb(${a},${b},${c})`);text(String((x*13+y*17)%100),145+x*115,200+y*88,20,'#fff')}text('Move or rotate camera slightly between images',800,850,30)}
+if(scene==='objects'){if(objectsImage.complete&&objectsImage.naturalWidth){ctx.drawImage(objectsImage,145,10,1310,873)}else{text('IMAGE LOADING',800,450,55)}}
 requestAnimationFrame(render)}
 document.querySelector('#motion').onclick=()=>{running=!running;document.querySelector('#motion').textContent=running?'暫停動畫':'播放動畫'};
 document.querySelector('#fullscreen').onclick=()=>document.documentElement.requestFullscreen?.();
