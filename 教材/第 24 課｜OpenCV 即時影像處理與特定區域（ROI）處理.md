@@ -59,9 +59,47 @@ ROI 可減少處理範圍及背景干擾，但固定 ROI 也可能漏掉移動�
 
 進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
 
+## 進一步實驗：裁切相機照片中的 ROI
+
+下載[相機拍攝的生成物件圖](./圖檔/objects-board.png)及[程式](./範例程式/第24課-相機ROI.py)到同一練習目錄，執行 `python3 第24課-相機ROI.py`。圖片是相機拍攝螢幕上的 AI 生成物件，並非真實水果照片。
+
+```python
+import cv2
+
+image = cv2.imread('objects-board.png')
+if image is None:
+    raise RuntimeError('找不到 objects-board.png')
+# 固定座標只適用本次 1200 x 675 圖片，換圖時需重新選取。
+x1, y1, x2, y2 = 150, 185, 390, 490
+roi = image[y1:y2, x1:x2].copy()
+if roi.size == 0:
+    raise RuntimeError('ROI 為空，請檢查座標')
+marked = image.copy()
+cv2.rectangle(marked, (x1, y1), (x2-1, y2-1), (0, 255, 0), 3)
+if not cv2.imwrite('lesson24-camera-roi.png', roi) or not cv2.imwrite('lesson24-camera-marked.png', marked):
+    raise RuntimeError('圖片儲存失敗')
+print('image shape:', image.shape)
+print('ROI shape:', roi.shape)
+print('saved: lesson24-camera-roi.png, lesson24-camera-marked.png')
+```
+
+RP5 實際輸出：
+
+```text
+image shape: (675, 1200, 3)
+ROI shape: (305, 240, 3)
+saved: lesson24-camera-roi.png, lesson24-camera-marked.png
+```
+
+![綠框標示的裁切範圍](./圖檔/lesson24-camera-marked.png)
+
+![裁切後的 ROI](./圖檔/lesson24-camera-roi.png)
+
+兩張圖是程式產生結果，不是操作截圖。因切片不包含右側與下方界線，高為 490−185＝305、寬為 390−150＝240。仔細觀察可看到蘋果左邊緣有一小部分落在綠框外，這顯示固定座標可能裁掉目標。`copy()` 讓後續修改 ROI 不會直接改動原圖。相機位置與畫面改變後應重新設定座標；本次未測即時選取或長時間連續處理。
+
 ## 與原文章的差異
 
-- 原文使用相機即時畫面；本版先以合成陣列驗證座標與尺寸，未驗證即時視窗。
+- 原文使用相機即時畫面；本版測合成陣列及單張相機照片的固定 ROI，未驗證即時視窗。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
 - 尚未保存操作畫面截圖。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
