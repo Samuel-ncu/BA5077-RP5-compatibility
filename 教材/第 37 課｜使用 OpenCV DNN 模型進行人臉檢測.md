@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886585) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 已在 Thonny 實測下載 OpenCV 人臉模型與生成素材照片的單張推論；真人、即時相機及合成空白圖流程仍待重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -10,16 +10,33 @@
 
 ## 事前準備
 
-需要系統 OpenCV、NumPy 及下方兩個模型檔。
+需要 OpenCV、NumPy、網路，以及兩個 OpenCV 人臉模型檔。本次在 Thonny 的獨立環境使用 Python 3.11、NumPy 1.26.4 與 opencv-contrib-python 4.11.0.86；依[環境指南](./Thonny環境與套件安裝.md#第-2527-課在-thonny-建立-opencv-擴充環境)建立並選擇環境。模型檔不是 Python 套件，下載模型不等於安裝套件。
 
-在練習目錄下載本次測試使用的官方 OpenCV 模型：
+### 透過 Thonny 下載模型與準備圖片
 
-```bash
-curl -fL https://raw.githubusercontent.com/opencv/opencv/master/samples/dnn/face_detector/opencv_face_detector.pbtxt -o opencv_face_detector.pbtxt
-curl -fL https://raw.githubusercontent.com/opencv/opencv_3rdparty/dnn_samples_face_detector_20180220_uint8/opencv_face_detector_uint8.pb -o opencv_face_detector_uint8.pb
+1. 從[教材儲存庫](https://github.com/Samuel-ncu/BA5077-RP5-compatibility)按 **Code → Download ZIP** 並解壓，或依[素材指南](./練習素材/素材下載與使用.md)下載單檔。本次 ZIP 下載及解壓未在 RP5 瀏覽器重測。
+2. 建立新的練習資料夾，將[模型下載程式](./範例程式/第37課-Thonny下載DNN模型.py)、[單張人臉偵測程式](./範例程式/第37課-相機DNN人臉.py)及[校正後的生成素材照片](./圖檔/facehand-board.png)複製到同一資料夾。圖片檔名須維持 `facehand-board.png`。
+3. 在 Thonny 用 **File → Open** 開啟下載程式，閱讀來源網址後按綠色執行鈕。此程式從 OpenCV 的 GitHub 來源取得 `opencv_face_detector.pbtxt` 與 `opencv_face_detector_uint8.pb`，並顯示檔案大小；成功後才繼續。若資料夾已有同名檔，程式會停止而不覆寫，請選用新練習資料夾。網路中斷可能留下不完整檔案，請檢查後使用新資料夾重試。
+
+本次 Thonny 下載實際輸出：
+
+```text
+Downloading: opencv_face_detector.pbtxt
+Saved: opencv_face_detector.pbtxt bytes: 34975
+Downloading: opencv_face_detector_uint8.pb
+Saved: opencv_face_detector_uint8.pb bytes: 2727750
+Download complete.
 ```
 
-## 程式與執行
+![在 Thonny 下載第 37 課 DNN 模型的實際畫面](./圖檔/lesson37-download-thonny.png)
+
+本次檔案 SHA-256：`opencv_face_detector.pbtxt` 為 `ca0eb6b3a0e0b124282d093a3d8a9d453967f37af3c1a933978ac55605a8f2cb`，`opencv_face_detector_uint8.pb` 為 `5c71d752ef2cbf2f457ac82fdd580fcb2522fd04c5efdaed18eb6d9e2843fbed`。其中一個來源使用 `master`，日後內容可能變動；本課結果以本次檔案和測試日期為準。
+
+4. 在同一資料夾以 Thonny 開啟單張人臉偵測程式，確認右下角解譯器，按綠色執行鈕。結果寫入 `lesson37-camera-dnn.png`；再執行可能覆寫同名檔。照片是相機拍攝螢幕上的 AI 生成虛構人物後經裁切校正，不能代表真人人臉測試。
+
+## 先前終端機空白圖範例（待 Thonny 重測）
+
+### 程式與執行
 
 將下列已在 RP5 執行的程式存為 `第37課.py`，或使用[範例程式](./範例程式/第37課.py)。先確認目前目錄及檔案，避免覆蓋已有資料。
 
@@ -36,9 +53,9 @@ print('DNN loaded', True)
 print('output shape', result.shape)
 ```
 
-執行 `python3 第37課.py`。
+在 Thonny 開啟 `第37課.py` 並按綠色執行鈕；空白圖範例尚未在此新環境重測。
 
-## 本機實際輸出
+## 先前終端機實際輸出
 
 ```text
 DNN loaded True
@@ -107,11 +124,9 @@ print('confidence scores:', scores)
 print('saved: lesson37-camera-dnn.png')
 ```
 
-```bash
-python3 第37課-相機DNN人臉.py
-```
+在 Thonny 開啟同一練習資料夾中的 `第37課-相機DNN人臉.py`，確認解譯器後按綠色執行鈕。
 
-本次 RP5 實際輸出：
+本次 RP5 的 Thonny Shell 實際輸出：
 
 ```text
 output shape: (1, 1, 200, 7)
@@ -119,6 +134,10 @@ faces above threshold: 1
 confidence scores: [0.967]
 saved: lesson37-camera-dnn.png
 ```
+
+![第 37 課在 Thonny 的 DNN 程式與 Shell 截圖](./圖檔/lesson37-thonny-clean.png)
+
+截圖中的 `lesson37.py` 是本課偵測程式的測試副本，內容相同。
 
 ![RP5 相機拍攝生成素材後的 DNN 人臉偵測結果](./圖檔/lesson37-camera-dnn.png)
 
@@ -130,9 +149,11 @@ saved: lesson37-camera-dnn.png
 
 ## 與原文章的差異
 
+- 本次改以 Thonny 下載 OpenCV 模型，並對可下載的生成素材照片進行單張推論，保留實測畫面與輸出。
+
 - 原文使用相機即時檢測，來源程式含非標準空白；本版重新寫入程式並以空白圖測試模型。
 - 真實場景的準確率、速度和操作畫面尚未完整驗證。
-- 尚未保存操作畫面截圖。
+- 新增 Thonny 模型下載及單張照片偵測截圖；即時相機與真人情境仍待測。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
 - 新增相機拍攝 AI 生成素材後的單張 DNN 偵測；未宣稱完成即時視訊或真人資料準確率驗證。
