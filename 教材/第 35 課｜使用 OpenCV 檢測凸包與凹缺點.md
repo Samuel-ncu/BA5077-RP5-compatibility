@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886573) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 已在 Thonny 實測先前相機拍攝並校正的圖形凸包和凹缺陷；合成入門範例及自行拍攝流程仍待 Thonny 重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -14,7 +14,18 @@
 
 本教學程式使用合成資料，沒有把私人相機影像上傳公開 repo；請在自己的練習目錄操作。
 
-## 程式與執行
+
+### Thonny 準備與素材下載
+
+1. 在 Thonny 依[擴充環境指南](./Thonny環境與套件安裝.md#第-2527-課在-thonny-建立-opencv-擴充環境)建立並選擇已安裝 OpenCV 和 NumPy 的環境。本次使用 Python 3.11、NumPy 1.26.4 和 opencv-contrib-python 4.11.0.86。
+2. 從[教材儲存庫](https://github.com/Samuel-ncu/BA5077-RP5-compatibility)按 **Code → Download ZIP** 並解壓；或依[素材指南](./練習素材/素材下載與使用.md)下載單檔。此次 ZIP 下載與解壓未在 RP5 瀏覽器重測。
+3. 將[Thonny 版凸包程式](./範例程式/第35課-Thonny校正圖凸包.py)與[已校正的相機圖片](./圖檔/concave-board.png)複製到同一個新的練習資料夾，圖片檔名維持 `concave-board.png`。在 Thonny 用 **File → Open** 開啟程式並按綠色執行鈕；結果為 `lesson35-camera-hull.png`。此版固定使用校正圖，不需要輸入命令列參數。
+
+結果檔可能覆寫同名檔案，執行前先確認練習資料夾。兩張素材皆為 RP5 拍攝螢幕上的圖形後裁切、校正的照片；不是 Thonny 操作截圖。
+
+## 先前終端機入門範例（待 Thonny 重測）
+
+### 程式與執行
 
 將下列程式存為 `第35課.py`，或使用[已測試的範例程式](./範例程式/第35課.py)。
 
@@ -37,9 +48,9 @@ print('hull indices', len(hull))
 print('defect count', 0 if defects is None else len(defects))
 ```
 
-在該檔案所在目錄執行 `python3 第35課.py`。
+用 Thonny 開啟 `第35課.py` 並按綠色執行鈕；此入門例尚未在新環境重測。
 
-## 本機實際輸出
+## 先前終端機實測輸出
 
 ```text
 hull indices 4
@@ -72,7 +83,7 @@ defect count 1
 
 ### 準備與操作
 
-下載本次[校正後的相機圖](./圖檔/concave-board.png)，存為 `concave-board.png`。若自行拍攝，請在[相機測試畫面](./練習素材/RP5相機測試.html)選「凸包與凹缺陷」，拍成 `concave-camera.jpg`；四個校正點只適用本次相機位置，其他照片須重新量測。 與[範例程式](./範例程式/第35課-相機凸包.py)放在 RP5 練習目錄，並確認 OpenCV 和 NumPy 可用；執行前檢查輸出檔名以免覆蓋。
+下載本次[校正後的相機圖](./圖檔/concave-board.png)，存為 `concave-board.png`。若自行拍攝，請在[相機測試畫面](./練習素材/RP5相機測試.html)選「凸包與凹缺陷」，拍成 `concave-camera.jpg`；四個校正點只適用本次相機位置，其他照片須重新量測。 與[Thonny 版範例程式](./範例程式/第35課-Thonny校正圖凸包.py)放在 RP5 練習目錄，並確認 OpenCV 和 NumPy 可用；執行前檢查輸出檔名以免覆蓋。
 
 ```python
 import argparse
@@ -81,7 +92,8 @@ import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--rectified', action='store_true', help='讀取已校正的測試圖')
-args = parser.parse_args()
+# 在 Thonny 固定讀取已校正的圖片。
+args = parser.parse_args(['--rectified'])
 if args.rectified:
     board = cv2.imread('concave-board.png')
     if board is None:
@@ -117,19 +129,19 @@ print('defects deeper than 10 pixels:', len(deep))
 print('saved: lesson35-camera-hull.png')
 ```
 
-```bash
-python3 第35課-相機凸包.py --rectified
-```
+在 Thonny 開啟上面的 Thonny 版程式並按綠色執行鈕。本次只在 Thonny 驗證校正圖，自行拍攝的原始照片模式是先前終端機紀錄，待 Thonny 重測。
 
-`--rectified` 讀取已校正圖片；若使用自行拍攝的原始照片，省略此參數。兩種模式本次皆在 RP5 執行。
-
-### 本次 RP5 實際輸出
+### 本次 Thonny 在 RP5 實際輸出
 
 ```text
 hull vertices: 16
 defects deeper than 10 pixels: 1
 saved: lesson35-camera-hull.png
 ```
+
+![第 35 課在 Thonny 的程式與 Shell 實際截圖](./圖檔/lesson35-thonny-clean.png)
+
+截圖中的 `lesson35.py` 是本課測試程式的副本；圖片由先前相機拍攝並校正。
 
 ![RP5 相機拍攝圖形後的處理結果](./圖檔/lesson35-camera-hull.png)
 
@@ -141,8 +153,10 @@ saved: lesson35-camera-hull.png
 
 ## 與原文章的差異
 
+- 新增使用可下載校正圖的 Thonny 實測和操作截圖。
+
 - 原文使用外部圖片；本版以固定多邊形驗證凸包和凹缺陷 API，未測試原圖。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
-- 尚未保存操作畫面截圖。
+- 新增校正圖範例的 Thonny 操作截圖；合成入門及自行拍攝流程尚待重測。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 新增 RP5 相機拍攝螢幕圖形的實測；圖片經校正，尚未驗證原文外部圖片。
