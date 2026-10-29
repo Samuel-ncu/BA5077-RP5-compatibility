@@ -6,6 +6,21 @@
 
 了解如何使用 Raspberry Pi Imager，為 Raspberry Pi 5 準備 Raspberry Pi OS。這台 RP5 已有可用的 Bookworm 系統；**本次沒有重新燒錄或驗證新安裝流程**。
 
+## 背景與原理
+
+作業系統是管理電腦硬體與程式的基礎軟體。RP5 啟動時需要從可開機的儲存媒體讀取系統；本課介紹使用 microSD 卡。映像檔可理解成準備好的系統資料，Raspberry Pi Imager 幫助使用者選擇設備、系統及目標儲存裝置，再寫入所選裝置。
+
+```mermaid
+flowchart LR
+    A[選 RP5 和作業系統] --> B[選備用 microSD]
+    B --> C[設定使用者等選項]
+    C --> D[寫入及驗證]
+    D --> E[插入已斷電的 RP5]
+    E --> F[首次開機與檢查]
+```
+
+流程圖是教學概念圖，不是此次的安裝畫面。寫入會覆蓋所選裝置內容，請使用備用卡；本機正在使用的卡不應拿來作此示範。
+
 ## 準備工作
 
 需要一台可執行 Raspberry Pi Imager 的電腦、讀卡機，以及準備作為新系統的 microSD。燒錄會清除選定裝置的內容。若要保留目前 RP5 的系統與資料，請使用另外一張卡，並在操作前備份重要資料。
@@ -23,6 +38,16 @@
 
 目前這台機器使用 Bookworm，已用於既有的相機、OpenCV 和部分 AI 測試。若日後使用官方 AI HAT+ 2，請先確認 [官方 AI 軟體文件](https://www.raspberrypi.com/documentation/computers/ai.html)對 Raspberry Pi OS 版本的要求；本次沒有在現有卡上升級或測試 HAT。
 
+Raspberry Pi OS 有不同版本及桌面／Lite 選擇。官方文件列出的版本可能隨時間改變；不要把此教材已測試的 Bookworm 環境誤認為官方當前唯一版本。[Raspberry Pi OS 官方文件](https://www.raspberrypi.com/documentation/computers/os.html)提供最新版本資訊。
+
+## 學生練習與後續應用
+
+1. 解釋為什麼燒錄作業系統前必須辨識目標儲存裝置。
+2. 如果要遠端使用且沒有螢幕，初次設定帳號和 SSH 為什麼重要？
+3. 比較有桌面的系統和 Lite 版本可能適合什麼情境；不要在沒有備份的現用記憶卡上進行練習。
+
+當裝置要部署為感測節點時，系統選擇會影響儲存空間、維護方式與套件相容性。未來升級到新版前，應先查官方文件與本課所需相機、Python、OpenCV 和 AI 套件的支援情況。
+
 ## 測試與畫面狀態
 
 - 已確認現有 RP5 可以開機、SSH 登入並執行 Python。
@@ -34,3 +59,4 @@
 - 以目前的 Raspberry Pi Imager 流程描述操作，並明確標出燒錄會清除目標裝置。
 - 加入本次使用 Bookworm、AI HAT+ 2 版本選擇，以及備用卡與備份的考量。
 - 原文章流程未在本次重新燒錄實測，請以 Imager 當前畫面為準。
+- 增加初學者背景、流程示意及備用卡練習；示意圖不代表本次完成燒錄。

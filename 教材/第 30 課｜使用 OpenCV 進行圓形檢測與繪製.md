@@ -1,54 +1,98 @@
 # 第 30 課｜使用 OpenCV 進行圓形檢測與繪製
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222886537) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222886537) · 實測日期：2026-10-29
 
-## 學習目標
+## 學習目標與先備知識
 
-使用 HoughCircles 偵測合成圖中的圓。
+理解圓心與半徑如何描述圓；利用 HoughCircles 在實拍圖中找圓，並解釋參數變化可能造成的漏檢與誤檢。 本課適合已完成 Python 變數、影像讀取與相機基礎的學生；若尚不熟悉，先閱讀第 13、15 與 17 課。
 
-## 事前準備
+## 背景：這個技術能解決什麼問題？
 
-需要 OpenCV 與 NumPy；先在黑色背景畫一個圓。
+瓶蓋、按鈕和硬幣在正面影像中常接近圓形。若相機能估計圓心和半徑，便能進行簡單的計數或位置提示；實際零件因透視、遮擋與鏡頭畸變，未必會呈現完美圓形。
 
-本教學程式使用合成資料，沒有把私人相機影像上傳公開 repo；請在自己的練習目錄操作。
+## 核心原理
 
-## 程式與執行
+一個圓可由中心 `(x, y)` 與半徑 `r` 描述。Hough 圓形偵測利用邊緣與梯度資訊，尋找可能的圓心和半徑；`dp` 控制累加器解析度比例，`minDist` 限制圓心距離，`param1`、`param2` 影響邊緣與候選圓判定，`minRadius`、`maxRadius` 指定半徑搜尋範圍。這些是影像處理參數，不是可保證適用於每個場景的常數。
 
-將下列程式存為 `第30課.py`，或使用[已測試的範例程式](./範例程式/第30課.py)。
+```mermaid
+flowchart LR
+    A[相機拍攝] --> B[截取並校正測試圖]
+    B --> C[影像前處理]
+    C --> D[偵測與標記]
+    D --> E[觀察結果與限制]
+```
+
+上圖是教學流程示意，不是操作截圖。原理可參考 [OpenCV 官方文件](https://docs.opencv.org/4.x/d4/d70/tutorial_hough_circle.html)。
+
+## 實作準備與步驟
+
+1. 先完成[第 29 課相機輪廓範例](./第%2029%20課｜使用%20OpenCV%20進行輪廓檢測與繪製.md)，在練習目錄產生 `shapes-board.png`；這是先裁切並校正過的實拍圖。
+2. 若暫時沒有相機，可下載[本次 RP5 的校正影像](./圖檔/shapes-board.png)，放到練習目錄並命名 `shapes-board.png`，用它重做後續偵測。
+3. 將[範例程式](./範例程式/第30課-相機圓形.py)放在同一目錄。輸出會儲存為 `shapes-circles.png`。
+
+## 已在 RP5 執行的程式
+
+把下列程式儲存為 `第30課-相機圓形.py`：
 
 ```python
 import cv2
 import numpy as np
-image = np.zeros((200, 200), dtype=np.uint8)
-cv2.circle(image, (100, 100), 40, 255, 3)
-circles = cv2.HoughCircles(image, cv2.HOUGH_GRADIENT, 1, 30, param1=100, param2=20, minRadius=30, maxRadius=50)
-result = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-if circles is not None:
-    for x, y, radius in np.round(circles[0]).astype(int):
-        cv2.circle(result, (x, y), radius, (0, 0, 255), 2)
-if not cv2.imwrite('lesson30-circle.png', result):
-    raise RuntimeError('image save failed')
-print('circle detected', circles is not None)
+
+# shapes-board.png 由第 29 課的相機範例產生，是經透視校正的相機影像。
+image = cv2.imread('shapes-board.png')
+if image is None:
+    raise RuntimeError('找不到 shapes-board.png，請先執行第 29 課相機輪廓範例')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+blurred = cv2.GaussianBlur(gray, (9, 9), 2)
+circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, dp=1, minDist=150,
+                           param1=100, param2=35, minRadius=80, maxRadius=160)
+result = image.copy()
+found = [] if circles is None else np.round(circles[0]).astype(int).tolist()
+for x, y, radius in found:
+    cv2.circle(result, (x, y), radius, (0, 255, 0), 4)
+    cv2.circle(result, (x, y), 4, (0, 255, 0), -1)
+if not cv2.imwrite('shapes-circles.png', result):
+    raise RuntimeError('無法儲存影像')
+print('input shape:', image.shape)
+print('circles found:', len(found))
+print('circles (x, y, radius):', found)
+print('saved: shapes-circles.png')
 ```
 
-在該檔案所在目錄執行 `python3 第30課.py`。
+在檔案所在目錄執行：
 
-## 本機實際輸出
+```bash
+python3 第30課-相機圓形.py
+```
+
+## 本次實際輸出與結果圖
+
+以下是這台 RP5、這次影像及參數的輸出；換照片、曝光、版本或參數時，數字可能不同。
 
 ```text
-circle detected True
+input shape: (675, 1200, 3)
+circles found: 1
+circles (x, y, radius): [[186, 330, 128]]
+saved: shapes-circles.png
 ```
 
-參數對尺寸與影像品質敏感；本結果只證明合成例子成功，不能保證其他圖片使用相同參數也能偵測。
+![第 30 課 RP5 實拍後的偵測結果](./圖檔/shapes-circles.png)
 
-## RP5 實際產生的結果圖
+此圖來自 RP5 相機拍攝螢幕圖形後的透視校正影像；綠色圓與圓心為程式實際偵測結果。
 
-![第 30 課的實際程式輸出](./圖檔/lesson30-circle.png)
+## 逐步理解結果
 
-合成圓與 HoughCircles 偵測結果。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
+先轉灰階，再用 GaussianBlur 降低雜訊；HoughCircles 尋找半徑 80–160 像素的候選圓。此照片找到 1 個，圓心約為 (186, 330)、半徑約 128 像素。座標屬於校正後的 1200 × 675 影像，不是原始相機照片座標。
+
+若顯示找不到圖片，先用檔案管理員確認檔名、目前目錄與副檔名。若找不到目標，檢查相機照片、校正點與測試圖尺寸，再依條件調整閾值；不要把偵測失敗直接當成相機故障。
+
+## 學生練習與後續應用
+
+先將最小與最大半徑設為 80–160，再嘗試把最大半徑設為 100，預測並觀察這個圓是否會漏檢；記錄你實際得到的結果，不要預先假設每個環境的輸出相同。
+
+圓形檢測可作為旋鈕定位、零件計數或實驗裝置定位的基礎；偏斜拍攝時圓可能呈橢圓，量測尺寸還需校正並建立像素與實際距離的換算。
 
 ## 與原文章的差異
 
-- 原文讀取外部杯子圖片；本版使用可重現的合成圓，未驗證原始圖片。
-- 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
-- 尚未保存操作畫面截圖。
+- 原文讀取外部杯子圖片；本版新增 RP5 實拍、透視校正後的測試圖，並明確列出本次實際偵測參數與結果；尚未驗證原始杯子圖片。
+- 圖片是攝影機拍攝後的影像處理結果，並非安裝截圖。

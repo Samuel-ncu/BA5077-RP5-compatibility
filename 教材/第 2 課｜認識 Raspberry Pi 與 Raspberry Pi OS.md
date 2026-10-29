@@ -10,6 +10,30 @@
 
 已啟動的 Raspberry Pi、終端機，以及可登入的帳號。可以在 RP5 接的螢幕操作，也可以使用已建立的 SSH 連線。
 
+## 背景：一張小板子為什麼是一台電腦？
+
+RP5 把處理器、記憶體及多種連接介面集中在一張板上，因此稱為單板電腦。加上電源與作業系統後，可以直接接螢幕、鍵盤和滑鼠，也能透過網路遠端操作。Raspberry Pi 是一系列產品：例如 Pico 是微控制器系列，開發方式與可執行 Linux 桌面的 RP5 不同。[官方入門指南](https://www.raspberrypi.com/documentation/computers/getting-started.html)介紹設備和啟動方式。
+
+## 核心概念：CPU、RAM、儲存與作業系統
+
+| 元件 | 做什麼 | 簡單比喻 |
+| --- | --- | --- |
+| CPU | 執行程式指令與計算 | 工作的人 |
+| RAM 記憶體 | 暫存使用中的程式和資料 | 桌面上的工作空間 |
+| microSD 儲存 | 保存系統、程式及檔案 | 放資料的櫃子 |
+| 作業系統 | 管理硬體、檔案、程式和使用者操作 | 協調工作的管理者 |
+
+```mermaid
+flowchart TB
+    U[使用者] --> OS[作業系統]
+    OS --> CPU[CPU 執行運算]
+    OS --> RAM[RAM 暫存資料]
+    OS --> SD[microSD 保存系統與檔案]
+    OS --> IO[相機、網路與其他介面]
+```
+
+這是概念圖，不是電路圖。Raspberry Pi OS 基於 Debian，系統版本會更新；[官方 Raspberry Pi OS 文件](https://www.raspberrypi.com/documentation/computers/os.html)介紹桌面版與 Lite 等類型。
+
 ## 實作：查詢硬體與系統
 
 在終端機執行：
@@ -34,14 +58,54 @@ Python 3.11.2
 
 記憶體可用 `free -h` 查看；這台機器的總記憶體曾顯示約 7.9 GiB，對應 8 GB 機型。可用量隨當時執行的程式而變。
 
+### 本次記憶體實測
+
+```bash
+free -h
+```
+
+```text
+               total        used        free      shared  buff/cache   available
+Mem:           7.9Gi       677Mi       3.0Gi        57Mi       4.4Gi       7.2Gi
+Swap:          2.0Gi          0B       2.0Gi
+```
+
+`available` 是估計可供程式使用的記憶體，會隨工作負載改變。`buff/cache` 包含系統用來加快讀取的快取；`Swap` 是利用儲存裝置的交換空間，不是另一條實體 RAM。
+
+### 本次系統與儲存裝置實測
+
+```bash
+cat /etc/os-release | head -1
+lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS
+```
+
+```text
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+NAME         SIZE TYPE MOUNTPOINTS
+mmcblk0     29.7G disk
+├─mmcblk0p1  512M part /boot/firmware
+└─mmcblk0p2 29.2G part /
+```
+
+29.7G 是這次的儲存裝置容量，不是 RAM。`/` 是主要系統檔案所在的掛載位置；還有多少可用空間需要另用 `df -h` 查詢。
+
 ## 檢查與排除
 
 - 如果找不到 `/proc/device-tree/model`，先確認是否真的在 Raspberry Pi 上執行，而不是在 Windows PowerShell。
 - `Python 3.11.2` 是本機結果；其他系統版本可能顯示不同數字。
 - 系統可用記憶體略低於標示容量屬常見情況；記憶體不是 microSD 儲存容量。
 
+## 學生練習與後續應用
+
+1. 寫出你自己機器的型號、架構、CPU 核心數、RAM 總量及儲存容量。
+2. 關閉部分程式後再看一次 `free -h`：哪些數字可能變動？為什麼？
+3. 如果模型需要較多記憶體、照片需要保存到檔案，分別會用到表格中的哪種資源？
+
+了解資源有助選擇相機解析度及 AI 模型。即使資源足夠，仍須實測模型速度與結果，不能只憑規格判斷產品可用。
+
 ## 與原文章的差異
 
 - 補上這台 RP5 的實際命令與輸出；原文的機型與作業系統介紹仍適用作背景知識。
 - 將硬體架構與軟體相容性分開說明，避免把 ARM64 視為所有套件均可安裝。
 - 尚未補拍本課畫面。
+- 新增初學者元件解說、概念圖、記憶體及儲存裝置實測與練習題；概念圖不是截圖。
