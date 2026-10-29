@@ -2,96 +2,46 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223033945) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> **部分實測**：本篇共用單張圖片的 Thonny 實驗；即時相機、全部手勢及全新套件安裝尚待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
-## 學習目標
+## 學習目標與背景
 
-先驗證剪刀、石頭、布的簡化判斷規則。
+本範例比較食指、中指、無名指和小指的指尖與關節高度。影像 y 軸向下增加，四根手指的指尖都較高時簡化判為 paper（布）；拇指不參與。手掌旋轉或遮擋可能使規則失效。
 
-## 事前準備
+## 準備素材和套件
 
-需要 Python；輸入為四根手指的布林狀態。
+此次在 RP5 的既有 `/home/pi/myenv/bin/python3` 執行，MediaPipe 0.10.9、OpenCV 和 CVZone 均可在此範例匯入。這個環境混合既有套件；從全新虛擬環境透過 Thonny 安裝 MediaPipe 和 CVZone 的完整流程尚未實測。若缺少 CVZone，共用範例會在匯入時停止；不要把匯入成功當作雙手功能驗證。
 
-MediaPipe 的已測試安裝方式請看[安裝操作與實測紀錄](../安裝操作與實測紀錄.md#5-mediapipe-手勢與-face-mesh)。不同專案請使用獨立環境。
+依[素材下載與使用說明](./練習素材/素材下載與使用.md)下載並解壓本倉庫，將[共用程式](./範例程式/補充1-2-4-5-6-Thonny.py)與[facehand-board.png](./圖檔/facehand-board.png)複製到同一新練習資料夾。這張圖原先以 AI 生成虛構人物與手，再顯示於螢幕，經 RP5 相機拍攝及透視校正；不是實拍真人。程式會在該資料夾寫入 `supplement-mediapipe-result.png`，請先確認不會覆寫需要保留的檔案。
 
-## 程式與執行
+## 在 Thonny 操作
 
-將以下程式存為 `補充5.py`，或使用[已測試的範例程式](./範例程式/補充5.py)。在檔案所在目錄執行 `python3 補充5.py`。
-
-```python
-def classify(index_up, middle_up, ring_up, little_up):
-    if not any((index_up, middle_up, ring_up, little_up)):
-        return 'rock'
-    if index_up and middle_up and not ring_up and not little_up:
-        return 'scissors'
-    if all((index_up, middle_up, ring_up, little_up)):
-        return 'paper'
-    return 'unknown'
-
-print('rock test', classify(False, False, False, False))
-print('scissors test', classify(True, True, False, False))
-print('paper test', classify(True, True, True, True))
-```
-
-## 本機實際輸出
-
-```text
-rock test rock
-scissors test scissors
-paper test paper
-```
-
-這只測試分類規則；程式沒有使用相機，也沒有從 MediaPipe 關鍵點判斷手指彎曲，不能視為完成互動遊戲。
-
-## 背景與核心概念
-
-### 從特徵點到遊戲規則
-
-手勢遊戲需要先取得手部影像，再推估關鍵點、判斷手指狀態，最後依規則計算勝負。用布林值測試規則只能驗證其中一段，不能證明相機辨識整個遊戲已完成。
-
-### 思考、練習與後續應用
-
-列出剪刀、石頭、布判斷規則可能忽略哪些手指或手部角度；哪些情況應回傳未知而非硬判？
-
-可擴充為互動遊戲，還要驗證誤判、等待時間、平手及無法辨識時的提示。
-
-進一步閱讀：[相關官方文件](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)。請以下方實測狀態為準；尚未實作或測試的情境不能視為已通過。
-
-## 概念流程圖
-
-```mermaid
-flowchart LR
-    A["相機影格"]
-    B["手部特徵點"]
-    C["手指狀態判斷"]
-    D["剪刀石頭布規則"]
-    A --> B --> C --> D
-```
-
-此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
-
-## 進一步實驗：由相機照片推算手勢
-
-### 輸入、步驟與限制
-
-1. 本次讓 RP5 相機拍攝螢幕上的 AI 生成虛構人物和手部，再裁切並校正成 [facehand-board.png](./圖檔/facehand-board.png)。[拍攝和校正步驟](./練習素材/相機實拍與校正流程.md)說明原始影像與校正方法。
-2. 把圖片和下方程式放在同一個練習目錄，使用[已測試的 MediaPipe 環境](../安裝操作與實測紀錄.md#5-mediapipe-手勢與-face-mesh)。圖片可從上面的連結下載；下方程式也提供[檔案](./範例程式/補充5-相機手勢.py)。
-3. 執行 `python 補充5-相機手勢.py`，終端機會列出手指狀態與手勢，並存出結果圖。注意使用已安裝 MediaPipe 和 OpenCV 的 Python。
+1. 在「工具 → 選項 → 直譯器」選擇已有 MediaPipe、OpenCV、CVZone 的 Python；開啟共用程式並按綠色執行鈕。
+2. 觀察 Shell 的版本、臉手數量和手勢；用檔案管理員開啟輸出圖。下面程式是這次實際執行的內容：
 
 ```python
 import cv2
 import mediapipe as mp
+from cvzone.HandTrackingModule import HandDetector
 
 image = cv2.imread('facehand-board.png')
 if image is None:
     raise RuntimeError('找不到 facehand-board.png')
-with mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=1, model_complexity=0) as detector:
-    result = detector.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-hands = result.multi_hand_landmarks or []
-print('hands found:', len(hands))
+print('MediaPipe:', mp.__version__)
+print('Solutions available:', hasattr(mp, 'solutions'))
+print('CVZone HandDetector import:', HandDetector is not None)
+rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+with mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=1,
+                              model_complexity=0) as detector:
+    hand_result = detector.process(rgb)
+with mp.solutions.face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1) as detector:
+    face_result = detector.process(rgb)
+hands = hand_result.multi_hand_landmarks or []
+faces = face_result.multi_face_landmarks or []
+print('hands:', len(hands), 'hand points:', [len(h.landmark) for h in hands])
+print('faces:', len(faces), 'face points:', [len(f.landmark) for f in faces])
 if hands:
     hand = hands[0]
-    # 僅適用大致朝上的手：影像的 y 座標從上往下增加。
     up = [hand.landmark[tip].y < hand.landmark[pip].y
           for tip, pip in [(8, 6), (12, 10), (16, 14), (20, 18)]]
     if all(up):
@@ -102,35 +52,45 @@ if hands:
         gesture = 'scissors'
     else:
         gesture = 'unknown'
-    print('index, middle, ring, little:', up)
-    print('predicted gesture:', gesture)
+    print('finger states:', up)
+    print('gesture:', gesture)
     mp.solutions.drawing_utils.draw_landmarks(image, hand, mp.solutions.hands.HAND_CONNECTIONS)
-    cv2.putText(image, gesture, (20, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 200, 0), 2)
-    if not cv2.imwrite('supplement5-camera-gesture.png', image):
-        raise RuntimeError('無法儲存結果')
-    print('saved: supplement5-camera-gesture.png')
+for face in faces:
+    mp.solutions.drawing_utils.draw_landmarks(
+        image, face, mp.solutions.face_mesh.FACEMESH_CONTOURS,
+        landmark_drawing_spec=None,
+        connection_drawing_spec=mp.solutions.drawing_styles.get_default_face_mesh_contours_style())
+if not cv2.imwrite('supplement-mediapipe-result.png', image):
+    raise RuntimeError('無法儲存結果')
+print('saved: supplement-mediapipe-result.png')
 ```
 
-RP5 這次的實際輸出：
+## 本次 Thonny 實際輸出
 
 ```text
-hands found: 1
-index, middle, ring, little: [True, True, True, True]
-predicted gesture: paper
-saved: supplement5-camera-gesture.png
+MediaPipe: 0.10.9
+Solutions available: True
+CVZone HandDetector import: True
+hands: 1 hand points: [21]
+faces: 1 face points: [468]
+finger states: [True, True, True, True]
+gesture: paper
+saved: supplement-mediapipe-result.png
 ```
 
-![相機拍攝生成圖片後的手勢偵測結果](./圖檔/supplement5-camera-gesture.png)
+![Thonny 實際顯示版本及模型測試](./圖檔/supp-mediapipe-version-thonny.png)
 
-圖是 RP5 對相機照片繪出的結果，並非桌面操作截圖。此規則比較四根手指的指尖與中間關節的影像 y 座標；y 往下增加，所以指尖 y 較小表示在畫面上較高。**只測到這張大致向上的張手圖，並未測試真人、旋轉手掌、石頭、剪刀或遊戲勝負。**拇指不參與此簡化規則；圖片中的 21 點是模型預估，不能保證一定準確。
+![Thonny 實際顯示特徵點與手勢輸出](./圖檔/supp-mediapipe-result-thonny.png)
 
-思考：把手橫放時，單靠 y 座標會怎樣？可進一步使用關節夾角並蒐集多角度樣本，但必須重新評估準確率。
+![本次程式在相機校正照片上畫出的特徵點](./圖檔/supp-mediapipe-result.png)
+
+上列結果來自同一次共用實驗，不代表每項原文功能都已完成。影像內容、解析度、模型和手部角度改變時結果也可能改變。
+
+## 練習與延伸
+
+試著解釋模型特徵點與程式規則各負責什麼；更換、縮小或旋轉素材後，記錄偵測數量與手勢的變化。要讓程式用在實際互動，還需測試不同人、角度、光線和連續畫面的誤判與延遲。
 
 ## 與原文章的差異
 
-- 新增相機拍攝生成素材後的單張手勢判斷；與原文的連續互動遊戲不同。
-
-- 原文包含即時相機遊戲；本版先測固定規則，後補單張相機素材的關鍵點到手勢判斷，尚未完成即時遊戲。
-- 本機測試範圍僅限上述流程；尚未保存操作畫面截圖。
-- 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
-- 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
+- {delta}
+- 新增 Thonny 實測程式、輸出、截圖及相機拍攝生成圖的下載方式；全新環境安裝仍待驗證。

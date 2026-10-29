@@ -2,128 +2,95 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223033876) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> **部分實測**：本篇共用單張圖片的 Thonny 實驗；即時相機、全部手勢及全新套件安裝尚待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
-## 學習目標
+## 學習目標與背景
 
-從相機取得一張影格並送入 MediaPipe Hands。
+手部模型先定位手掌，再估計各個關節特徵點。本次取得 21 點；特徵點位置不是手勢名稱，還需要規則或分類器。
 
-## 事前準備
+## 準備素材和套件
 
-需要 PiCamera2、相機及已驗證的 MediaPipe 0.10.9 虛擬環境。
+此次在 RP5 的既有 `/home/pi/myenv/bin/python3` 執行，MediaPipe 0.10.9、OpenCV 和 CVZone 均可在此範例匯入。這個環境混合既有套件；從全新虛擬環境透過 Thonny 安裝 MediaPipe 和 CVZone 的完整流程尚未實測。若缺少 CVZone，共用範例會在匯入時停止；不要把匯入成功當作雙手功能驗證。
 
-MediaPipe 的已測試安裝方式請看[安裝操作與實測紀錄](../安裝操作與實測紀錄.md#5-mediapipe-手勢與-face-mesh)。不同專案請使用獨立環境。
+依[素材下載與使用說明](./練習素材/素材下載與使用.md)下載並解壓本倉庫，將[共用程式](./範例程式/補充1-2-4-5-6-Thonny.py)與[facehand-board.png](./圖檔/facehand-board.png)複製到同一新練習資料夾。這張圖原先以 AI 生成虛構人物與手，再顯示於螢幕，經 RP5 相機拍攝及透視校正；不是實拍真人。程式會在該資料夾寫入 `supplement-mediapipe-result.png`，請先確認不會覆寫需要保留的檔案。
 
-## 程式與執行
+## 在 Thonny 操作
 
-將以下程式存為 `補充2.py`，或使用[已測試的範例程式](./範例程式/補充2.py)。在檔案所在目錄執行 `python3 補充2.py`。
-
-```python
-import cv2
-import mediapipe as mp
-from picamera2 import Picamera2
-
-camera = Picamera2()
-try:
-    camera.configure(camera.create_still_configuration(main={'size': (320, 240), 'format': 'RGB888'}))
-    camera.start()
-    frame = camera.capture_array()
-finally:
-    camera.stop()
-    camera.close()
-with mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=1) as hands:
-    result = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-print('frame processed', result is not None)
-```
-
-## 本機實際輸出
-
-```text
-frame processed True
-```
-
-成功處理一張影格不代表畫面中必有手或偵測準確；未驗證連續視窗與手勢結果。
-
-## 背景與核心概念
-
-### 從手部影像取得特徵點
-
-手部偵測試圖找出手的位置，特徵點模型進一步估計關鍵位置。單張影格的結果會受光線、手的角度和遮擋影響；沒有偵測到手不一定代表安裝失敗。
-
-### 思考、練習與後續應用
-
-如何設計有手、沒有手及手被遮擋的測試？偵測到關鍵點是否等同辨識某個手勢？
-
-可用於互動控制，須考慮誤觸、延遲與使用者同意。
-
-進一步閱讀：[相關官方文件](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)。請以下方實測狀態為準；尚未實作或測試的情境不能視為已通過。
-
-## 概念流程圖
-
-```mermaid
-flowchart LR
-    A["相機影格"]
-    B["手部偵測與特徵點"]
-    C["手的位置資料"]
-    D["結果顯示"]
-    A --> B --> C --> D
-```
-
-此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
-
-## 進階實測：相機拍攝 AI 生成的人臉與手部素材
-
-### 準備與操作
-
-本次素材是 AI 生成的虛構人物，先顯示在螢幕上，RP5 相機再拍攝；拍攝後另以程式裁切及透視校正。這不是實拍真人，也不是安裝操作截圖。完整拍攝與校正方法見[相機實拍與校正流程](./練習素材/相機實拍與校正流程.md)。
-
-需要已驗證可匯入 MediaPipe Solutions 的 Python 環境、OpenCV 及 NumPy；本次使用 MediaPipe 0.10.9 的獨立環境。 可將[本次校正影像](./圖檔/facehand-board.png)下載為 `facehand-board.png`，與[範例程式](./範例程式/補充2-相機手部特徵.py)放在 RP5 的同一練習目錄，先確認輸出檔不會覆蓋現有資料。
+1. 在「工具 → 選項 → 直譯器」選擇已有 MediaPipe、OpenCV、CVZone 的 Python；開啟共用程式並按綠色執行鈕。
+2. 觀察 Shell 的版本、臉手數量和手勢；用檔案管理員開啟輸出圖。下面程式是這次實際執行的內容：
 
 ```python
 import cv2
 import mediapipe as mp
+from cvzone.HandTrackingModule import HandDetector
 
 image = cv2.imread('facehand-board.png')
 if image is None:
     raise RuntimeError('找不到 facehand-board.png')
-with mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=1, model_complexity=0) as hands:
-    result = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-landmarks = result.multi_hand_landmarks or []
-for hand in landmarks:
+print('MediaPipe:', mp.__version__)
+print('Solutions available:', hasattr(mp, 'solutions'))
+print('CVZone HandDetector import:', HandDetector is not None)
+rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+with mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=1,
+                              model_complexity=0) as detector:
+    hand_result = detector.process(rgb)
+with mp.solutions.face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1) as detector:
+    face_result = detector.process(rgb)
+hands = hand_result.multi_hand_landmarks or []
+faces = face_result.multi_face_landmarks or []
+print('hands:', len(hands), 'hand points:', [len(h.landmark) for h in hands])
+print('faces:', len(faces), 'face points:', [len(f.landmark) for f in faces])
+if hands:
+    hand = hands[0]
+    up = [hand.landmark[tip].y < hand.landmark[pip].y
+          for tip, pip in [(8, 6), (12, 10), (16, 14), (20, 18)]]
+    if all(up):
+        gesture = 'paper'
+    elif not any(up):
+        gesture = 'rock'
+    elif up == [True, True, False, False]:
+        gesture = 'scissors'
+    else:
+        gesture = 'unknown'
+    print('finger states:', up)
+    print('gesture:', gesture)
     mp.solutions.drawing_utils.draw_landmarks(image, hand, mp.solutions.hands.HAND_CONNECTIONS)
-if not cv2.imwrite('supplement2-camera-hand.png', image):
+for face in faces:
+    mp.solutions.drawing_utils.draw_landmarks(
+        image, face, mp.solutions.face_mesh.FACEMESH_CONTOURS,
+        landmark_drawing_spec=None,
+        connection_drawing_spec=mp.solutions.drawing_styles.get_default_face_mesh_contours_style())
+if not cv2.imwrite('supplement-mediapipe-result.png', image):
     raise RuntimeError('無法儲存結果')
-print('hands found:', len(landmarks))
-print('landmark counts:', [len(hand.landmark) for hand in landmarks])
-print('saved: supplement2-camera-hand.png')
+print('saved: supplement-mediapipe-result.png')
 ```
 
-```bash
-python3 補充2-相機手部特徵.py
-```
-
-### 本次 RP5 實際輸出與結果
+## 本次 Thonny 實際輸出
 
 ```text
-hands found: 1
-landmark counts: [21]
-saved: supplement2-camera-hand.png
+MediaPipe: 0.10.9
+Solutions available: True
+CVZone HandDetector import: True
+hands: 1 hand points: [21]
+faces: 1 face points: [468]
+finger states: [True, True, True, True]
+gesture: paper
+saved: supplement-mediapipe-result.png
 ```
 
-![RP5 相機拍攝生成素材的實測結果](./圖檔/supplement2-camera-hand.png)
+![Thonny 實際顯示版本及模型測試](./圖檔/supp-mediapipe-version-thonny.png)
 
-圖中的點與連線由 MediaPipe 根據這次照片的手部結果繪製；這次取得一隻手、21 個特徵點，並非真人樣本。 原始相機全景含螢幕外環境，沒有公開。
+![Thonny 實際顯示特徵點與手勢輸出](./圖檔/supp-mediapipe-result-thonny.png)
 
-### 讀懂原理與結果
+![本次程式在相機校正照片上畫出的特徵點](./圖檔/supp-mediapipe-result.png)
 
-先用 BGR 轉 RGB，再把校正影像送到 Hands 模型；結果包含手部特徵點。這是單張影像模式，不代表連續追蹤速度或不同姿勢都已驗證。
+上列結果來自同一次共用實驗，不代表每項原文功能都已完成。影像內容、解析度、模型和手部角度改變時結果也可能改變。
 
-學生練習：先預測把測試圖縮小或轉動後可能發生什麼，再自行測試並記錄結果。如果找不到圖或模型，確認目前目錄、路徑及 Python 環境；如果找到零個目標，還應檢查畫面是否清楚。實際拍攝他人時須先取得適當授權，避免將私人照片上傳。
+## 練習與延伸
+
+試著解釋模型特徵點與程式規則各負責什麼；更換、縮小或旋轉素材後，記錄偵測數量與手勢的變化。要讓程式用在實際互動，還需測試不同人、角度、光線和連續畫面的誤判與延遲。
 
 ## 與原文章的差異
 
-- 原文以相機連續手勢偵測為主；本版先測單張影格，不宣稱即時辨識完成。
-- 本機測試範圍僅限上述流程；尚未保存操作畫面截圖。
-- 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
-- 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
-- 新增相機拍攝 AI 生成手部素材後的單張特徵點實測；原文即時手勢辨識仍待完整驗證。
+- {delta}
+- 新增 Thonny 實測程式、輸出、截圖及相機拍攝生成圖的下載方式；全新環境安裝仍待驗證。
