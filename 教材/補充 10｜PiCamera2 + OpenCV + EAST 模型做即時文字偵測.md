@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223038343) · 更新日期：2026-10-29
 
-> **部分 Thonny 實測。** 已在 Thonny 測模型下載、相機文字照片；全新系統安裝及即時相機仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> **部分 Thonny 實測。** 已在 Thonny 測模型下載、相機文字照片；已另測限時即時相機；全新系統安裝仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -256,11 +256,107 @@ saved: east-box-ocr-result.png
 
 ![程式產生的文字框編號結果圖](./圖檔/east-box-ocr-result.png)
 
-綠框與紅色編號是程式產生的結果圖，前兩張是實際操作截圖。請對照原圖與第 10 框：原圖是 `OPEN CV`，但框未涵蓋全部文字，輸出成 `OPEN C`。程式按框的上緣 y 值再按 x 值排序，對同一行高度略有差異的框不一定符合閱讀順序，例如 `DETECTION` 排在 `TEXT` 前；實際應用可先依行分組。這是一張清楚英文照片的示範，不能當作其他場景的準確率；相機即時預覽及逐框 OCR 的整合仍待測。
+綠框與紅色編號是程式產生的結果圖，前兩張是實際操作截圖。請對照原圖與第 10 框：原圖是 `OPEN CV`，但框未涵蓋全部文字，輸出成 `OPEN C`。程式按框的上緣 y 值再按 x 值排序，對同一行高度略有差異的框不一定符合閱讀順序，例如 `DETECTION` 排在 `TEXT` 前；實際應用可先依行分組。這是一張清楚英文照片的示範，不能當作其他場景的準確率；另一次限時即時預覽與逐框 OCR 實測見下節。
+
+## Thonny 實測：相機連續 EAST 偵測與逐框英文辨識
+
+### 準備與操作
+
+1. 依本篇前面的步驟準備相機、EAST 模型與英文 Tesseract；將 [east_helpers.py](./範例程式/east_helpers.py)、[即時辨識程式](./範例程式/補充10和11-Thonny即時OCR.py) 和 `frozen_east_text_detection.pb` 放入同一練習資料夾。詳見[素材下載與使用](./練習素材/素材下載與使用.md)。本次使用既有 `/home/pi/myenv/bin/python3`，全新系統的 OCR 環境尚未驗證。
+2. 用另一台電腦的螢幕顯示[文字測試板](./圖檔/text-board.png)，或使用清楚的英文印刷文字，讓相機對準目標。測試板是先前相機拍攝後校正的練習素材；本次再由實體相機拍攝螢幕上顯示的圖片。
+3. 在 Thonny 開啟本程式並按綠色執行。程式先等待 15 秒，再擷取 1280×960 影像並在相機預覽視窗中繪出文字框。程式的 `[0:520, 400:1250]` 是本次取景的裁切區域，請依自己的畫面調整；要處理完整影像，可改用 `full_frame.copy()`，但這項修改不屬於本次實測。
+4. 每次辨識把 EAST 找到的區域逐框交給 Tesseract 英文模式，文字印在 Thonny Shell。程式約 25 秒後自動停止並釋放相機；`q` 停止分支尚未在此範例獨立驗證。辨識每框需要時間，畫面更新速度不等於相機擷取速度。
+
+完整程式（與下載檔相同）：
+
+```python
+from pathlib import Path
+import subprocess
+import time
+
+import cv2
+from picamera2 import Picamera2
+from east_helpers import detect_text
+
+# 與模型、east_helpers.py 放在同一個資料夾。這些座標是本次相機取景，請依自己的畫面調整。
+model_path = Path('frozen_east_text_detection.pb')
+if not model_path.exists():
+    raise FileNotFoundError('找不到 EAST 模型')
+net = cv2.dnn.readNet(str(model_path))
+print('15 seconds to show the text board', flush=True)
+time.sleep(15)
+camera = Picamera2()
+started = False
+frames = 0
+begin = None
+try:
+    camera.configure(camera.create_preview_configuration(
+        main={'size': (1280, 960), 'format': 'RGB888'}))
+    camera.start()
+    started = True
+    time.sleep(1)
+    begin = time.monotonic()
+    while time.monotonic() - begin < 25:
+        full_frame = camera.capture_array()
+        frame = full_frame[0:520, 400:1250].copy()
+        boxes = sorted(detect_text(net, frame), key=lambda b: (b[1], b[0]))
+        texts = []
+        height, width = frame.shape[:2]
+        for x1, y1, x2, y2 in boxes:
+            crop = frame[max(0, y1-5):min(height, y2+5), max(0, x1-5):min(width, x2+5)]
+            ok, png = cv2.imencode('.png', crop)
+            if not ok:
+                raise RuntimeError('圖片編碼失敗')
+            result = subprocess.run(['tesseract', 'stdin', 'stdout', '-l', 'eng', '--psm', '7'],
+                                    input=png.tobytes(), capture_output=True, check=True)
+            text = result.stdout.decode('utf-8').strip().replace('\n', ' ')
+            texts.append(text)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 220, 0), 2)
+        frames += 1
+        print(f'frame {frames}: {len(boxes)} boxes; {texts}', flush=True)
+        cv2.imshow('EAST + Tesseract live', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            print('q pressed', flush=True)
+            break
+finally:
+    if started:
+        camera.stop()
+    camera.close()
+    cv2.destroyAllWindows()
+    print('frames:', frames, flush=True)
+    if begin is not None:
+        print('elapsed seconds:', round(time.monotonic() - begin, 2), flush=True)
+    print('camera released', flush=True)
+```
+
+### 實際輸出與截圖
+
+2026-10-29 的 RP5 Thonny 單次測試，Shell 最後一筆與結束結果如下：
+
+```text
+frame 15: 10 boxes; ['TEXT', 'DETECTION', 'RASPBERRY', 'PI5', 'HELLO', 'CAMERA', 'AIOT', '2026', 'OPENC', '12345']
+frames: 15
+elapsed seconds: 25.86
+camera released
+```
+
+![RP5 實際執行 Thonny 與相機文字框預覽](./圖檔/east-live-thonny-preview.png)
+
+![RP5 的 Thonny 顯示連續辨識的最後結果與相機釋放](./圖檔/east-live-thonny-finished.png)
+
+第一張是 RP5 桌面**操作截圖**，視窗內是相機實拍並由程式繪製的結果；第二張是實際 Shell 輸出。15 個已處理影格除以 25.86 秒約 0.58 影格／秒，非相機硬體的最高幀率。`PI5` 缺少空格，`OPENC` 未包含原文完整的 `OPEN CV`：偵測框裁切及辨識都可能造成損失。這是單一固定英文測試場景，不能作為一般準確率；不同距離、角度、光線、繁體中文即時影像和長時間運行仍待測。
+
+### 練習與排錯
+
+- 觀察綠框是否涵蓋完整字詞，再比較 Shell 文字，說明文字「位置偵測」和「內容辨識」是哪兩個不同步驟。
+- 缺少模型或 `east_helpers` 時，確認三個檔案放在同一目錄，並在 Thonny 重新開啟程式。相機被占用時，先關閉其他相機程式。
+- 試著調整測試板大小與角度，記錄漏字或誤字；不要把 `q` 停止或其他場景的表現當成已測結果。
 
 ## 與原文章的差異
 
-- 新增 Thonny 單張相機校正照片的 EAST 框選與整圖英文 OCR 實測；已另測模型下載與載入；另以相機照片測試逐框英文 OCR；即時相機整合仍待測。
+- 即時示範另加入 15 秒準備與約 25 秒自動停止，使用本次固定裁切範圍、EAST 框選及 Tesseract 英文逐框辨識；輸出與預覽擷取自真實測試。
+
+- 新增 Thonny 單張相機校正照片的 EAST 框選與整圖英文 OCR 實測；已另測模型下載與載入；另以相機照片測試逐框英文 OCR；已另測限時即時相機整合；不同場景、繁中即時影像及全新系統仍待驗證。
 
 - 新增對相機拍攝的英文測試板執行 EAST 及整圖 Tesseract；與原文即時流程的差異仍見下方。
 

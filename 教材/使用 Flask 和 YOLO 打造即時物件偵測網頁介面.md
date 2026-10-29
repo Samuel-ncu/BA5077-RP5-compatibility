@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222901408) · 更新日期：2026-10-29
 
-> **部分實測**：已在 Thonny 測試本機 HTTP 四張 JPEG，以及相機經 YOLO 送至 RP5 瀏覽器的 150 張影格；長時間運作與乾淨環境安裝待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
+> **部分實測**：已在 Thonny 測試本機 HTTP 四張 JPEG，以及相機經 YOLO 送至 RP5 瀏覽器的 150 張影格及兩分鐘串流；數小時運作與乾淨環境安裝待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
 
@@ -211,6 +211,157 @@ server stopped
 - 模型找不到：確認 `yolov8n.pt` 與程式同一工作資料夾。缺少 Python 模組時檢查 Thonny 右下角的直譯器，乾淨安裝流程仍待驗證。
 - 練習：依序畫出「相機 → 模型 → JPEG → Flask → 瀏覽器」，並比較更改偵測尺寸對速度與細節的可能影響。延伸可研究斷線重連及單一相機如何服務多位使用者；本例尚未驗證這些功能。
 
+## Thonny 實測：兩分鐘 Flask 相機串流
+
+前述範例以影格數結束，這次改以時間觀察串流。相機拍攝 → YOLO CPU 推論 → JPEG 編碼 → Flask `/stream` → RP5 本機瀏覽器；`/status` 回傳的是**伺服器產生的影格數**，不是瀏覽器實際解碼或顯示的影格數。
+
+1. 使用前節相同的既有 Thonny Python 環境、相機和 `yolov8n.pt`；下載[兩分鐘範例](./範例程式/Flask-YOLO-Thonny兩分鐘相機.py)與模型放到同一練習資料夾。相機只供一個網頁分頁使用。
+2. 在 Thonny 開啟程式並執行，若瀏覽器沒有自動開啟，請在 RP5 瀏覽器輸入 `http://127.0.0.1:18766/`；程式等待串流連線最多 30 秒。連線後約 120 秒停止，觀察 Shell 中的結果。
+3. 示範頁面的 Hide preview 只隱藏影像元素，並不停止串流；狀態仍會更新。下方瀏覽器截圖為保護現場隱私而隱藏預覽；前節 150 影格截圖可看到實際相機畫面。結束後已另用 Thonny 相機程式成功擷取一張影像，證實本次正常結束後可重開相機。
+
+完整程式（與下載檔相同）：
+
+```python
+import threading
+import time
+import webbrowser
+
+import cv2
+from flask import Flask, Response, jsonify
+from picamera2 import Picamera2
+from ultralytics import YOLO
+from werkzeug.serving import make_server
+
+
+def main():
+    app = Flask(__name__)
+    model = YOLO('yolov8n.pt')
+    started = threading.Event()
+    finished = threading.Event()
+    lock = threading.Lock()
+    stats = {'frames': 0, 'state': 'waiting'}
+
+    @app.get('/')
+    def home():
+        return '''<!doctype html><html><head><meta charset="utf-8">
+        <title>RP5 Camera YOLO</title></head><body>
+        <h1>RP5 Camera YOLO</h1>
+        <p>Two-minute single-client camera test.</p>
+        <p id="status">Waiting for camera...</p>
+        <button onclick="document.getElementById('feed').style.visibility='hidden'">
+          Hide preview</button>
+        <p><img id="feed" src="/stream" alt="camera stream"></p>
+        <script>
+        async function update() {
+          try {
+            const response = await fetch('/status', {cache: 'no-store'});
+            const data = await response.json();
+            document.getElementById('status').textContent =
+              'Server frames produced: ' + data.frames + ' | state: ' + data.state;
+            if (data.state !== 'finished') setTimeout(update, 1000);
+          } catch (error) {
+            document.getElementById('status').textContent = 'Status unavailable';
+          }
+        }
+        update();
+        </script></body></html>'''
+
+    @app.get('/status')
+    def status():
+        with lock:
+            return jsonify(stats.copy())
+
+    @app.get('/stream')
+    def stream():
+        with lock:
+            if started.is_set():
+                return 'This example supports one camera stream.', 409
+            started.set()
+
+        def frames():
+            camera = Picamera2()
+            count = 0
+            begin = None
+            next_report = 30
+            try:
+                camera.configure(camera.create_preview_configuration(
+                    main={'size': (640, 480), 'format': 'RGB888'}))
+                camera.start()
+                time.sleep(1)
+                begin = time.perf_counter()
+                with lock:
+                    stats['state'] = 'streaming'
+                while time.perf_counter() - begin < 120:
+                    frame = camera.capture_array()
+                    result = model.predict(frame, imgsz=320, device='cpu', verbose=False)[0]
+                    ok, jpeg = cv2.imencode('.jpg', result.plot())
+                    if not ok:
+                        raise RuntimeError('JPEG 編碼失敗')
+                    count += 1
+                    elapsed = time.perf_counter() - begin
+                    with lock:
+                        stats['frames'] = count
+                    if elapsed >= next_report:
+                        print(f'after {next_report}s: frames={count}', flush=True)
+                        next_report += 30
+                    yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n'
+                yield b'--frame--\r\n'
+            finally:
+                elapsed = time.perf_counter() - begin if begin is not None else 0
+                camera.stop()
+                camera.close()
+                with lock:
+                    stats['state'] = 'finished'
+                print('camera frames:', count, flush=True)
+                print('elapsed seconds:', round(elapsed, 2), flush=True)
+                print('average FPS:', round(count / elapsed, 2) if elapsed else 0, flush=True)
+                print('camera released', flush=True)
+                finished.set()
+        return Response(frames(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+    server = make_server('127.0.0.1', 18766, app, threaded=True)
+    worker = threading.Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    try:
+        print('Open: http://127.0.0.1:18766/', flush=True)
+        print('Browser opened:', webbrowser.open('http://127.0.0.1:18766/'), flush=True)
+        if not started.wait(30):
+            print('No browser stream in 30 seconds', flush=True)
+        elif not finished.wait(150):
+            print('Camera stream did not finish in time', flush=True)
+        else:
+            time.sleep(5)  # 讓頁面有機會讀取完成狀態。
+    finally:
+        server.shutdown()
+        worker.join()
+        server.server_close()
+        print('server stopped', flush=True)
+
+
+if __name__ == '__main__':
+    main()
+```
+
+2026-10-29 同一次 Thonny 測試摘錄：
+
+```text
+after 120s: frames=828
+camera frames: 828
+elapsed seconds: 120.03
+average FPS: 6.9
+camera released
+127.0.0.1 - - [29/Oct/2026 19:45:27] "GET /status HTTP/1.1" 200 -
+server stopped
+```
+
+![RP5 瀏覽器串流期間的伺服器計數](./圖檔/flask-120s-browser-running.png)
+
+![RP5 瀏覽器顯示兩分鐘串流已結束](./圖檔/flask-120s-browser-finished.png)
+
+![Thonny 顯示兩分鐘實測的輸出與服務停止](./圖檔/flask-120s-thonny.png)
+
+平均 6.9 FPS 為此場景服務端產生影格數除以實測時間；不同模型、環境、影格內容和負載會影響結果，也不能視為客戶端播放速度或偵測準確率。這是單一瀏覽器和兩分鐘測試；跨裝置、多客戶端、數小時穩定性、所有異常停止情境與乾淨環境安裝仍待驗證。
+
 ## 練習與後續應用
 
 解釋 HTTP 請求、路由、回應內容類型和 JPEG 影格各自的工作。如果收到 200 但無法解碼圖片，應先檢查哪些資料？進一步設計頁面時，可考慮服務停止方式及影格傳輸延遲。
@@ -219,4 +370,4 @@ server stopped
 
 - 本版先測有限影片，再以 Thonny 測本機瀏覽器的相機即時串流；示範限定 150 張影格及約 70 秒服務，不等同原文持續直播。
 - 新增 Thonny 實測、實際輸出及兩次不同實驗的瀏覽器畫面；有限影片程式曾出現 Thonny 自動啟動行為，相機範例改在函式內建立應用。
-- 使用本機既有套件環境，乾淨安裝、跨裝置及長時間穩定性待驗證。
+- 使用本機既有套件環境，已另測兩分鐘單用戶串流；乾淨安裝、跨裝置及數小時穩定性待驗證。
