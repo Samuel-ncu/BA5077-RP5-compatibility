@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886555) · 更新日期：2026-10-29
 
-> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 本課共同的兩張相機校正圖範例已在 Thonny 測試 SIFT 與 ORB；此新環境的 SURF 不可用。其他舊範例與原文完整情境仍待 Thonny 重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -14,7 +14,33 @@
 
 本教學程式使用合成資料，沒有把私人相機影像上傳公開 repo；請在自己的練習目錄操作。
 
-## 程式與執行
+## 在 Thonny 實測：兩張校正圖的特徵比對
+
+這項實驗由第 31～33 課共用：兩張圖由 RP5 在不同時間拍攝相同螢幕圖案後裁切及校正，不是兩個真實場景。對同一組素材比較 SIFT 與 ORB 的特徵點與候選配對，能看到同一問題可使用不同方法；候選配對數不等於正確率。
+
+1. 先依[Thonny 擴充環境指南](./Thonny環境與套件安裝.md#第-2527-課在-thonny-建立-opencv-擴充環境)建立並選取環境。本次使用 Python 3.11、NumPy 1.26.4、opencv-contrib-python 4.11.0.86。
+2. 從 GitHub 使用 **Code → Download ZIP** 下載並解壓教材，將[Thonny 比對程式](./範例程式/第31至33課-Thonny校正圖比對.py)、[第一張校正圖](./圖檔/feature-board-a.png)與[第二張校正圖](./圖檔/feature-board-b.png)複製到同一個新練習資料夾。圖片檔名保持 `feature-board-a.png` 和 `feature-board-b.png`。ZIP 下載與解壓步驟本次尚未在 RP5 瀏覽器重測。
+3. 在 Thonny 選 **File → Open** 開啟比對程式，確認右下角環境後按綠色執行鈕。程式固定選擇已校正圖，不用在終端機輸入參數；執行後會在練習目錄儲存 SIFT 和 ORB 的配對圖，請先確認同名檔不會被覆寫。
+
+本次 Thonny Shell 實際輸出：
+
+```text
+SURF unavailable in this OpenCV build
+SIFT keypoints: 1320 1192
+SIFT cross-check matches: 567
+saved: feature-camera-sift-matches.png
+ORB keypoints: 1200 1200
+ORB cross-check matches: 432
+saved: feature-camera-orb-matches.png
+```
+
+![在 RP5 的 Thonny 執行第 31～33 課共同特徵比對](./圖檔/lesson31-33-thonny-clean.png)
+
+截圖的 `lesson31-33.py` 是上方 Thonny 範例的測試副本。右下角顯示測試用的獨立環境。**此環境的 SURF 無法建立**；程式保留其他演算法並如實顯示不可用。下方舊紀錄的 SURF 成功來自另一套先前環境，不代表此安裝方式也能啟用 SURF。尚未在此新環境比較三種方法或測試自行拍攝的原圖。
+
+## 先前終端機範例（待 Thonny 重測）
+
+### 程式與執行
 
 將下列程式存為 `第32課.py`，或使用[已測試的範例程式](./範例程式/第32課.py)。
 
@@ -34,9 +60,9 @@ print('descriptors found', len(desc) > 0)
 print('same-image matches', len(matches))
 ```
 
-在該檔案所在目錄執行 `python3 第32課.py`。
+在 Thonny 開啟 `第32課.py` 並按綠色執行鈕；此舊範例尚未在上述新環境重測。
 
-## 本機實際輸出
+## 先前終端機實測輸出（非本次新環境）
 
 ```text
 descriptors found True
@@ -65,7 +91,7 @@ same-image matches 318
 
 進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/dc/dc3/tutorial_py_matcher.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
 
-## 進階實測：比對兩張 RP5 相機照片
+## 先前終端機實測：比對兩張 RP5 相機照片
 
 ### 為什麼需要兩張不同影像？
 
@@ -132,13 +158,9 @@ for name, detector, norm in detectors:
     print('saved:', output)
 ```
 
-使用下載的校正圖片時執行：
+使用下載的校正圖片時，請回到上方的 **Thonny 實測**段落開啟固定讀取校正圖的新版範例。
 
-```bash
-python3 第31至33課-相機特徵比對.py --rectified
-```
-
-若使用自行拍攝的兩張原始照片，省略 `--rectified`；程式會先產生校正圖再進行比對。本次兩種方式均已在 RP5 執行，原始相機全景未公開。
+下方原始版本的兩種輸入方式先前在終端機測試；自行拍攝原圖與重新校正仍待 Thonny 重測，原始相機全景未公開。
 
 ### 本次 RP5 實際輸出
 
@@ -168,8 +190,10 @@ SIFT 和 SURF 使用 L2 距離，本例 ORB 使用 Hamming 距離。各方法的
 
 ## 與原文章的差異
 
+- 新增以 Thonny 使用兩張可下載校正圖的實測；此新環境 SURF 不可用，SIFT、ORB 成功。
+
 - 原文示範 SURF 與 SIFT；初步例子以 SIFT 自身匹配實測，新增兩張相機照片的 SURF 和 SIFT 候選比對，原文外部圖片尚未測試。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
-- 尚未保存操作畫面截圖。
+- 新增上方共同範例的 Thonny 操作截圖；其他情境依文章標記。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 新增兩張不同顯示大小的 RP5 相機實拍圖，實測 SIFT、SURF、ORB 候選匹配；尚未量測正確率或不同真實場景。
