@@ -2,6 +2,8 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223038385) · 更新日期：2026-10-29
 
+> Thonny 重測進行中：請先看本篇標示「Thonny 實測」的段落；其他既有輸出依原測試方式標示，完整情境仍待重測。[逐篇進度](./Thonny逐篇實測狀態.md)
+
 ## 學習目標
 
 使用 EAST 找到合成圖片的文字區域，再交給 Tesseract 辨識。
@@ -20,7 +22,7 @@ curl -fL https://raw.githubusercontent.com/oyyd/frozen_east_text_detection.pb/ma
 
 ## 程式與執行
 
-將以下程式存為 `補充11.py`，或使用[已測試的範例程式](./範例程式/補充11.py)。在檔案所在目錄執行 `python3 補充11.py`。
+將以下程式存為 `補充11.py`，或使用[已測試的範例程式](./範例程式/補充11.py)。此段為先前終端機實測；Thonny 的重測仍待完成。
 
 ```python
 import cv2
@@ -47,7 +49,7 @@ text boxes 2
 OCR: HELLO 123
 ```
 
-本機合成英文文字成功辨識；目前只有 eng、osd 語言資料。相機即時 OCR 與中文準確率未測。
+原先的合成英文文字成功辨識；另在獨立練習目錄準備繁體中文語言資料並進行下方測試。相機即時 OCR 與中文準確率尚未完成。
 
 ## 背景與核心概念
 
@@ -82,7 +84,7 @@ flowchart LR
 
 1. 在螢幕顯示[相機測試畫面](./練習素材/RP5相機測試.html)的「文字偵測」，由 RP5 相機拍攝，再依[實拍與校正流程](./練習素材/相機實拍與校正流程.md)裁切校正。這次得到的[實拍輸入圖 text-board.png](./圖檔/text-board.png)可供重現。
 2. 將該圖片、[east_helpers.py](./範例程式/east_helpers.py) 和[本範例程式](./範例程式/補充9至11-相機文字.py)放入同一個練習目錄，依本文事前準備放入 EAST 模型，並依[安裝紀錄](../安裝操作與實測紀錄.md#6-tesseract-ocr)準備 OpenCV、NumPy、Tesseract 及英文語言資料。
-3. 在該目錄執行 `python3 補充9至11-相機文字.py`。模型和語言資料缺失時先依安裝紀錄處理，不要以其他模型的結果替代。
+3. 先前在該目錄以終端機執行此程式；此相機照片流程尚待用 Thonny 重測。模型和語言資料缺失時先依安裝紀錄處理，不要以其他模型的結果替代。
 
 ```python
 import cv2
@@ -127,11 +129,42 @@ OPEN CV 12345
 
 練習：比較輸入圖和綠框，指出未被完整涵蓋的字；把「框定位是否正確」與「OCR 字元是否正確」分開評估。
 
+## Thonny 實測：繁體中文合成文字 OCR
+
+文字偵測是找出文字位置；OCR 是把圖片中的字轉為文字。這個練習只測 OCR，**沒有使用 EAST**；它不能取代本課的即時相機整合測試。
+
+本機已安裝 Tesseract 執行程式，並在練習目錄的 `tessdata` 放入 `chi_tra.traineddata` 和 `eng.traineddata`。繁中資料來源為 [Tesseract 官方 tessdata_fast](https://github.com/tesseract-ocr/tessdata_fast)。Python 使用原有 `/home/pi/myenv/bin/python3`，其中已有 Pillow；它與第 14 課新建環境不同。
+
+1. 確認電腦已完成 Tesseract 基礎安裝，準備包含上述兩個語言檔的 `tessdata` 資料夾；本練習另使用系統中的 Droid 中文字型及 DejaVu Sans 數字字型。
+2. 在 Thonny 選擇含 Pillow 的環境，開啟[繁體中文 OCR 範例](./範例程式/補充11-繁體中文OCR.py)。確定工作目錄含有 `tessdata`，以免找不到語言檔。檔案會在工作目錄產生 `supplement11-chinese-input.png`，請使用新的練習資料夾，避免覆寫。
+3. 點綠色執行按鈕，在 Shell 比較只用繁中資料及繁中加英文資料的結果：
+
+```text
+saved: supplement11-chinese-input.png
+OCR output (chi_tra):
+樹莓派影像處理
+人工智慧與物聯網
+溫度25 度
+OCR output (chi_tra+eng):
+樹莓派影像處理
+人工智慧與物聯網
+溫度25 度
+```
+
+![Thonny 中執行繁體中文 OCR 的實際畫面](./圖檔/supplement11-thonny-ocr.png)
+
+![用兩種字型建立的合成輸入圖片](./圖檔/supplement11-chinese-input.png)
+
+本次兩種語言設定輸出相同，數字前後的空格仍與原文排版不同；這只是一張人工合成圖片的觀察，不能推論一般中文準確率。初次測試僅用中文字型時，數字缺字而產生方框，OCR 無法正確讀出 `25`；更換支援數字的字型後才得到上面的結果。練習時先觀察輸入圖，再判斷錯誤來自繪圖字型還是 OCR。
+
+![初次測試中數字字型缺字的合成輸入](./圖檔/supplement11-missing-glyphs.png)
+
 ## 與原文章的差異
 
+- 新增 Thonny 執行繁中合成圖片 OCR 的結果與畫面；沒有宣稱這是 EAST 加相機的即時流程。
 - 新增對相機拍攝的英文測試板執行 EAST 及整圖 Tesseract；與原文即時流程的差異仍見下方。
 
 - 原文結合 EAST、Tesseract 與相機；本版以合成圖片實測完整偵測到 OCR 的流程，尚未測相機即時整合。
-- 本機測試範圍僅限上述流程；尚未保存操作畫面截圖。
+- 本機的繁中合成文字 OCR 有 Thonny 操作截圖；EAST 與相機即時整合的 Thonny 操作截圖尚待補。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。

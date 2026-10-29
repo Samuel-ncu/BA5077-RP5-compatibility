@@ -2,6 +2,8 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222855718) · 更新日期：2026-10-29
 
+> 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md)。
+
 ## 學習目標
 
 了解如何透過 SSH 讓 RP5 上的 X11 程式在電腦顯示。MobaXterm 安裝在 Windows 端；RP5 端則需要 SSH 與 X11 轉發支援。X11 轉發與遠端桌面分享整個畫面是不同功能。

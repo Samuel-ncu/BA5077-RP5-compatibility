@@ -2,6 +2,8 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222880489) · 更新日期：2026-10-29
 
+> 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md)。
+
 ## 學習目標
 
 了解如何使用 Raspberry Pi Imager，為 Raspberry Pi 5 準備 Raspberry Pi OS。這台 RP5 已有可用的 Bookworm 系統；**本次沒有重新燒錄或驗證新安裝流程**。

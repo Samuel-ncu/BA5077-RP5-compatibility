@@ -2,6 +2,8 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222901408) · 更新日期：2026-10-29
 
+> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md)
+
 ## 學習目標
 
 以 Flask 測試客戶端驗證首頁與一次相機 JPEG 推論回應。
@@ -188,10 +190,77 @@ saved: flask-yolo-stream-frame.png
 
 練習：比較單張 `/frame` 與多張 `/stream` 的內容類型；為何 HTTP 200 和四張影格可解碼仍不足以證明直播穩定？
 
+## 進一步實驗：在 RP5 瀏覽器顯示 YOLO 結果
+
+1. 依前文準備 YOLO CPU 環境、`yolov8n.pt` 和 [lesson42-input.avi](./練習素材/lesson42-input.avi)，並將[網頁程式](./範例程式/Flask-YOLO-影片網頁.py)放入相同練習目錄。
+2. 在已啟用的 YOLO 環境執行 `python Flask-YOLO-影片網頁.py`，保持終端機開啟；接著在 **RP5 本機** Chromium 開啟 `http://127.0.0.1:18766/`。影片只有四影格，傳送結束後畫面停在最後一張；重整會再跑一次。
+3. 結束測試時回到執行程式的終端機，按 `Ctrl+C` 停止。服務僅監聽 RP5 的本機位址，其他電腦不能直接用這個位址連入；這是開發伺服器，不是正式部署方式。
+
+```python
+import cv2
+from flask import Flask, Response
+from ultralytics import YOLO
+
+app = Flask(__name__)
+model = YOLO('yolov8n.pt')
+
+
+@app.get('/')
+def home():
+    return '''<!doctype html><html lang="en"><head><meta charset="utf-8">
+    <title>RP5 YOLO video demonstration</title></head><body>
+    <h1>RP5 YOLO video demonstration</h1>
+    <p>Four recorded camera frames; CPU inference. This stream ends.</p>
+    <img src="/stream" alt="YOLO annotated video frames" width="800">
+    </body></html>'''
+
+
+@app.get('/stream')
+def stream():
+    def frames():
+        video = cv2.VideoCapture('lesson42-input.avi')
+        if not video.isOpened():
+            raise RuntimeError('無法開啟 lesson42-input.avi')
+        try:
+            while True:
+                ok, frame = video.read()
+                if not ok:
+                    break
+                annotated = model.predict(frame, imgsz=320, device='cpu', verbose=False)[0].plot()
+                ok, jpeg = cv2.imencode('.jpg', annotated)
+                if not ok:
+                    raise RuntimeError('無法編碼 JPEG')
+                yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n'
+            yield b'--frame--\r\n'
+        finally:
+            video.release()
+    return Response(frames(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+if __name__ == '__main__':
+    # 只在 RP5 本機測試，不開放給區域網路。
+    app.run(host='127.0.0.1', port=18766, debug=False, threaded=False)
+```
+
+本次伺服器日誌節錄（時間會不同）：
+
+```text
+Running on http://127.0.0.1:18766
+"GET / HTTP/1.1" 200 -
+"GET /stream HTTP/1.1" 200 -
+"GET /favicon.ico HTTP/1.1" 404 -
+```
+
+![RP5 瀏覽器顯示 YOLO 四影格影片結果的實際截圖](./圖檔/flask-yolo-browser-screenshot.png)
+
+這是 RP5 上 Chromium 的操作截圖，裁切後保留瀏覽器與頁面。`/` 回傳 HTML，`/stream` 在單一回應中逐張回傳 JPEG；瀏覽器請求不存在的網站圖示得到 404，不影響本次頁面與影像顯示。畫面內容來自先前相機拍攝的 AI 生成圖片影片，**不是直接連接相機的即時直播**。本次僅驗證 RP5 本機單一瀏覽器；跨裝置、多人、長時間運作與真實物件仍需另測。
+
+練習：查看標題、影像及網址，解釋瀏覽器與 Flask 各負責什麼；如果 `/` 成功但 `/stream` 失敗，應先檢查哪個路由和哪個影片檔？
+
 ## 與原文章的差異
 
-- 原文提供即時物件偵測網頁；本版測單張回應及本機四影格影片串流，尚未驗證瀏覽器即時相機畫面。
+- 原文提供即時物件偵測網頁；本版已在 RP5 瀏覽器顯示四影格錄影的推論結果，直接相機即時串流仍未完成。
 - 真實場景的準確率、速度和操作畫面尚未完整驗證。
-- 尚未保存操作畫面截圖。
+- 已新增 RP5 瀏覽器實際顯示的操作截圖。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。

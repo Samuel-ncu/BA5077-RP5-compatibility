@@ -2,6 +2,8 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222880459) · 更新日期：2026-10-29
 
+> 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md)。
+
 ## 學習目標
 
 認識 Raspberry Pi 單板電腦和 Raspberry Pi OS，並能在自己的機器上確認型號、架構、核心數及 Python 版本。Raspberry Pi OS 是針對 Raspberry Pi 調整的 Linux 系統；本次機器使用的版本以 Debian 12 Bookworm 為基礎。

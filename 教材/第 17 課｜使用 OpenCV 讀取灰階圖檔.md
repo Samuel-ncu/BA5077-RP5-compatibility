@@ -2,6 +2,8 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886366) · 更新日期：2026-10-29
 
+> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md)
+
 ## 學習目標
 
 建立合成彩色圖像，轉成灰階並儲存，以觀察彩色與灰階陣列的差異。
@@ -94,10 +96,47 @@ saved True
 
 比較[彩色輸入](./圖檔/objects-board.png)與灰階輸出，說明哪些顏色資訊消失。將圖片檔名改成不存在的名稱，觀察程式如何提示，再改回正確名稱。
 
+## 進一步實驗：在桌面顯示合成灰階圖
+
+先用本文範例產生 `lesson17-gray.png`，把[圖形視窗程式](./範例程式/OpenCV-圖形視窗.py)放在同一練習目錄，在 RP5 桌面執行：
+
+```bash
+python3 OpenCV-圖形視窗.py lesson17-gray.png
+```
+
+```python
+import sys
+import cv2
+
+if len(sys.argv) != 2:
+    raise SystemExit('用法：python3 OpenCV-圖形視窗.py 圖片檔名')
+image = cv2.imread(sys.argv[1], cv2.IMREAD_UNCHANGED)
+if image is None:
+    raise SystemExit('無法讀取圖片，請檢查路徑')
+print('image shape:', image.shape, flush=True)
+cv2.imshow('OpenCV image - press any key', image)
+print('window opened; press any key or wait 60 seconds', flush=True)
+cv2.waitKey(60000)
+cv2.destroyAllWindows()
+print('window closed', flush=True)
+```
+
+本次使用 RP5 系統 OpenCV 實際輸出節錄：
+
+```text
+image shape: (240, 320)
+window opened; press any key or wait 60 seconds
+window closed
+```
+
+![RP5 顯示灰階圖片的視窗截圖](./圖檔/lesson17-opencv-window.png)
+
+這是遠端桌面擷取並裁切的操作截圖；圖中的灰色矩形是合成資料，滑鼠游標也出現在視窗中。顯示灰階圖需要圖形桌面與支援 GUI 的 OpenCV；本次沒有測試原文外部圖片。視窗程式在取得按鍵或等待 60 秒後結束。
+
 ## 與原文章的差異
 
 - 原文讀取外部 `demo.jpeg`；本版使用合成圖像，不依賴未提供的圖片。
 - 上述文字輸出是本次實機紀錄，其他版本或環境可能不同。
-- 尚未補拍操作畫面；圖檔（若有）是程式產生的結果，不冒充螢幕截圖。
+- 新增合成灰階圖在 OpenCV 視窗中顯示的操作截圖。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
-- 新增使用 `cv2.imread(..., cv2.IMREAD_GRAYSCALE)` 讀取 RP5 實拍後校正影像的實測；原文即時圖形視窗仍未驗證。
+- 新增使用 `cv2.imread(..., cv2.IMREAD_GRAYSCALE)` 讀取 RP5 實拍後校正影像的實測；本版另以合成圖片驗證圖形視窗；原文圖片未測。

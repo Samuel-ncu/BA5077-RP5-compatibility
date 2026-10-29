@@ -2,6 +2,8 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223033861) · 更新日期：2026-10-29
 
+> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md)
+
 ## 學習目標
 
 認識 MediaPipe 與 Solutions API，並檢查舊教材使用的介面是否能匯入。

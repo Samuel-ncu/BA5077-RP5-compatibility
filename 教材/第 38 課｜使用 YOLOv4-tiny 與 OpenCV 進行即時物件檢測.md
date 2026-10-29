@@ -2,6 +2,8 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886591) · 更新日期：2026-10-29
 
+> **Thonny 轉換待完成。** 本篇既有程式、安裝步驟與輸出仍須逐項改寫並在 Thonny 重新操作；現有終端機紀錄不代表已用 Thonny 測試。[逐篇進度](./Thonny逐篇實測狀態.md)
+
 ## 學習目標
 
 載入 YOLOv4-tiny 的設定與權重，以 OpenCV DNN 執行 CPU 前向推論。
