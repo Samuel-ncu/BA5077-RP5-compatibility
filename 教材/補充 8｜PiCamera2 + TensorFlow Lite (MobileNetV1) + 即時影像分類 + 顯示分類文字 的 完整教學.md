@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223038310) · 更新日期：2026-10-29
 
-> **部分實測**：模型和標籤已在 Thonny 下載，單張分類也已在 Thonny 重測。已測獨立單圖分類，並在新建、可讀取系統套件的環境實測 50 張相機分類；全新作業系統安裝仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
+> **部分實測**：模型和標籤已在 Thonny 下載，單張分類也已在 Thonny 重測。已測獨立單圖分類，並在新建、可讀取系統套件的環境實測相機分類、Q 鍵與兩分鐘連續預覽；全新作業系統安裝仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
 
@@ -91,7 +91,7 @@ top class: 957 custard apple 0.0625
 
 1. 請依前節下載模型和標籤，並把 [相機分類程式](./範例程式/補充8-Thonny相機TFLite.py)、`mobilenet.tflite`、`labels.txt` 放在同一個練習資料夾。
 2. 本次選擇既有 `/home/pi/myenv/bin/python3`，其中同時可匯入 Picamera2、OpenCV、NumPy 和 TFLite。前節的單圖環境不含 Picamera2；另有後續建立、讀取系統套件的新相機環境，請見下方重測。
-3. 在 Thonny 開啟程式、按綠色執行鈕，觀察預覽左上角文字與分數；程式最多處理 50 張影格，自動結束並釋放相機。程式提供預覽視窗按 `q` 提前結束的分支，但這項操作尚未單獨驗證；若需確保安全結束，先等待自動完成。
+3. 在 Thonny 開啟程式、按綠色執行鈕，觀察預覽左上角文字與分數；程式最多處理 50 張影格，自動結束並釋放相機。這個 50 影格版本的 Q 分支尚未單獨驗證；後方的兩分鐘版本已另測提前停止。
 4. Shell 出現 `camera released` 後，才啟動下一個相機程式。請勿同時開啟其他使用相機的程式。
 
 完整程式：
@@ -185,7 +185,7 @@ camera released
 
 ![新建相機環境中的 Thonny 分類實測](./圖檔/tflite-camera-env-run.png)
 
-此新環境借用現有系統 Picamera2 0.3.31 與 OpenCV 4.10.0-dev，並非全新系統驗證；系統 OpenCV 的實際版本與套件管理器登記版本不同，細節見環境安裝說明。未測 Q 提前停止；程式產生的黑白空白負例見下節。
+此新環境借用現有系統 Picamera2 0.3.31 與 OpenCV 4.10.0-dev，並非全新系統驗證；系統 OpenCV 的實際版本與套件管理器登記版本不同，細節見環境安裝說明。該次 50 影格測試未測 Q；兩分鐘版本的 Q 鍵重測及程式產生的黑白空白負例見下文。
 
 ## 負例：全黑與全白圖片仍會出現分類標籤
 
@@ -231,11 +231,137 @@ white blank: 550 envelope 0.0156
 
 兩張圖都是程式產生的空白資料，並沒有線蟲或信封；標籤只是模型在既有類別中選出最高分。分數不是物體確實存在的證明。若要設計「不確定」門檻，應蒐集不同正例與負例實測，不能根據這兩張圖隨意宣稱準確率或決定通用門檻。實際相機拍攝的空白背景仍待測。
 
+## Thonny 實測：Q 鍵與兩分鐘相機分類
+
+程式持續將相機影格送給 MobileNetV1，每 30 秒記錄當時的分類與處理張數，最多運行 120 秒。它是**整張畫面分類**，不會框出每個物件。
+
+1. 依前文下載 `mobilenet.tflite` 和 `labels.txt`，再下載[兩分鐘分類程式](./範例程式/補充8-Thonny兩分鐘分類.py)，放在同一練習資料夾。模型和標籤的來源及下載步驟見前文；程式不儲存相機影格。
+2. 選取[新建且讀取系統套件的 TFLite 相機環境](./Thonny環境與套件安裝.md)，在 Thonny 開啟程式並按綠色執行鈕。本次使用 `/home/pi/ba5077-tflite-camera-20261029/bin/python3`，含 NumPy 1.26.4 和 TFLite Runtime 2.14.0，並使用系統既有 Picamera2 和 OpenCV。
+3. 提前結束時，先用滑鼠點選 `TFLite camera - Q to stop` 預覽視窗，再按小寫 `q`；在 Thonny 編輯區按鍵不會傳給預覽視窗。等待 Shell 顯示 `camera released`，才啟動下一個使用相機的程式。
+
+完整程式：
+
+```python
+import time
+import cv2
+import numpy as np
+from picamera2 import Picamera2
+from tflite_runtime.interpreter import Interpreter
+
+with open('labels.txt', encoding='utf-8') as f:
+    labels = [line.strip() for line in f]
+interpreter = Interpreter(model_path='mobilenet.tflite')
+interpreter.allocate_tensors()
+inp = interpreter.get_input_details()[0]
+out = interpreter.get_output_details()[0]
+if tuple(inp['shape']) != (1, 224, 224, 3) or inp['dtype'] != np.uint8:
+    raise RuntimeError('需要 uint8 224x224 RGB 的 MobileNetV1 模型')
+scale, zero = out['quantization']
+if scale <= 0:
+    raise RuntimeError('模型輸出量化參數無效')
+
+camera = Picamera2()
+count = 0
+next_report = 30
+stop_reason = 'time limit'
+try:
+    camera.configure(camera.create_preview_configuration(
+        main={'size': (640, 480), 'format': 'RGB888'}))
+    camera.start()
+    time.sleep(1)
+    start = time.perf_counter()
+    while time.perf_counter() - start < 120:
+        frame = camera.capture_array()
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        rgb = cv2.resize(rgb, (224, 224))
+        interpreter.set_tensor(inp['index'], np.expand_dims(rgb, 0))
+        interpreter.invoke()
+        raw = interpreter.get_tensor(out['index'])[0]
+        scores = (raw.astype(np.float32) - zero) * scale
+        if len(labels) != len(scores):
+            raise RuntimeError('標籤數與模型輸出數不一致')
+        i = int(np.argmax(scores))
+        count += 1
+        cv2.putText(frame, f'{labels[i]} {scores[i]:.3f}', (10, 35),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        cv2.imshow('TFLite camera - Q to stop', frame)
+        elapsed = time.perf_counter() - start
+        if elapsed >= next_report:
+            print(f'after {next_report}s: frames={count}, '
+                  f'top={labels[i]}, score={scores[i]:.4f}', flush=True)
+            next_report += 30
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            stop_reason = 'q key'
+            break
+    elapsed = time.perf_counter() - start
+    print('stop reason:', stop_reason)
+    print('frames:', count)
+    print('elapsed seconds:', round(elapsed, 2))
+    print('average FPS:', round(count / elapsed, 2))
+finally:
+    camera.stop()
+    camera.close()
+    cv2.destroyAllWindows()
+    print('camera released')
+```
+
+### 提前停止及重開
+
+2026-10-29 首次執行時，在預覽視窗按 `q`，Thonny 的實際輸出為：
+
+```text
+stop reason: q key
+frames: 318
+elapsed seconds: 15.5
+average FPS: 20.51
+camera released
+```
+
+![Thonny 在 Q 鍵停止分類後顯示輸出](./圖檔/tflite-q-stop-thonny.png)
+
+隨後在 Thonny 再按執行，成功重開相機並進行下方兩分鐘測試。
+
+### 兩分鐘連續測試
+
+本輪未按 Q，讓程式在 120 秒上限自動結束。實際的程式輸出如下：
+
+```text
+after 30s: frames=605, top=desktop computer, score=0.7461
+after 60s: frames=1212, top=desktop computer, score=0.7500
+after 90s: frames=1820, top=desktop computer, score=0.7422
+after 120s: frames=2436, top=desktop computer, score=0.6758
+stop reason: time limit
+frames: 2436
+elapsed seconds: 120.02
+average FPS: 20.3
+camera released
+```
+
+![Thonny 每 30 秒輸出的分類紀錄](./圖檔/tflite-120s-top.png)
+
+![Thonny 兩分鐘測試結束後的輸出](./圖檔/tflite-120s-bottom.png)
+
+相機對準螢幕與瓶子，顯示的是整張影格的最高分標籤；上面的四個分數只代表取樣當下，並非逐張正確率。為保護周邊畫面，這裡只公開結束後的 Thonny 截圖。計時包括取像、前處理、推論及顯示，不含模型載入與相機暖機；FPS 是本次平均處理速度，不是相機固定幀率。
+
+兩分鐘結束後再次執行同一程式，確認相機可重開，再點選預覽視窗按 `q`，實際輸出：
+
+```text
+stop reason: q key
+frames: 400
+elapsed seconds: 19.34
+average FPS: 20.68
+camera released
+```
+
+![兩分鐘測試後重開並停止的 Thonny 畫面](./圖檔/tflite-120s-reopen.png)
+
+截圖中的紅色 `AT-SPI` 提示發生在本次遠端桌面；本次仍能顯示預覽、完成分類並釋放相機，不能據此推斷其他錯誤都可忽略。這是一次兩分鐘測試與重開，不代表數小時穩定性，也不是乾淨作業系統安裝或其他場景的準確率測試。
+
 ## 練習與後續應用
 
 解釋為何模型需要 224 × 224 的輸入；比較分類結果與第 40 課的物件偵測框。準備其他圖片測試前，先確認標籤順序及模型輸出是否一致，再紀錄結果與人工觀察差異。
 
 ## 與原文章的差異
 
-- 本版在 Thonny 實測模型下載、單張圖片分類，以及 50 張影格的即時相機分類和畫面顯示；模型轉換仍未重做。
-- 新增相機拍攝生成圖、模型和標籤下載方式及可核對的檔案資訊；相機範例也已在新建、讀取現有系統套件的環境短測；全新系統安裝與長時間穩定性待驗證。
+- 本版在 Thonny 實測模型下載、單張圖片分類、50 張影格及兩分鐘即時相機分類、畫面顯示和 Q 鍵；模型轉換仍未重做。
+- 新增相機拍攝生成圖、模型和標籤下載方式及可核對的檔案資訊；相機範例也已在新建、讀取現有系統套件的環境短測；全新系統安裝與數小時穩定性待驗證。
