@@ -49,14 +49,14 @@
 | [第 43 課｜使用 PyCamera2 與 YOLOv8 實現即時目標偵測（Raspberry Pi 5）](./%E7%AC%AC%2043%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20PyCamera2%20%E8%88%87%20YOLOv8%20%E5%AF%A6%E7%8F%BE%E5%8D%B3%E6%99%82%E7%9B%AE%E6%A8%99%E5%81%B5%E6%B8%AC%EF%BC%88Raspberry%20Pi%205%EF%BC%89.md) | 已撰寫；畫面待補 |
 | [第 44 課｜YOLOv8 從圖片到即時檢測的完整教學與比較](./%E7%AC%AC%2044%20%E8%AA%B2%EF%BD%9CYOLOv8%20%E5%BE%9E%E5%9C%96%E7%89%87%E5%88%B0%E5%8D%B3%E6%99%82%E6%AA%A2%E6%B8%AC%E7%9A%84%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8%E8%88%87%E6%AF%94%E8%BC%83.md) | 已撰寫；畫面待補 |
 | [使用 Flask 和 YOLO 打造即時物件偵測網頁介面](./%E4%BD%BF%E7%94%A8%20Flask%20%E5%92%8C%20YOLO%20%E6%89%93%E9%80%A0%E5%8D%B3%E6%99%82%E7%89%A9%E4%BB%B6%E5%81%B5%E6%B8%AC%E7%B6%B2%E9%A0%81%E4%BB%8B%E9%9D%A2.md) | 已撰寫；畫面待補 |
-| 補充 1｜🎯 MediaPipe 介紹：Google 開源的跨平台視覺 AI 框架 | 待重做 |
-| 補充 2｜🍓 在 Raspberry Pi 5 上用 PiCamera2 + MediaPipe 做手勢偵測 | 待重做 |
-| 補充 3｜🧠 TensorFlow Lite (TFLite) 教學入門指南 | 待重做 |
-| 補充 4｜📸 Raspberry Pi 5 + PiCamera2 + MediaPipe Face Mesh 教學（支援 468 點臉部特徵點） | 待重做 |
-| 補充 5｜✊🤚✌️ Raspberry Pi 5 + PiCamera2 + MediaPipe 手勢辨識遊戲：「剪刀、石頭、布」 | 待重做 |
-| 補充 6｜🧠 RP5 + CVZone + MediaPipe + PiCamera2 雙手偵測與距離計算教學 | 待重做 |
-| 補充 7｜🧠 Raspberry Pi 5 上安裝 Ollama 完整教學（支援 ARM64） | 待重做 |
-| 補充 8｜PiCamera2 + TensorFlow Lite (MobileNetV1) + 即時影像分類 + 顯示分類文字 的 完整教學 | 待重做 |
-| 補充 9｜EAST（Efficient and Accurate Scene Text Detector）文字偵測演算法 的 完整 Python 教學 | 待重做 |
-| 補充 10｜PiCamera2 + OpenCV + EAST 模型做即時文字偵測 | 待重做 |
-| 補充 11｜🎯 Raspberry Pi 5 上使用 EAST + Tesseract 進行即時文字辨識（含 PiCamera2 即時預覽） | 待重做 |
+| [補充 1｜🎯 MediaPipe 介紹：Google 開源的跨平台視覺 AI 框架](./%E8%A3%9C%E5%85%85%201%EF%BD%9C%F0%9F%8E%AF%20MediaPipe%20%E4%BB%8B%E7%B4%B9%EF%BC%9AGoogle%20%E9%96%8B%E6%BA%90%E7%9A%84%E8%B7%A8%E5%B9%B3%E5%8F%B0%E8%A6%96%E8%A6%BA%20AI%20%E6%A1%86%E6%9E%B6.md) | 已撰寫；畫面待補 |
+| [補充 2｜🍓 在 Raspberry Pi 5 上用 PiCamera2 + MediaPipe 做手勢偵測](./%E8%A3%9C%E5%85%85%202%EF%BD%9C%F0%9F%8D%93%20%E5%9C%A8%20Raspberry%20Pi%205%20%E4%B8%8A%E7%94%A8%20PiCamera2%20%2B%20MediaPipe%20%E5%81%9A%E6%89%8B%E5%8B%A2%E5%81%B5%E6%B8%AC.md) | 已撰寫；畫面待補 |
+| [補充 3｜🧠 TensorFlow Lite (TFLite) 教學入門指南](./%E8%A3%9C%E5%85%85%203%EF%BD%9C%F0%9F%A7%A0%20TensorFlow%20Lite%20%28TFLite%29%20%E6%95%99%E5%AD%B8%E5%85%A5%E9%96%80%E6%8C%87%E5%8D%97.md) | 已撰寫；畫面待補 |
+| [補充 4｜📸 Raspberry Pi 5 + PiCamera2 + MediaPipe Face Mesh 教學（支援 468 點臉部特徵點）](./%E8%A3%9C%E5%85%85%204%EF%BD%9C%F0%9F%93%B8%20Raspberry%20Pi%205%20%2B%20PiCamera2%20%2B%20MediaPipe%20Face%20Mesh%20%E6%95%99%E5%AD%B8%EF%BC%88%E6%94%AF%E6%8F%B4%20468%20%E9%BB%9E%E8%87%89%E9%83%A8%E7%89%B9%E5%BE%B5%E9%BB%9E%EF%BC%89.md) | 已撰寫；畫面待補 |
+| [補充 5｜✊🤚✌️ Raspberry Pi 5 + PiCamera2 + MediaPipe 手勢辨識遊戲：「剪刀、石頭、布」](./%E8%A3%9C%E5%85%85%205%EF%BD%9C%E2%9C%8A%F0%9F%A4%9A%E2%9C%8C%EF%B8%8F%20Raspberry%20Pi%205%20%2B%20PiCamera2%20%2B%20MediaPipe%20%E6%89%8B%E5%8B%A2%E8%BE%A8%E8%AD%98%E9%81%8A%E6%88%B2%EF%BC%9A%E3%80%8C%E5%89%AA%E5%88%80%E3%80%81%E7%9F%B3%E9%A0%AD%E3%80%81%E5%B8%83%E3%80%8D.md) | 已撰寫；畫面待補 |
+| [補充 6｜🧠 RP5 + CVZone + MediaPipe + PiCamera2 雙手偵測與距離計算教學](./%E8%A3%9C%E5%85%85%206%EF%BD%9C%F0%9F%A7%A0%20RP5%20%2B%20CVZone%20%2B%20MediaPipe%20%2B%20PiCamera2%20%E9%9B%99%E6%89%8B%E5%81%B5%E6%B8%AC%E8%88%87%E8%B7%9D%E9%9B%A2%E8%A8%88%E7%AE%97%E6%95%99%E5%AD%B8.md) | 已撰寫；畫面待補 |
+| [補充 7｜🧠 Raspberry Pi 5 上安裝 Ollama 完整教學（支援 ARM64）](./%E8%A3%9C%E5%85%85%207%EF%BD%9C%F0%9F%A7%A0%20Raspberry%20Pi%205%20%E4%B8%8A%E5%AE%89%E8%A3%9D%20Ollama%20%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8%EF%BC%88%E6%94%AF%E6%8F%B4%20ARM64%EF%BC%89.md) | 已撰寫；畫面待補 |
+| [補充 8｜PiCamera2 + TensorFlow Lite (MobileNetV1) + 即時影像分類 + 顯示分類文字 的 完整教學](./%E8%A3%9C%E5%85%85%208%EF%BD%9CPiCamera2%20%2B%20TensorFlow%20Lite%20%28MobileNetV1%29%20%2B%20%E5%8D%B3%E6%99%82%E5%BD%B1%E5%83%8F%E5%88%86%E9%A1%9E%20%2B%20%E9%A1%AF%E7%A4%BA%E5%88%86%E9%A1%9E%E6%96%87%E5%AD%97%20%E7%9A%84%20%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8.md) | 已撰寫；畫面待補 |
+| [補充 9｜EAST（Efficient and Accurate Scene Text Detector）文字偵測演算法 的 完整 Python 教學](./%E8%A3%9C%E5%85%85%209%EF%BD%9CEAST%EF%BC%88Efficient%20and%20Accurate%20Scene%20Text%20Detector%EF%BC%89%E6%96%87%E5%AD%97%E5%81%B5%E6%B8%AC%E6%BC%94%E7%AE%97%E6%B3%95%20%E7%9A%84%20%E5%AE%8C%E6%95%B4%20Python%20%E6%95%99%E5%AD%B8.md) | 已撰寫；畫面待補 |
+| [補充 10｜PiCamera2 + OpenCV + EAST 模型做即時文字偵測](./%E8%A3%9C%E5%85%85%2010%EF%BD%9CPiCamera2%20%2B%20OpenCV%20%2B%20EAST%20%E6%A8%A1%E5%9E%8B%E5%81%9A%E5%8D%B3%E6%99%82%E6%96%87%E5%AD%97%E5%81%B5%E6%B8%AC.md) | 已撰寫；畫面待補 |
+| [補充 11｜🎯 Raspberry Pi 5 上使用 EAST + Tesseract 進行即時文字辨識（含 PiCamera2 即時預覽）](./%E8%A3%9C%E5%85%85%2011%EF%BD%9C%F0%9F%8E%AF%20Raspberry%20Pi%205%20%E4%B8%8A%E4%BD%BF%E7%94%A8%20EAST%20%2B%20Tesseract%20%E9%80%B2%E8%A1%8C%E5%8D%B3%E6%99%82%E6%96%87%E5%AD%97%E8%BE%A8%E8%AD%98%EF%BC%88%E5%90%AB%20PiCamera2%20%E5%8D%B3%E6%99%82%E9%A0%90%E8%A6%BD%EF%BC%89.md) | 已撰寫；畫面待補 |
