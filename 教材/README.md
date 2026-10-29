@@ -39,16 +39,16 @@
 | [第 33 課｜使用 OpenCV ORB 特徵檢測與匹配](./%E7%AC%AC%2033%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20ORB%20%E7%89%B9%E5%BE%B5%E6%AA%A2%E6%B8%AC%E8%88%87%E5%8C%B9%E9%85%8D.md) | 已撰寫；畫面待補 |
 | [第 34 課｜使用 OpenCV 檢測與簡化多邊形輪廓](./%E7%AC%AC%2034%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E6%AA%A2%E6%B8%AC%E8%88%87%E7%B0%A1%E5%8C%96%E5%A4%9A%E9%82%8A%E5%BD%A2%E8%BC%AA%E5%BB%93.md) | 已撰寫；畫面待補 |
 | [第 35 課｜使用 OpenCV 檢測凸包與凹缺點](./%E7%AC%AC%2035%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E6%AA%A2%E6%B8%AC%E5%87%B8%E5%8C%85%E8%88%87%E5%87%B9%E7%BC%BA%E9%BB%9E.md) | 已撰寫；畫面待補 |
-| 第 36 課｜使用 OpenCV 進行全景拼接 | 待重做 |
-| 第 37 課｜使用 OpenCV DNN 模型進行人臉檢測 | 待重做 |
-| 第 38 課｜使用 YOLOv4-tiny 與 OpenCV 進行即時物件檢測 | 待重做 |
-| 第 39 課｜YOLOv8 與 COCO 資料集完整教學 | 待重做 |
-| 第 40 課｜YOLOv8 圖像目標檢測教學（使用 COCO 資料集） | 待重做 |
-| 第 41 課｜YOLOv8 影片目標檢測完整教學 | 待重做 |
-| 第 42 課｜YOLOv8 即時攝影機目標偵測教學 | 待重做 |
-| 第 43 課｜使用 PyCamera2 與 YOLOv8 實現即時目標偵測（Raspberry Pi 5） | 待重做 |
-| 第 44 課｜YOLOv8 從圖片到即時檢測的完整教學與比較 | 待重做 |
-| 使用 Flask 和 YOLO 打造即時物件偵測網頁介面 | 待重做 |
+| [第 36 課｜使用 OpenCV 進行全景拼接](./%E7%AC%AC%2036%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E9%80%B2%E8%A1%8C%E5%85%A8%E6%99%AF%E6%8B%BC%E6%8E%A5.md) | 已撰寫；畫面待補 |
+| [第 37 課｜使用 OpenCV DNN 模型進行人臉檢測](./%E7%AC%AC%2037%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20DNN%20%E6%A8%A1%E5%9E%8B%E9%80%B2%E8%A1%8C%E4%BA%BA%E8%87%89%E6%AA%A2%E6%B8%AC.md) | 已撰寫；畫面待補 |
+| [第 38 課｜使用 YOLOv4-tiny 與 OpenCV 進行即時物件檢測](./%E7%AC%AC%2038%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20YOLOv4-tiny%20%E8%88%87%20OpenCV%20%E9%80%B2%E8%A1%8C%E5%8D%B3%E6%99%82%E7%89%A9%E4%BB%B6%E6%AA%A2%E6%B8%AC.md) | 已撰寫；畫面待補 |
+| [第 39 課｜YOLOv8 與 COCO 資料集完整教學](./%E7%AC%AC%2039%20%E8%AA%B2%EF%BD%9CYOLOv8%20%E8%88%87%20COCO%20%E8%B3%87%E6%96%99%E9%9B%86%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8.md) | 已撰寫；畫面待補 |
+| [第 40 課｜YOLOv8 圖像目標檢測教學（使用 COCO 資料集）](./%E7%AC%AC%2040%20%E8%AA%B2%EF%BD%9CYOLOv8%20%E5%9C%96%E5%83%8F%E7%9B%AE%E6%A8%99%E6%AA%A2%E6%B8%AC%E6%95%99%E5%AD%B8%EF%BC%88%E4%BD%BF%E7%94%A8%20COCO%20%E8%B3%87%E6%96%99%E9%9B%86%EF%BC%89.md) | 已撰寫；畫面待補 |
+| [第 41 課｜YOLOv8 影片目標檢測完整教學](./%E7%AC%AC%2041%20%E8%AA%B2%EF%BD%9CYOLOv8%20%E5%BD%B1%E7%89%87%E7%9B%AE%E6%A8%99%E6%AA%A2%E6%B8%AC%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8.md) | 已撰寫；畫面待補 |
+| [第 42 課｜YOLOv8 即時攝影機目標偵測教學](./%E7%AC%AC%2042%20%E8%AA%B2%EF%BD%9CYOLOv8%20%E5%8D%B3%E6%99%82%E6%94%9D%E5%BD%B1%E6%A9%9F%E7%9B%AE%E6%A8%99%E5%81%B5%E6%B8%AC%E6%95%99%E5%AD%B8.md) | 已撰寫；畫面待補 |
+| [第 43 課｜使用 PyCamera2 與 YOLOv8 實現即時目標偵測（Raspberry Pi 5）](./%E7%AC%AC%2043%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20PyCamera2%20%E8%88%87%20YOLOv8%20%E5%AF%A6%E7%8F%BE%E5%8D%B3%E6%99%82%E7%9B%AE%E6%A8%99%E5%81%B5%E6%B8%AC%EF%BC%88Raspberry%20Pi%205%EF%BC%89.md) | 已撰寫；畫面待補 |
+| [第 44 課｜YOLOv8 從圖片到即時檢測的完整教學與比較](./%E7%AC%AC%2044%20%E8%AA%B2%EF%BD%9CYOLOv8%20%E5%BE%9E%E5%9C%96%E7%89%87%E5%88%B0%E5%8D%B3%E6%99%82%E6%AA%A2%E6%B8%AC%E7%9A%84%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8%E8%88%87%E6%AF%94%E8%BC%83.md) | 已撰寫；畫面待補 |
+| [使用 Flask 和 YOLO 打造即時物件偵測網頁介面](./%E4%BD%BF%E7%94%A8%20Flask%20%E5%92%8C%20YOLO%20%E6%89%93%E9%80%A0%E5%8D%B3%E6%99%82%E7%89%A9%E4%BB%B6%E5%81%B5%E6%B8%AC%E7%B6%B2%E9%A0%81%E4%BB%8B%E9%9D%A2.md) | 已撰寫；畫面待補 |
 | 補充 1｜🎯 MediaPipe 介紹：Google 開源的跨平台視覺 AI 框架 | 待重做 |
 | 補充 2｜🍓 在 Raspberry Pi 5 上用 PiCamera2 + MediaPipe 做手勢偵測 | 待重做 |
 | 補充 3｜🧠 TensorFlow Lite (TFLite) 教學入門指南 | 待重做 |
