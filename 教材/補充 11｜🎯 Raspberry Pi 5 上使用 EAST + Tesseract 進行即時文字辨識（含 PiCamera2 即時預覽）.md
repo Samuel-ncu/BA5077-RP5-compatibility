@@ -38,7 +38,18 @@ EAST boxes: 10
 
 ![RP5 Thonny 驗證下載模型的實際畫面](./圖檔/east-verify-thonny.png)
 
-4. 後續原有範例使用 `frozen_east_text_detection.pb` 這個檔名。確認下載完成後，可在檔案管理員將 `east-download-check.pb` 改名為 `frozen_east_text_detection.pb`，與範例及素材放在同一練習資料夾；若已有同名檔案，請勿覆寫，改用另一個新資料夾。
+4. 改名之前，下載[空白圖負例程式](./範例程式/補充9-Thonny文字偵測負例.py)到同一資料夾並在 Thonny 執行。本次用 NumPy 製作 320 × 320 的全黑與全白影像，並使用同一模型與文字框處理程式；RP5 的實際輸出為：
+
+```text
+black blank: 0 boxes
+white blank: 0 boxes
+```
+
+![RP5 Thonny 文字偵測空白圖負例](./圖檔/east-negative-thonny.png)
+
+這兩個合成負例均未找到文字框；這不保證真實背景不會誤報，也不表示 OCR 已正確讀出文字。
+
+5. 後續原有範例使用 `frozen_east_text_detection.pb` 這個檔名。確認下載完成後，可在檔案管理員將 `east-download-check.pb` 改名為 `frozen_east_text_detection.pb`，與範例及素材放在同一練習資料夾；若已有同名檔案，請勿覆寫，改用另一個新資料夾。
 
 依[安裝操作與實測紀錄](../安裝操作與實測紀錄.md#6-tesseract-ocr)建立 OCR 環境；本機的 Tesseract 已安裝。
 
