@@ -6,17 +6,17 @@
 
 | 原文章標題 | Thonny 轉換狀態 |
 | --- | --- |
-| [第 1 課｜BA5077 AIoT 產品發展實作課程介紹](./%E7%AC%AC%201%20%E8%AA%B2%EF%BD%9CBA5077%20AIoT%20%E7%94%A2%E5%93%81%E7%99%BC%E5%B1%95%E5%AF%A6%E4%BD%9C%E8%AA%B2%E7%A8%8B%E4%BB%8B%E7%B4%B9.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 2 課｜認識 Raspberry Pi 與 Raspberry Pi OS](./%E7%AC%AC%202%20%E8%AA%B2%EF%BD%9C%E8%AA%8D%E8%AD%98%20Raspberry%20Pi%20%E8%88%87%20Raspberry%20Pi%20OS.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 3 課｜網路基礎與作業系統：應用於 Raspberry Pi（上）](./%E7%AC%AC%203%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8A%EF%BC%89.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 4 課｜網路基礎與作業系統：應用於 Raspberry Pi（下）](./%E7%AC%AC%204%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8B%EF%BC%89.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 5 課｜Raspberry Pi OS 安裝完整教學](./%E7%AC%AC%205%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20OS%20%E5%AE%89%E8%A3%9D%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8.md) | 系統基礎或獨立工具；依文章核對操作與截圖；備用 microSD 待備齊 |
-| [第 6 課｜使用 MobaXterm 對 Raspberry Pi 啟用 X11 轉發](./%E7%AC%AC%206%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20MobaXterm%20%E5%B0%8D%20Raspberry%20Pi%20%E5%95%9F%E7%94%A8%20X11%20%E8%BD%89%E7%99%BC.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 7 課｜連接 Raspberry Pi 5 相機模組](./%E7%AC%AC%207%20%E8%AA%B2%EF%BD%9C%E9%80%A3%E6%8E%A5%20Raspberry%20Pi%205%20%E7%9B%B8%E6%A9%9F%E6%A8%A1%E7%B5%84.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 8 課｜Raspberry Pi 5 安裝與使用 qiv 圖片檢視器](./%E7%AC%AC%208%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20qiv%20%E5%9C%96%E7%89%87%E6%AA%A2%E8%A6%96%E5%99%A8.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 9 課｜Raspberry Pi 的 UNIX 指令教學](./%E7%AC%AC%209%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20UNIX%20%E6%8C%87%E4%BB%A4%E6%95%99%E5%AD%B8.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 10 課｜Raspberry Pi 5 安裝與設定 VNC Viewer](./%E7%AC%AC%2010%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E8%A8%AD%E5%AE%9A%20VNC%20Viewer.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
-| [第 11 課｜Raspberry Pi 的 vi 與 nano 編輯器教學與比較](./%E7%AC%AC%2011%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20vi%20%E8%88%87%20nano%20%E7%B7%A8%E8%BC%AF%E5%99%A8%E6%95%99%E5%AD%B8%E8%88%87%E6%AF%94%E8%BC%83.md) | 系統基礎或獨立工具；依文章核對操作與截圖 |
+| [第 1 課｜BA5077 AIoT 產品發展實作課程介紹](./%E7%AC%AC%201%20%E8%AA%B2%EF%BD%9CBA5077%20AIoT%20%E7%94%A2%E5%93%81%E7%99%BC%E5%B1%95%E5%AF%A6%E4%BD%9C%E8%AA%B2%E7%A8%8B%E4%BB%8B%E7%B4%B9.md) | 課程介紹與產品構想；沒有可替代學習活動的安裝實測 |
+| [第 2 課｜認識 Raspberry Pi 與 Raspberry Pi OS](./%E7%AC%AC%202%20%E8%AA%B2%EF%BD%9C%E8%AA%8D%E8%AD%98%20Raspberry%20Pi%20%E8%88%87%20Raspberry%20Pi%20OS.md) | 已查詢 RP5 型號、RAM、CPU、系統與儲存；各硬體情境未逐項實測 |
+| [第 3 課｜網路基礎與作業系統：應用於 Raspberry Pi（上）](./%E7%AC%AC%203%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8A%EF%BC%89.md) | 已測網路介面狀態與 localhost 名稱解析；其他網路情境與操作截圖待測 |
+| [第 4 課｜網路基礎與作業系統：應用於 Raspberry Pi（下）](./%E7%AC%AC%204%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8B%EF%BC%89.md) | 已測 SSH、系統工具與本機 HTTP；Apache、外部連線及操作截圖待測 |
+| [第 5 課｜Raspberry Pi OS 安裝完整教學](./%E7%AC%AC%205%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20OS%20%E5%AE%89%E8%A3%9D%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8.md) | 安裝流程與設備已有說明；備用 microSD 重灌及初次啟動待測 |
+| [第 6 課｜使用 MobaXterm 對 Raspberry Pi 啟用 X11 轉發](./%E7%AC%AC%206%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20MobaXterm%20%E5%B0%8D%20Raspberry%20Pi%20%E5%95%9F%E7%94%A8%20X11%20%E8%BD%89%E7%99%BC.md) | 已檢查 SSH 與 xauth；MobaXterm 的 X11 端到端轉發及截圖待測 |
+| [第 7 課｜連接 Raspberry Pi 5 相機模組](./%E7%AC%AC%207%20%E8%AA%B2%EF%BD%9C%E9%80%A3%E6%8E%A5%20Raspberry%20Pi%205%20%E7%9B%B8%E6%A9%9F%E6%A8%A1%E7%B5%84.md) | 已列出相機並透過 Picamera2 擷取影格；本次未拆接排線或拍攝接線過程 |
+| [第 8 課｜Raspberry Pi 5 安裝與使用 qiv 圖片檢視器](./%E7%AC%AC%208%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20qiv%20%E5%9C%96%E7%89%87%E6%AA%A2%E8%A6%96%E5%99%A8.md) | 已用既有 qiv 開啟圖片並截圖；安裝過程及其他格式待測 |
+| [第 9 課｜Raspberry Pi 的 UNIX 指令教學](./%E7%AC%AC%209%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20UNIX%20%E6%8C%87%E4%BB%A4%E6%95%99%E5%AD%B8.md) | 已測系統查詢、建立及複製文字檔；其他原文系統管理命令與截圖待測 |
+| [第 10 課｜Raspberry Pi 5 安裝與設定 VNC Viewer](./%E7%AC%AC%2010%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E8%A8%AD%E5%AE%9A%20VNC%20Viewer.md) | 已實際連接 RP5 的 X11 遠端桌面；安裝與設定步驟的操作截圖待補 |
+| [第 11 課｜Raspberry Pi 的 vi 與 nano 編輯器教學與比較](./%E7%AC%AC%2011%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20vi%20%E8%88%87%20nano%20%E7%B7%A8%E8%BC%AF%E5%99%A8%E6%95%99%E5%AD%B8%E8%88%87%E6%AF%94%E8%BC%83.md) | 已在 RP5 終端機實測 nano 與 vi 的一行編輯、儲存、離開及讀回；其他原文命令待測 |
 | [第 12 課｜使用 Thonny IDE 與 OpenCV 進行 Python 開發](./%E7%AC%AC%2012%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20Thonny%20IDE%20%E8%88%87%20OpenCV%20%E9%80%B2%E8%A1%8C%20Python%20%E9%96%8B%E7%99%BC.md) | 已實測 Thonny 基本 OpenCV 程式；完整課程情境待重測 |
 | [第 13 課｜Raspberry Pi 使用攝影機完整指南](./%E7%AC%AC%2013%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E4%BD%BF%E7%94%A8%E6%94%9D%E5%BD%B1%E6%A9%9F%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97.md) | 已在 Thonny 實測：Picamera2 單張影格擷取；不含預覽或 USB 相機；其他情境見文章 |
 | [第 14 課｜在 Raspberry Pi 5 安裝 OpenCV](./%E7%AC%AC%2014%20%E8%AA%B2%EF%BD%9C%E5%9C%A8%20Raspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%20OpenCV.md) | 已實測 Thonny 建立環境、安裝、基本影像視窗；相機與擴充模組待測 |
