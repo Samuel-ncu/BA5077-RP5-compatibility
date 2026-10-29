@@ -1,6 +1,6 @@
 # BA5077 重製教材目錄
 
-依 2026-10-29 課程網站顯示標題命名。每篇包含實際測試狀態與原文差異；尚未完成的文章不提供假連結。
+依 2026-10-29 課程網站顯示標題命名。每篇記錄實際測試範圍與原文差異；尚未完成的文章不提供假連結。
 
 | 文章 | 狀態 |
 | --- | --- |
@@ -9,36 +9,36 @@
 | [第 3 課｜網路基礎與作業系統：應用於 Raspberry Pi（上）](./%E7%AC%AC%203%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8A%EF%BC%89.md) | 已撰寫；畫面待補 |
 | [第 4 課｜網路基礎與作業系統：應用於 Raspberry Pi（下）](./%E7%AC%AC%204%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8B%EF%BC%89.md) | 已撰寫；畫面待補 |
 | [第 5 課｜Raspberry Pi OS 安裝完整教學](./%E7%AC%AC%205%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20OS%20%E5%AE%89%E8%A3%9D%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8.md) | 已撰寫；畫面待補 |
-| 第 6 課｜使用 MobaXterm 對 Raspberry Pi 啟用 X11 轉發 | 待重做 |
-| 第 7 課｜連接 Raspberry Pi 5 相機模組 | 待重做 |
-| 第 8 課｜Raspberry Pi 5 安裝與使用 qiv 圖片檢視器 | 待重做 |
-| 第 9 課｜Raspberry Pi 的 UNIX 指令教學 | 待重做 |
-| 第 10 課｜Raspberry Pi 5 安裝與設定 VNC Viewer | 待重做 |
-| 第 11 課｜Raspberry Pi 的 vi 與 nano 編輯器教學與比較 | 待重做 |
-| 第 12 課｜使用 Thonny IDE 與 OpenCV 進行 Python 開發 | 待重做 |
-| 第 13 課｜Raspberry Pi 使用攝影機完整指南 | 待重做 |
-| 第 14 課｜在 Raspberry Pi 5 安裝 OpenCV | 待重做 |
-| 第 15 課｜在 Raspberry Pi 5 使用 Libcamera、Picamera2 與 OpenCV | 待重做 |
-| 第 16 課｜Python 結合 OpenCV 與 Picamera2：影片錄製與即時影像處理 | 待重做 |
-| 第 17 課｜使用 OpenCV 讀取灰階圖檔 | 待重做 |
-| 第 18 課｜使用 Picamera2 拍攝照片並保存至本地 | 待重做 |
-| 第 19 課｜使用 OpenCV 繪製直線、圓形、橢圓與多邊形 | 待重做 |
-| 第 20 課｜使用 OpenCV 測試不同字體樣式 | 待重做 |
-| 第 21 課｜使用 OpenCV 繪製基本圖形與文字 | 待重做 |
-| 第 22 課｜使用 OpenCV 進行臉部檢測 | 待重做 |
-| 第 23 課｜使用 Picamera2 和 OpenCV 進行臉部識別 | 待重做 |
-| 第 24 課｜OpenCV 即時影像處理與特定區域（ROI）處理 | 待重做 |
-| 第 25 課｜使用 OpenCV 進行目標追蹤 | 待重做 |
-| 第 26 課｜使用 OpenCV 進行背景差分與運動物體檢測 | 待重做 |
-| 第 27 課｜使用背景減法與 MOG 進行運動物體檢測 | 待重做 |
-| 第 28 課｜使用 Picamera2 和 OpenCV 實現顏色檢測與物體追蹤 | 待重做 |
-| 第 29 課｜使用 OpenCV 進行輪廓檢測與繪製 | 待重做 |
-| 第 30 課｜使用 OpenCV 進行圓形檢測與繪製 | 待重做 |
-| 第 31 課｜使用 OpenCV 比較 SIFT、SURF 與 ORB 特徵檢測 | 待重做 |
-| 第 32 課｜使用 OpenCV 比較兩張圖片的特徵匹配（SURF 與 SIFT） | 待重做 |
-| 第 33 課｜使用 OpenCV ORB 特徵檢測與匹配 | 待重做 |
-| 第 34 課｜使用 OpenCV 檢測與簡化多邊形輪廓 | 待重做 |
-| 第 35 課｜使用 OpenCV 檢測凸包與凹缺點 | 待重做 |
+| [第 6 課｜使用 MobaXterm 對 Raspberry Pi 啟用 X11 轉發](./%E7%AC%AC%206%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20MobaXterm%20%E5%B0%8D%20Raspberry%20Pi%20%E5%95%9F%E7%94%A8%20X11%20%E8%BD%89%E7%99%BC.md) | 已撰寫；畫面待補 |
+| [第 7 課｜連接 Raspberry Pi 5 相機模組](./%E7%AC%AC%207%20%E8%AA%B2%EF%BD%9C%E9%80%A3%E6%8E%A5%20Raspberry%20Pi%205%20%E7%9B%B8%E6%A9%9F%E6%A8%A1%E7%B5%84.md) | 已撰寫；畫面待補 |
+| [第 8 課｜Raspberry Pi 5 安裝與使用 qiv 圖片檢視器](./%E7%AC%AC%208%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20qiv%20%E5%9C%96%E7%89%87%E6%AA%A2%E8%A6%96%E5%99%A8.md) | 已撰寫；畫面待補 |
+| [第 9 課｜Raspberry Pi 的 UNIX 指令教學](./%E7%AC%AC%209%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20UNIX%20%E6%8C%87%E4%BB%A4%E6%95%99%E5%AD%B8.md) | 已撰寫；畫面待補 |
+| [第 10 課｜Raspberry Pi 5 安裝與設定 VNC Viewer](./%E7%AC%AC%2010%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E8%A8%AD%E5%AE%9A%20VNC%20Viewer.md) | 已撰寫；畫面待補 |
+| [第 11 課｜Raspberry Pi 的 vi 與 nano 編輯器教學與比較](./%E7%AC%AC%2011%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20vi%20%E8%88%87%20nano%20%E7%B7%A8%E8%BC%AF%E5%99%A8%E6%95%99%E5%AD%B8%E8%88%87%E6%AF%94%E8%BC%83.md) | 已撰寫；畫面待補 |
+| [第 12 課｜使用 Thonny IDE 與 OpenCV 進行 Python 開發](./%E7%AC%AC%2012%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20Thonny%20IDE%20%E8%88%87%20OpenCV%20%E9%80%B2%E8%A1%8C%20Python%20%E9%96%8B%E7%99%BC.md) | 已撰寫；畫面待補 |
+| [第 13 課｜Raspberry Pi 使用攝影機完整指南](./%E7%AC%AC%2013%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E4%BD%BF%E7%94%A8%E6%94%9D%E5%BD%B1%E6%A9%9F%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97.md) | 已撰寫；畫面待補 |
+| [第 14 課｜在 Raspberry Pi 5 安裝 OpenCV](./%E7%AC%AC%2014%20%E8%AA%B2%EF%BD%9C%E5%9C%A8%20Raspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%20OpenCV.md) | 已撰寫；畫面待補 |
+| [第 15 課｜在 Raspberry Pi 5 使用 Libcamera、Picamera2 與 OpenCV](./%E7%AC%AC%2015%20%E8%AA%B2%EF%BD%9C%E5%9C%A8%20Raspberry%20Pi%205%20%E4%BD%BF%E7%94%A8%20Libcamera%E3%80%81Picamera2%20%E8%88%87%20OpenCV.md) | 已撰寫；畫面待補 |
+| [第 16 課｜Python 結合 OpenCV 與 Picamera2：影片錄製與即時影像處理](./%E7%AC%AC%2016%20%E8%AA%B2%EF%BD%9CPython%20%E7%B5%90%E5%90%88%20OpenCV%20%E8%88%87%20Picamera2%EF%BC%9A%E5%BD%B1%E7%89%87%E9%8C%84%E8%A3%BD%E8%88%87%E5%8D%B3%E6%99%82%E5%BD%B1%E5%83%8F%E8%99%95%E7%90%86.md) | 已撰寫；畫面待補 |
+| [第 17 課｜使用 OpenCV 讀取灰階圖檔](./%E7%AC%AC%2017%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E8%AE%80%E5%8F%96%E7%81%B0%E9%9A%8E%E5%9C%96%E6%AA%94.md) | 已撰寫；畫面待補 |
+| [第 18 課｜使用 Picamera2 拍攝照片並保存至本地](./%E7%AC%AC%2018%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20Picamera2%20%E6%8B%8D%E6%94%9D%E7%85%A7%E7%89%87%E4%B8%A6%E4%BF%9D%E5%AD%98%E8%87%B3%E6%9C%AC%E5%9C%B0.md) | 已撰寫；畫面待補 |
+| [第 19 課｜使用 OpenCV 繪製直線、圓形、橢圓與多邊形](./%E7%AC%AC%2019%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E7%B9%AA%E8%A3%BD%E7%9B%B4%E7%B7%9A%E3%80%81%E5%9C%93%E5%BD%A2%E3%80%81%E6%A9%A2%E5%9C%93%E8%88%87%E5%A4%9A%E9%82%8A%E5%BD%A2.md) | 已撰寫；畫面待補 |
+| [第 20 課｜使用 OpenCV 測試不同字體樣式](./%E7%AC%AC%2020%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E6%B8%AC%E8%A9%A6%E4%B8%8D%E5%90%8C%E5%AD%97%E9%AB%94%E6%A8%A3%E5%BC%8F.md) | 已撰寫；畫面待補 |
+| [第 21 課｜使用 OpenCV 繪製基本圖形與文字](./%E7%AC%AC%2021%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E7%B9%AA%E8%A3%BD%E5%9F%BA%E6%9C%AC%E5%9C%96%E5%BD%A2%E8%88%87%E6%96%87%E5%AD%97.md) | 已撰寫；畫面待補 |
+| [第 22 課｜使用 OpenCV 進行臉部檢測](./%E7%AC%AC%2022%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E9%80%B2%E8%A1%8C%E8%87%89%E9%83%A8%E6%AA%A2%E6%B8%AC.md) | 已撰寫；畫面待補 |
+| [第 23 課｜使用 Picamera2 和 OpenCV 進行臉部識別](./%E7%AC%AC%2023%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20Picamera2%20%E5%92%8C%20OpenCV%20%E9%80%B2%E8%A1%8C%E8%87%89%E9%83%A8%E8%AD%98%E5%88%A5.md) | 已撰寫；畫面待補 |
+| [第 24 課｜OpenCV 即時影像處理與特定區域（ROI）處理](./%E7%AC%AC%2024%20%E8%AA%B2%EF%BD%9COpenCV%20%E5%8D%B3%E6%99%82%E5%BD%B1%E5%83%8F%E8%99%95%E7%90%86%E8%88%87%E7%89%B9%E5%AE%9A%E5%8D%80%E5%9F%9F%EF%BC%88ROI%EF%BC%89%E8%99%95%E7%90%86.md) | 已撰寫；畫面待補 |
+| [第 25 課｜使用 OpenCV 進行目標追蹤](./%E7%AC%AC%2025%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E9%80%B2%E8%A1%8C%E7%9B%AE%E6%A8%99%E8%BF%BD%E8%B9%A4.md) | 已撰寫；畫面待補 |
+| [第 26 課｜使用 OpenCV 進行背景差分與運動物體檢測](./%E7%AC%AC%2026%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E9%80%B2%E8%A1%8C%E8%83%8C%E6%99%AF%E5%B7%AE%E5%88%86%E8%88%87%E9%81%8B%E5%8B%95%E7%89%A9%E9%AB%94%E6%AA%A2%E6%B8%AC.md) | 已撰寫；畫面待補 |
+| [第 27 課｜使用背景減法與 MOG 進行運動物體檢測](./%E7%AC%AC%2027%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%E8%83%8C%E6%99%AF%E6%B8%9B%E6%B3%95%E8%88%87%20MOG%20%E9%80%B2%E8%A1%8C%E9%81%8B%E5%8B%95%E7%89%A9%E9%AB%94%E6%AA%A2%E6%B8%AC.md) | 已撰寫；畫面待補 |
+| [第 28 課｜使用 Picamera2 和 OpenCV 實現顏色檢測與物體追蹤](./%E7%AC%AC%2028%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20Picamera2%20%E5%92%8C%20OpenCV%20%E5%AF%A6%E7%8F%BE%E9%A1%8F%E8%89%B2%E6%AA%A2%E6%B8%AC%E8%88%87%E7%89%A9%E9%AB%94%E8%BF%BD%E8%B9%A4.md) | 已撰寫；畫面待補 |
+| [第 29 課｜使用 OpenCV 進行輪廓檢測與繪製](./%E7%AC%AC%2029%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E9%80%B2%E8%A1%8C%E8%BC%AA%E5%BB%93%E6%AA%A2%E6%B8%AC%E8%88%87%E7%B9%AA%E8%A3%BD.md) | 已撰寫；畫面待補 |
+| [第 30 課｜使用 OpenCV 進行圓形檢測與繪製](./%E7%AC%AC%2030%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E9%80%B2%E8%A1%8C%E5%9C%93%E5%BD%A2%E6%AA%A2%E6%B8%AC%E8%88%87%E7%B9%AA%E8%A3%BD.md) | 已撰寫；畫面待補 |
+| [第 31 課｜使用 OpenCV 比較 SIFT、SURF 與 ORB 特徵檢測](./%E7%AC%AC%2031%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E6%AF%94%E8%BC%83%20SIFT%E3%80%81SURF%20%E8%88%87%20ORB%20%E7%89%B9%E5%BE%B5%E6%AA%A2%E6%B8%AC.md) | 已撰寫；畫面待補 |
+| [第 32 課｜使用 OpenCV 比較兩張圖片的特徵匹配（SURF 與 SIFT）](./%E7%AC%AC%2032%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E6%AF%94%E8%BC%83%E5%85%A9%E5%BC%B5%E5%9C%96%E7%89%87%E7%9A%84%E7%89%B9%E5%BE%B5%E5%8C%B9%E9%85%8D%EF%BC%88SURF%20%E8%88%87%20SIFT%EF%BC%89.md) | 已撰寫；畫面待補 |
+| [第 33 課｜使用 OpenCV ORB 特徵檢測與匹配](./%E7%AC%AC%2033%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20ORB%20%E7%89%B9%E5%BE%B5%E6%AA%A2%E6%B8%AC%E8%88%87%E5%8C%B9%E9%85%8D.md) | 已撰寫；畫面待補 |
+| [第 34 課｜使用 OpenCV 檢測與簡化多邊形輪廓](./%E7%AC%AC%2034%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E6%AA%A2%E6%B8%AC%E8%88%87%E7%B0%A1%E5%8C%96%E5%A4%9A%E9%82%8A%E5%BD%A2%E8%BC%AA%E5%BB%93.md) | 已撰寫；畫面待補 |
+| [第 35 課｜使用 OpenCV 檢測凸包與凹缺點](./%E7%AC%AC%2035%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E6%AA%A2%E6%B8%AC%E5%87%B8%E5%8C%85%E8%88%87%E5%87%B9%E7%BC%BA%E9%BB%9E.md) | 已撰寫；畫面待補 |
 | 第 36 課｜使用 OpenCV 進行全景拼接 | 待重做 |
 | 第 37 課｜使用 OpenCV DNN 模型進行人臉檢測 | 待重做 |
 | 第 38 課｜使用 YOLOv4-tiny 與 OpenCV 進行即時物件檢測 | 待重做 |
