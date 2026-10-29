@@ -5,9 +5,10 @@
 ## 測試基準
 
 - Raspberry Pi 5 Model B Rev 1.0，8 GB RAM，64 位元 ARM。
-- 裝置回報 Debian GNU/Linux 12（Bookworm）；尚未確認是否為 Raspberry Pi OS 映像，或其軟體來源。
-- microSD 約 32 GB；實際剩餘空間、相機和 AI HAT 是否安裝均未確認。
-- 網路線與 SSH 連線曾成功；以下安裝與範例尚未在這台機器實際執行。
+- Raspberry Pi OS Bookworm（Debian 12；pi-gen 2024-11-19 映像標記），Python 3.11.2。
+- microSD 約 32 GB，根目錄可用約 7.1 GiB（查核時）；已偵測到 IMX708 廣角相機，AI HAT 是否安裝未確認。
+- 網路線與 SSH 已連線。已確認可匯入 OpenCV 4.10.0-dev、Picamera2 與 NumPy，SIFT 與 ORB 可建立；尚未逐篇測試安裝與範例。系統套件紀錄顯示 OpenCV 4.6.0，與 Python 實際匯入版本不同，需進一步確認來源。
+- 目前 Python 找不到 tflite_runtime 與 ultralytics；套件未匯入不等於確認完全未安裝。
 
 ## 補充 8｜PiCamera2 + TensorFlow Lite (MobileNetV1) + 即時影像分類 + 顯示分類文字 的 完整教學
 
