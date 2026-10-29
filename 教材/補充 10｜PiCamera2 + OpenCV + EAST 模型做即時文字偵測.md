@@ -53,7 +53,7 @@ white blank: 0 boxes
 
 ## 程式與執行
 
-將以下程式存為 `補充10.py`，或使用[已測試的範例程式](./範例程式/補充10.py)。在檔案所在目錄執行 `python3 補充10.py`。
+將以下程式存為 `補充10.py`，或使用[已測試的範例程式](./範例程式/補充10.py)。在 Thonny 開啟 `補充10.py`，按綠色執行鈕。
 
 ```python
 import cv2
@@ -116,7 +116,7 @@ flowchart LR
 
 1. 在螢幕顯示[相機測試畫面](./練習素材/RP5相機測試.html)的「文字偵測」，由 RP5 相機拍攝，再依[實拍與校正流程](./練習素材/相機實拍與校正流程.md)裁切校正。這次得到的[實拍輸入圖 text-board.png](./圖檔/text-board.png)可供重現。
 2. 將該圖片、[east_helpers.py](./範例程式/east_helpers.py) 和[本範例程式](./範例程式/補充9至11-相機文字.py)放入同一個練習目錄，依本文事前準備放入 EAST 模型，並依[安裝紀錄](../安裝操作與實測紀錄.md#6-tesseract-ocr)準備 OpenCV、NumPy、Tesseract 及英文語言資料。
-3. 在該目錄執行 `python3 補充9至11-相機文字.py`。模型和語言資料缺失時先依安裝紀錄處理，不要以其他模型的結果替代。
+3. 在 Thonny 開啟該目錄中的 `補充9至11-相機文字.py`，按綠色執行鈕。模型和語言資料缺失時先依安裝紀錄處理，不要以其他模型的結果替代。
 
 ```python
 import cv2
@@ -178,15 +178,93 @@ OPEN CV 12345
 
 ![Thonny 執行相機文字照片的 EAST 和 OCR](./圖檔/supp-east-ocr-thonny.png)
 
-此圖為先前由 RP5 拍攝文字測試畫面並校正的照片；EAST 偵測文字框，Tesseract 本次對**整張圖片**辨識，沒有逐框送入 OCR。該結果不代表相機持續預覽、逐框辨識或不同場景均已驗證；上述文字為本次觀察的完整輸出，截圖因視窗高度只顯示其中一部分。
+此圖為先前由 RP5 拍攝文字測試畫面並校正的照片；EAST 偵測文字框，Tesseract 本次對**整張圖片**辨識，沒有逐框送入 OCR。該次結果不代表相機持續預覽或不同場景均已驗證；逐框辨識的另一次實測見下節。上述文字為本次觀察的完整輸出，截圖因視窗高度只顯示其中一部分。
+
+## Thonny 實測：逐框英文辨識
+
+**目標**：先由 EAST 找到可能的文字範圍，再把每個區域裁下來交給 Tesseract。這與前面直接辨識整張照片不同；框是否完整，會影響後續 OCR 的結果。
+
+1. 使用前述步驟取得 `frozen_east_text_detection.pb`；另下載[練習照片](./圖檔/text-board.png)、[east_helpers.py](./範例程式/east_helpers.py)和[逐框辨識程式](./範例程式/補充9至11-Thonny逐框文字辨識.py)，放進同一個新的練習資料夾。照片是 RP5 拍攝測試畫面後裁切校正的實拍素材。下載方式見[素材說明](./練習素材/素材下載與使用.md)。
+2. 此範例需要 OpenCV、NumPy 以及系統安裝的 Tesseract 和 `eng` 英文資料；系統層安裝見[安裝紀錄](../安裝操作與實測紀錄.md#6-tesseract-ocr)。本次選用 Thonny 右下角 `/home/pi/ba5077-tflite-camera-20261029/bin/python3`，此環境讀取現有系統 OpenCV；並非全新系統安裝。
+3. 在 Thonny 開啟逐框辨識程式，按綠色執行鈕。程式會輸出每框的座標及文字，並在同一資料夾產生 `east-box-ocr-result.png`。為避免覆寫，若結果圖已存在，請移到其他位置或另用新資料夾再執行。
+
+完整程式：
+
+```python
+from pathlib import Path
+import subprocess
+
+import cv2
+from east_helpers import detect_text
+
+# 相機拍攝後經校正的練習照片、EAST 模型和 east_helpers.py 要在同一資料夾。
+image = cv2.imread('text-board.png')
+if image is None:
+    raise FileNotFoundError('找不到 text-board.png')
+net = cv2.dnn.readNet('frozen_east_text_detection.pb')
+boxes = sorted(detect_text(net, image), key=lambda box: (box[1], box[0]))
+height, width = image.shape[:2]
+result_image = image.copy()
+print('EAST boxes:', len(boxes), flush=True)
+for number, (x1, y1, x2, y2) in enumerate(boxes, 1):
+    # 多保留 5 像素背景，避免裁到字的筆畫。
+    left, top = max(0, x1 - 5), max(0, y1 - 5)
+    right, bottom = min(width, x2 + 5), min(height, y2 + 5)
+    crop = image[top:bottom, left:right]
+    ok, png = cv2.imencode('.png', crop)
+    if not ok:
+        raise RuntimeError('無法編碼裁切影像')
+    # -l eng 使用英文資料，--psm 7 將每個區域視為單行文字。
+    process = subprocess.run(
+        ['tesseract', 'stdin', 'stdout', '-l', 'eng', '--psm', '7'],
+        input=png.tobytes(), capture_output=True, check=True,
+    )
+    text = process.stdout.decode('utf-8').strip().replace('\n', ' ')
+    print(f'{number}: ({x1}, {y1}, {x2}, {y2}) {text!r}', flush=True)
+    cv2.rectangle(result_image, (x1, y1), (x2, y2), (0, 180, 0), 2)
+    cv2.putText(result_image, str(number), (x1, max(20, y1 - 5)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+output = Path('east-box-ocr-result.png')
+if output.exists():
+    raise FileExistsError('結果圖已存在，請移至其他資料夾後再執行')
+if not cv2.imwrite(str(output), result_image):
+    raise RuntimeError('無法儲存結果圖')
+print('saved:', output)
+```
+
+2026-10-29 此 RP5 的完整 Shell 實測輸出如下。座標是原圖中的左上與右下像素位置，`''` 表示未讀出文字；結果可能隨照片、版本或參數變化。
+
+```text
+EAST boxes: 10
+1: (532, 33, 873, 82) 'DETECTION'
+2: (375, 37, 506, 84) 'TEXT'
+3: (266, 170, 780, 236) 'RASPBERRY'
+4: (828, 170, 960, 232) 'PI 5'
+5: (326, 307, 573, 367) 'HELLO'
+6: (596, 307, 915, 367) 'CAMERA'
+7: (648, 434, 806, 497) '2026'
+8: (442, 440, 611, 499) 'AIOT'
+9: (708, 571, 843, 620) '12345'
+10: (420, 575, 626, 622) 'OPEN C'
+saved: east-box-ocr-result.png
+```
+
+![Thonny 顯示逐框辨識輸出上半部](./圖檔/east-box-ocr-top.png)
+
+![Thonny 顯示逐框辨識輸出下半部](./圖檔/east-box-ocr-bottom.png)
+
+![程式產生的文字框編號結果圖](./圖檔/east-box-ocr-result.png)
+
+綠框與紅色編號是程式產生的結果圖，前兩張是實際操作截圖。請對照原圖與第 10 框：原圖是 `OPEN CV`，但框未涵蓋全部文字，輸出成 `OPEN C`。程式按框的上緣 y 值再按 x 值排序，對同一行高度略有差異的框不一定符合閱讀順序，例如 `DETECTION` 排在 `TEXT` 前；實際應用可先依行分組。這是一張清楚英文照片的示範，不能當作其他場景的準確率；相機即時預覽及逐框 OCR 的整合仍待測。
 
 ## 與原文章的差異
 
-- 新增 Thonny 單張相機校正照片的 EAST 框選與整圖英文 OCR 實測；已另測模型下載與載入；即時相機及逐框 OCR 仍待測。
+- 新增 Thonny 單張相機校正照片的 EAST 框選與整圖英文 OCR 實測；已另測模型下載與載入；另以相機照片測試逐框英文 OCR；即時相機整合仍待測。
 
 - 新增對相機拍攝的英文測試板執行 EAST 及整圖 Tesseract；與原文即時流程的差異仍見下方。
 
 - 原文使用連續攝影機及顯示視窗；本版先完成單張影格與後處理，不宣稱即時畫面已測。
-- 本機測試範圍僅限上述流程；尚未保存操作畫面截圖。
+- 本文包含上述 Thonny 測試的操作截圖，測試範圍以各節註記為準。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
