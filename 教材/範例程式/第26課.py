@@ -5,4 +5,6 @@ current = background.copy()
 current[20:40, 30:50] = 255
 diff = cv2.absdiff(background, current)
 _, mask = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
+if not cv2.imwrite('lesson26-difference.png', np.hstack((background, current, mask))):
+    raise RuntimeError('image save failed')
 print('changed pixels', cv2.countNonZero(mask))

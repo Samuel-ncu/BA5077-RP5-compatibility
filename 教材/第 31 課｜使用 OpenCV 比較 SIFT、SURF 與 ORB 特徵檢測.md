@@ -18,9 +18,14 @@
 
 ```python
 import cv2
+import numpy as np
 sift = cv2.SIFT_create()
 surf = cv2.xfeatures2d.SURF_create()
 orb = cv2.ORB_create()
+image = np.random.default_rng(42).integers(0, 256, (240, 320), dtype=np.uint8)
+panels = [cv2.drawKeypoints(image, detector.detect(image, None), None) for detector in (sift, surf, orb)]
+if not cv2.imwrite('lesson31-features.png', cv2.hconcat(panels)):
+    raise RuntimeError('image save failed')
 print('SIFT created', bool(sift))
 print('SURF created', bool(surf))
 print('ORB created', bool(orb))
@@ -37,6 +42,12 @@ ORB created True
 ```
 
 本機三種物件均可建立；不代表所有 Raspberry Pi OS 的 OpenCV 都包含 SURF，也未測試原文圖片的特徵數。
+
+## RP5 實際產生的結果圖
+
+![第 31 課的實際程式輸出](./圖檔/lesson31-features.png)
+
+合成隨機圖上的特徵點，由左至右分別使用 SIFT、SURF、ORB。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
 
 ## 與原文章的差異
 

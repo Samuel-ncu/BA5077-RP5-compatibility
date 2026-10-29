@@ -23,6 +23,10 @@ image = np.zeros((100, 100), dtype=np.uint8)
 cv2.rectangle(image, (20, 20), (70, 70), 255, -1)
 contours, _ = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 approx = cv2.approxPolyDP(contours[0], 0.02 * cv2.arcLength(contours[0], True), True)
+result = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+cv2.polylines(result, [approx], True, (0, 0, 255), 2)
+if not cv2.imwrite('lesson34-polygon.png', result):
+    raise RuntimeError('image save failed')
 print('polygon vertices', len(approx))
 ```
 
@@ -35,6 +39,12 @@ polygon vertices 4
 ```
 
 矩形近似得到四個頂點；若變更 epsilon 或圖片形狀，頂點數可能改變。
+
+## RP5 實際產生的結果圖
+
+![第 34 課的實際程式輸出](./圖檔/lesson34-polygon.png)
+
+合成矩形與近似多邊形。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
 
 ## 與原文章的差異
 

@@ -24,6 +24,8 @@ left = scene[:, :600].copy()
 right = scene[:, 300:].copy()
 stitcher = cv2.Stitcher_create(cv2.Stitcher_PANORAMA)
 status, panorama = stitcher.stitch([left, right])
+if panorama is not None and not cv2.imwrite('lesson36-panorama.png', panorama):
+    raise RuntimeError('image save failed')
 print('stitch status', status)
 print('panorama produced', panorama is not None)
 ```
@@ -38,6 +40,12 @@ panorama produced True
 ```
 
 狀態 0 表示這個合成案例成功。真實照片需要足夠重疊、紋理和合適拍攝角度；並未測試原文的照片。
+
+## RP5 實際產生的結果圖
+
+![第 36 課的實際程式輸出](./圖檔/lesson36-panorama.png)
+
+合成隨機影像拼接後的結果；輸入不是相機照片。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
 
 ## 與原文章的差異
 

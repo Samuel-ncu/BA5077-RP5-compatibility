@@ -23,6 +23,8 @@ image = np.zeros((100, 100, 3), dtype=np.uint8)
 image[20:40, 30:50] = (0, 0, 255)
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 mask = cv2.inRange(hsv, (0, 100, 100), (10, 255, 255))
+if not cv2.imwrite('lesson28-mask.png', np.hstack((image, cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)))):
+    raise RuntimeError('image save failed')
 print('red pixels', cv2.countNonZero(mask))
 ```
 
@@ -35,6 +37,12 @@ red pixels 400
 ```
 
 此例僅使用紅色 HSV 的一段範圍；真實場景需要根據相機與照明調整，紅色也可能跨越色相邊界。
+
+## RP5 實際產生的結果圖
+
+![第 28 課的實際程式輸出](./圖檔/lesson28-mask.png)
+
+左側為合成紅色區塊，右側為 HSV 遮罩。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
 
 ## 與原文章的差異
 

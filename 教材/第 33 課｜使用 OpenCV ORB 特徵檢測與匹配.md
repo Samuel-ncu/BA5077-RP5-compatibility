@@ -21,10 +21,13 @@ import cv2
 import numpy as np
 image = np.random.default_rng(42).integers(0, 256, (240, 320), dtype=np.uint8)
 orb = cv2.ORB_create()
-_, desc = orb.detectAndCompute(image, None)
+keypoints, desc = orb.detectAndCompute(image, None)
 if desc is None:
     raise RuntimeError('no descriptors')
 matches = cv2.BFMatcher(cv2.NORM_HAMMING).match(desc, desc)
+result = cv2.drawMatches(image, keypoints, image, keypoints, matches[:30], None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+if not cv2.imwrite('lesson33-orb-matches.png', result):
+    raise RuntimeError('image save failed')
 print('descriptors found', len(desc) > 0)
 print('same-image matches', len(matches))
 ```
@@ -39,6 +42,12 @@ same-image matches 453
 ```
 
 這是同圖自我匹配的基礎測試；特徵數受版本和參數影響，不代表真實圖片的匹配品質。
+
+## RP5 實際產生的結果圖
+
+![第 33 課的實際程式輸出](./圖檔/lesson33-orb-matches.png)
+
+合成圖與自身的 ORB 配對示意，畫出前 30 個配對。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
 
 ## 與原文章的差異
 

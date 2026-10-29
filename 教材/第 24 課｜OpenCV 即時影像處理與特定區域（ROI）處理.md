@@ -18,8 +18,12 @@
 
 ```python
 import numpy as np
+import cv2
 image = np.zeros((240, 320, 3), dtype=np.uint8)
 roi = image[30:110, 50:150]
+roi[:] = (0, 255, 0)
+if not cv2.imwrite('lesson24-roi.png', image):
+    raise RuntimeError('image save failed')
 print('image', image.shape)
 print('ROI', roi.shape)
 ```
@@ -34,6 +38,12 @@ ROI (80, 100, 3)
 ```
 
 陣列索引先列高度範圍，再列寬度範圍；ROI 的高與寬分別為 80 與 100。
+
+## RP5 實際產生的結果圖
+
+![第 24 課的實際程式輸出](./圖檔/lesson24-roi.png)
+
+綠色區域是程式設定的 ROI。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
 
 ## 與原文章的差異
 

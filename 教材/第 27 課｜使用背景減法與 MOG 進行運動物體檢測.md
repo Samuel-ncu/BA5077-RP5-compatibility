@@ -22,6 +22,8 @@ import numpy as np
 subtractor = cv2.bgsegm.createBackgroundSubtractorGMG()
 frame = np.zeros((40, 40, 3), dtype=np.uint8)
 mask = subtractor.apply(frame)
+if not cv2.imwrite('lesson27-gmg-mask.png', mask):
+    raise RuntimeError('image save failed')
 print('GMG created', True)
 print('mask shape', mask.shape)
 ```
@@ -36,6 +38,12 @@ mask shape (40, 40)
 ```
 
 輸出遮罩尺寸與輸入相同；第一張影格不能代表背景模型已完成學習。
+
+## RP5 實際產生的結果圖
+
+![第 27 課的實際程式輸出](./圖檔/lesson27-gmg-mask.png)
+
+這是第一張影格產生的遮罩；背景模型尚未完成學習，不能作為移動物體偵測成果。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
 
 ## 與原文章的差異
 

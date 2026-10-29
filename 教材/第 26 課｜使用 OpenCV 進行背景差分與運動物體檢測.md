@@ -24,6 +24,8 @@ current = background.copy()
 current[20:40, 30:50] = 255
 diff = cv2.absdiff(background, current)
 _, mask = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
+if not cv2.imwrite('lesson26-difference.png', np.hstack((background, current, mask))):
+    raise RuntimeError('image save failed')
 print('changed pixels', cv2.countNonZero(mask))
 ```
 
@@ -36,6 +38,12 @@ changed pixels 400
 ```
 
 20 × 20 等於 400，輸出顯示這些像素被標記；真實場景還需處理光線、雜訊與相機移動。
+
+## RP5 實際產生的結果圖
+
+![第 26 課的實際程式輸出](./圖檔/lesson26-difference.png)
+
+由左至右為背景、目前影格與差分遮罩。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
 
 ## 與原文章的差異
 
