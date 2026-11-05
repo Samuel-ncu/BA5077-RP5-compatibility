@@ -1,8 +1,9 @@
 # 第 12 課｜使用 Thonny IDE 與 OpenCV 進行 Python 開發
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222870088) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222870088) · 更新日期：2026-11-05
+> **Trixie 狀態：**本課以 Trixie 64 位元作主要教學目標；待重測項目以[基線與測試矩陣](./乾淨系統基線與測試矩陣.md)標示。Bookworm 舊輸出不代表新系統已通過。
 
-> Thonny 重測進行中：請先看本篇標示「Thonny 實測」的段落；其他既有輸出依原測試方式標示，完整情境仍待重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> **Trixie 狀態：**請先依[OpenCV 環境指南](./Thonny環境與套件安裝.md)在新 venv 安裝 `opencv-python==4.12.0.88` 與 NumPy 2.2.4，再執行本課範例。下方舊版 Thonny 畫面使用既有環境，不能當作 Trixie 乾淨系統驗收；完整情境仍依[逐篇進度](./Thonny逐篇實測狀態.md)標示。[圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -73,9 +74,10 @@ Thonny 是整合開發環境（IDE），提供編輯與執行介面；Python 解
 
 ## 實機操作：在 Thonny 執行 OpenCV 程式
 
-1. 開啟 RP5 桌面的 Thonny，選擇「File → Open」，開啟[本次範例程式](./範例程式/第12課-Thonny測試.py)。可先將檔案下載至自己的練習目錄。
-2. 檢查右下角顯示的 Python 解譯器。這台 RP5 當時選用的是 `/home/pi/myenv/bin/python3`，不等同前述終端機的系統 Python；不同人的路徑可能不同。
-3. 點選綠色執行按鈕，查看下方 Shell 的輸出。執行前先確認此解譯器能匯入 OpenCV 與 NumPy；若沒有套件，應在選定的獨立環境中處理。
+1. 依[OpenCV 環境指南](./Thonny環境與套件安裝.md)建立本課新的 venv，完成安裝後重新啟動 Thonny backend。
+2. 開啟 RP5 桌面的 Thonny，選擇「File → Open」，開啟[本次範例程式](./範例程式/第12課-Thonny測試.py)。可先將檔案下載至自己的練習目錄。
+3. 檢查右下角顯示的 Python 解譯器，必須是本課新建的 venv；不要依賴 `/home/pi/myenv` 或其他課程留下的路徑。
+4. 點選綠色執行按鈕，查看下方 Shell 的輸出。執行前先確認此解譯器能匯入 OpenCV 與 NumPy；若沒有套件，應在選定的獨立環境中處理。
 
 ```python
 import cv2
@@ -88,7 +90,9 @@ print('Image shape:', image.shape)
 print('Center BGR:', image[60, 80].tolist())
 ```
 
-本次實際 Shell 輸出：
+### Bookworm 舊測試輸出（非 Trixie 驗收）
+
+下列輸出與畫面來自舊測試環境，保留作為比較不同解譯器的例子：
 
 ```text
 OpenCV version: 4.11.0
@@ -96,13 +100,13 @@ Image shape: (120, 160, 3)
 Center BGR: [0, 255, 0]
 ```
 
-![RP5 的 Thonny 程式與執行輸出截圖](./圖檔/lesson12-thonny-screenshot.png)
+![Bookworm 歷史測試：RP5 的 Thonny 程式與執行輸出截圖](./圖檔/lesson12-thonny-screenshot.png)
 
 這是實際操作後裁切的 Thonny 截圖。上半部是程式、下半部是輸出；右下角顯示當時的解譯器。`(120, 160, 3)` 依序表示高、寬、三色通道；圓心的 `[0, 255, 0]` 表示 BGR 的綠色。此程式只驗證匯入和陣列運算，沒有顯示影像視窗。Thonny 的 OpenCV 4.11.0 與系統 Python 的 4.10.0-dev 不同，正好說明不同解譯器可能載入不同套件版本。
 
 ## Thonny 實測：新虛擬環境
 
-另外依[環境與套件安裝指南](./Thonny環境與套件安裝.md)建立新環境，安裝後在 Thonny 重新執行同一個範例，Shell 實際輸出如下。這次使用新環境，所以版本與上面的 `myenv` 結果不同。
+另外依[環境與套件安裝指南](./Thonny環境與套件安裝.md)建立新環境，安裝後在 Thonny 重新執行同一個範例。下列畫面仍是舊測試；Trixie 新環境的版本應以 Shell 實際輸出和 `pip show` 記錄為準。
 
 ```text
 OpenCV version: 4.10.0
@@ -111,6 +115,14 @@ Center BGR: [0, 255, 0]
 ```
 
 ![Thonny 新虛擬環境的程式和輸出](./圖檔/thonny-newenv-demo.png)
+
+## 預期結果
+
+Thonny Shell 應顯示目前選取的 Python 解譯器和 OpenCV 版本。若要在不同虛擬環境執行程式，應以新環境的直譯器路徑確認，而不只看系統終端機的套件。
+
+## 常見錯誤與排查
+
+若 Thonny 找不到 cv2，先確認右下角直譯器是不是安裝套件的同一個 venv，再重新啟動 backend；不要直接將套件裝到系統 Python。
 
 ## 與原文章的差異
 

@@ -1,12 +1,13 @@
 # 第 6 課｜使用 MobaXterm 對 Raspberry Pi 啟用 X11 轉發
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222855718) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222855718) · 更新日期：2026-11-05
+> **Trixie 狀態：**本課以 Trixie 64 位元作主要教學目標；待重測項目以[基線與測試矩陣](./乾淨系統基線與測試矩陣.md)標示。Bookworm 舊輸出不代表新系統已通過。
 
 > 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)。
 
 ## 學習目標
 
-了解如何透過 SSH 讓 RP5 上的 X11 程式在電腦顯示。MobaXterm 安裝在 Windows 端；RP5 端則需要 SSH 與 X11 轉發支援。X11 轉發與遠端桌面分享整個畫面是不同功能。
+了解如何透過 SSH 讓 RP5 上的 X11 程式在電腦顯示。MobaXterm 安裝在 Windows 端；RP5 端則需要 SSH 與 X11 轉發支援。X11 轉發與遠端桌面分享整個畫面是不同功能。主要基準為 Trixie 的 Wayland 桌面，不能假設 X11 程式可在每種工作階段直接顯示。
 
 ## 事前檢查
 
@@ -73,6 +74,14 @@ flowchart LR
 ### 學生任務
 
 畫出「Windows、SSH、RP5、X server、遠端程式」的關係，並標出程式實際在哪台機器執行。思考：SSH 能登入時，為什麼還可能看不到圖形視窗？
+
+## 預期結果
+
+若 SSH 的 X11 轉發設定正確，測試程式的視窗應出現在 Windows 端。一般 SSH shell 能工作並不能單獨證明 X11 顯示正常；Trixie Wayland 和 X11 forwarding 必須分別檢查。
+
+## 常見錯誤與排查
+
+視窗沒有出現時，先分辨 SSH 登入是否成功、X11 轉發是否開啟、遠端程式是否使用 X11，以及目前是否為 Wayland 工作階段。X11 forwarding 不是整個桌面的 VNC 遠端控制。
 
 ## 與原文章的差異
 

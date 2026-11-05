@@ -1,12 +1,13 @@
 # 第 2 課｜認識 Raspberry Pi 與 Raspberry Pi OS
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222880459) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222880459) · 更新日期：2026-11-05
+> **Trixie 狀態：**本課以 Trixie 64 位元作主要教學目標；待重測項目以[基線與測試矩陣](./乾淨系統基線與測試矩陣.md)標示。Bookworm 舊輸出不代表新系統已通過。
 
 > 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)。
 
 ## 學習目標
 
-認識 Raspberry Pi 單板電腦和 Raspberry Pi OS，並能在自己的機器上確認型號、架構、核心數及 Python 版本。Raspberry Pi OS 是針對 Raspberry Pi 調整的 Linux 系統；本次機器使用的版本以 Debian 12 Bookworm 為基礎。
+認識 Raspberry Pi 單板電腦和 Raspberry Pi OS，並能在自己的機器上確認型號、架構、核心數及 Python 版本。Raspberry Pi OS 是針對 Raspberry Pi 調整的 Linux 系統；本課主要驗收系統為 Debian 13 Trixie。
 
 ## 需要準備什麼
 
@@ -47,7 +48,7 @@ printf 'cores: '; getconf _NPROCESSORS_ONLN
 python3 --version
 ```
 
-本次實際輸出：
+Bookworm 歷史測試輸出（Python 3.11.2；不能當作 Trixie 結果）：
 
 ```text
 model: Raspberry Pi 5 Model B Rev 1.0
@@ -60,7 +61,7 @@ Python 3.11.2
 
 記憶體可用 `free -h` 查看；這台機器的總記憶體曾顯示約 7.9 GiB，對應 8 GB 機型。可用量隨當時執行的程式而變。
 
-### 本次記憶體實測
+### Bookworm 歷史測試記憶體輸出
 
 ```bash
 free -h
@@ -74,7 +75,7 @@ Swap:          2.0Gi          0B       2.0Gi
 
 `available` 是估計可供程式使用的記憶體，會隨工作負載改變。`buff/cache` 包含系統用來加快讀取的快取；`Swap` 是利用儲存裝置的交換空間，不是另一條實體 RAM。
 
-### 本次系統與儲存裝置實測
+### Bookworm 歷史測試：系統與儲存裝置
 
 ```bash
 cat /etc/os-release | head -1
@@ -94,7 +95,7 @@ mmcblk0     29.7G disk
 ## 檢查與排除
 
 - 如果找不到 `/proc/device-tree/model`，先確認是否真的在 Raspberry Pi 上執行，而不是在 Windows PowerShell。
-- `Python 3.11.2` 是本機結果；其他系統版本可能顯示不同數字。
+- `Python 3.11.2` 及 Debian 12 輸出來自舊版 Bookworm 測試；目前 Trixie 基線是 Python 3.13.5，請使用開頭的測試矩陣核對。
 - 系統可用記憶體略低於標示容量屬常見情況；記憶體不是 microSD 儲存容量。
 
 ## 學生練習與後續應用
@@ -120,6 +121,14 @@ CPU 核心數是能力的一個指標，不等於所有程式都會自動同時�
 ### 課堂任務
 
 在自己的 RP5 記錄上述三組命令的輸出，圈出「型號」「核心數」「記憶體」「儲存裝置」；再用兩句話解釋 RAM 和 microSD 的分工。實際執行時的數值與本教材可以不同，不需要改成一致。
+
+## 預期結果
+
+查詢結果會顯示 Raspberry Pi 型號、作業系統版本、ARM64 架構與 Python 版本。不同機器的記憶體和磁碟容量可能不同；請記錄自己的輸出，不要照抄範例數字。
+
+## 常見錯誤與排查
+
+命令找不到時先確認是否在 RP5 終端機執行；若型號或版本與範例不同，保留自己的輸出並以作業系統版本為準，不要修改系統去符合舊範例。
 
 ## 與原文章的差異
 

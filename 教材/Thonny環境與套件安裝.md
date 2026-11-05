@@ -1,6 +1,34 @@
 # 使用 Thonny 建立 Python 環境與安裝 OpenCV
 
-本指南記錄 2026-10-29 在 Raspberry Pi 5、Bookworm 64 位元、Python 3.11 的操作。學生使用 Thonny 編寫與執行 Python，基本系統安裝與設定仍使用作業系統提供的工具。其他課程的相機、AI 模型與特殊模組尚須各自測試。
+本指南的主要操作基準為 Raspberry Pi 5、Raspberry Pi OS Trixie 64 位元與 Python 3.13。學生使用 Thonny 編寫與執行 Python；系統 Python 由 Raspberry Pi OS 管理，套件安裝在課程虛擬環境。下方 2026-10-29 的 Bookworm 安裝紀錄保留作比較，不是 Trixie 的操作步驟。
+
+## Trixie 主流程：建立 OpenCV 環境
+
+OpenCV 是 Python 的影像處理程式庫，`cv2` 是程式匯入時使用的模組名稱。乾淨 Trixie 系統的系統 Python 尚未安裝 `cv2`；將套件放進專用 venv，可讓學生移除或重建課程環境時不影響作業系統和原生 Thonny。
+
+1. 先完成[Raspberry Pi 5 Trixie 基線檢查](./乾淨系統基線與測試矩陣.md)，確認 `aarch64`、Python 3.13.x 和有網路。不要在系統 Python 執行 `pip install`。
+2. 在 Thonny 開啟 **Tools → Options → Interpreter**，建立新的 virtual environment，選擇一個尚不存在的路徑，例如 `/home/pi/ba5077-opencv-20261105`。請勿沿用其他課程或舊測試環境。
+3. 選取這個 venv 的 `bin/python3` 作為 Thonny interpreter。重新開啟 Thonny Shell 後，確認右下角解譯器路徑包含 `ba5077-opencv-20261105`。
+4. 開啟[第 14 課套件安裝程式](./範例程式/第14課-Thonny安裝套件.py)，先閱讀程式再按執行。它透過 `sys.executable` 對目前選取的 venv 安裝 `numpy==2.2.4` 與 `opencv-python==4.12.0.88`；等待 `Successfully installed` 後重新啟動 Thonny backend。
+5. 在 Thonny 開啟[第 14 課 Trixie 驗證程式](./範例程式/第14課-Trixie驗證.py)。應看到 OpenCV `4.12.0`、NumPy `2.2.4` 和 `saved: True`，並在工作目錄找到輸出圖片。
+
+若 Thonny 沒有顯示建立 virtual environment 的按鈕，可在 RP5 終端機執行 `python3 -m venv ~/ba5077-opencv-20261105`，然後在 Thonny interpreter 設定中選取 `~/ba5077-opencv-20261105/bin/python3`。若目錄已存在，改用新名稱，不要刪除或覆寫未知環境。
+
+Trixie 的 OpenCV wheel 路徑已在 Python 3.13 ARM64 驗證。APT 模擬安裝 `python3-opencv` 顯示會新增 72 個套件，因此不列為學生預設步驟；這不表示 APT 套件無效，而是本課採較小且可隔離的 venv 路徑。
+
+## Trixie 相機課環境
+
+Picamera2 與相機驅動由 Raspberry Pi OS 提供。需要相機的 Python venv 要以 `system_site_packages=True` 建立，才能讀到 OS 的 Picamera2；OpenCV 等課程 wheel 則安裝在該 venv。使用這種環境時，`pip check` 可能列出未安裝在 venv 的其他 OS 套件，不把它當成唯一驗收；請依各課程實測相機擷取和影像處理。
+
+1. 在 Thonny 開啟[相機環境建立程式](./範例程式/Thonny建立相機環境.py)並執行。在 Shell 輸入課程代號，例如 `lesson-15`；程式會在家目錄建立 `ba5077-camera-lesson-15`。每課使用不同代號；若名稱已存在，換一個代號，不刪除原目錄。
+2. 在 Thonny interpreter 選擇該環境的 `bin/python3`。只使用 Picamera2 的課程可直接做匯入和取像測試；需要 OpenCV 的課程，再於這個 venv 執行第 14 課安裝程式安裝固定版本。
+3. 執行第 15 課相機擷取範例，確認程式可以匯入 `picamera2`、匯入 `cv2` 並收到相機影格。先關閉其他正在使用相機的預覽程式。
+
+書寫相機程式前先了解：讓 venv 看見 OS 套件不會將 Picamera2 複製進 venv，也不會替系統安裝相機元件。若 `from picamera2 import Picamera2` 失敗，先確認環境建立方式與 Thonny 選取路徑。
+
+## Bookworm 舊版安裝與測試紀錄（2026-10-29）
+
+以下段落記錄 Python 3.11、OpenCV 4.10 及當時的既有環境；不要將其版本或輸出直接當成 Trixie 驗收結果。要重做目前教材，請使用上方 Trixie 主流程。
 
 ## 先認識虛擬環境
 

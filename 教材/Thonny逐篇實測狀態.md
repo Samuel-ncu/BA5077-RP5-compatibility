@@ -1,10 +1,10 @@
 # Thonny 逐篇轉換與實測進度
 
-更新日期：2026-10-29。原有終端機測試不能自動算成 Thonny 測試；已測小範例也不表示完整原文情境都完成。系統安裝與非 Python 工具仍使用必要的操作介面。
+本表全部逐篇結果來自 2026-10-29 Bookworm / Python 3.11，僅供查看舊環境曾測過的範圍，不能轉作 Trixie 驗收。Trixie / Python 3.13 的目前狀態以[乾淨系統基線與測試矩陣](./乾淨系統基線與測試矩陣.md)為準。原有終端機測試不能自動算成 Thonny 測試；已測小範例也不表示完整原文情境都完成。
 
 [Thonny 環境與套件安裝實測](./Thonny環境與套件安裝.md) · [既有逐篇實測範圍](./逐篇深化與實測狀態.md)
 
-| 原文章標題 | Thonny 轉換狀態 |
+| 原文章標題 | Bookworm 歷史 Thonny 測試範圍（非 Trixie 驗收） |
 | --- | --- |
 | [第 1 課｜BA5077 AIoT 產品發展實作課程介紹](./%E7%AC%AC%201%20%E8%AA%B2%EF%BD%9CBA5077%20AIoT%20%E7%94%A2%E5%93%81%E7%99%BC%E5%B1%95%E5%AF%A6%E4%BD%9C%E8%AA%B2%E7%A8%8B%E4%BB%8B%E7%B4%B9.md) | 課程介紹與產品構想；沒有可替代學習活動的安裝實測 |
 | [第 2 課｜認識 Raspberry Pi 與 Raspberry Pi OS](./%E7%AC%AC%202%20%E8%AA%B2%EF%BD%9C%E8%AA%8D%E8%AD%98%20Raspberry%20Pi%20%E8%88%87%20Raspberry%20Pi%20OS.md) | 已查詢 RP5 型號、RAM、CPU、系統與儲存；各硬體情境未逐項實測 |

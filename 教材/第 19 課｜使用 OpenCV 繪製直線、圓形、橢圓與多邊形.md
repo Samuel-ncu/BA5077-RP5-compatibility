@@ -1,8 +1,9 @@
 # 第 19 課｜使用 OpenCV 繪製直線、圓形、橢圓與多邊形
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222886411) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222886411) · 更新日期：2026-11-05
+> **Trixie 狀態：**本課以 Trixie 64 位元作主要教學目標；待重測項目以[基線與測試矩陣](./乾淨系統基線與測試矩陣.md)標示。Bookworm 舊輸出不代表新系統已通過。
 
-> 本課基本繪圖程式已在 Thonny 重新執行；結果視窗的原完整流程仍待 Thonny 重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 既有 Thonny 基本繪圖測試屬舊測試紀錄；Trixie OpenCV wheel 已通過基本影像操作，但本課完整程式、Thonny 視窗與對應截圖仍需重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -10,7 +11,7 @@
 
 ## 事前準備
 
-依[Thonny 環境指南](./Thonny環境與套件安裝.md)準備 OpenCV 與 NumPy，確認 Thonny 選擇安裝了這些套件的環境；程式會寫入 `lesson19-shapes.png`。
+在 Trixie/Python 3.13 使用[第 14 課的 OpenCV 建立流程](./Thonny環境與套件安裝.md)建立新的環境，並在 Thonny 選取它。環境至少包含 `opencv-python==4.12.0.88` 和 `numpy==2.2.4`。本課以合成畫布為輸入，無需相機。請在自己的新練習目錄保存結果圖，並在 Thonny 選取本課建立的 venv。
 
 請在自己的練習目錄操作。已存在的同名輸出檔可能被覆寫，先確認路徑；用不著將任何相機照片上傳公開儲存庫。
 
@@ -44,7 +45,7 @@ saved True
 
 ![RP5 上 Thonny 執行第 19 課程式及 Shell 輸出](./圖檔/lesson19-thonny.png)
 
-本次 Thonny 使用 OpenCV 4.10.0 在 RP5 產生的圖檔：
+Bookworm 歷史測試使用 OpenCV 4.10.0 在 RP5 產生的圖檔（待以 Trixie 重新執行）：
 
 ![本次程式輸出](./圖檔/lesson19-thonny-result.png)
 
@@ -77,6 +78,14 @@ OpenCV 將圖片視為像素陣列，繪製函式會改變指定位置的像素�
 先前以終端機和系統 OpenCV 開啟同一類結果圖，保留視窗截圖作為歷史紀錄；**這張圖不是 Thonny 執行截圖**。使用 Thonny 開啟本課圖片的完整操作仍待重測。可先在[第 14 課](./Thonny環境與套件安裝.md)練習經 Thonny 開啟基本 OpenCV 視窗。
 
 ![先前終端機測試的 OpenCV 結果視窗](./圖檔/lesson19-opencv-window.png)
+
+## 預期結果
+
+合成畫布應包含直線、矩形、圓、橢圓與多邊形，且能存成 PNG。座標、線寬或顏色改變後，重新執行可觀察像素結果的變化。
+
+## 常見錯誤與排查
+
+若顏色和預期不同，確認 OpenCV 使用 BGR 通道順序；若圖形被裁切，確認 x 在影像寬度範圍內、y 在高度範圍內。
 
 ## 與原文章的差異
 

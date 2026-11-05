@@ -1,7 +1,7 @@
 # 使用 Flask 和 YOLO 打造即時物件偵測網頁介面
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222901408) · 更新日期：2026-10-29
-
+> **Trixie 狀態：**此篇尚未依乾淨 Trixie 64 位元基線逐篇驗收；舊版測試與輸出僅供歷史參考。套件課程應依相依群組建立新環境，請先核對[逐篇測試矩陣](./乾淨系統基線與測試矩陣.md)。
 > **部分實測**：已在 Thonny 測試本機 HTTP 四張 JPEG，以及相機經 YOLO 送至 RP5 瀏覽器的 150 張影格及兩分鐘串流；數小時運作與乾淨環境安裝待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
@@ -36,7 +36,6 @@ from werkzeug.serving import make_server
 app = Flask(__name__)
 model = YOLO('yolov8n.pt')
 
-
 @app.get('/stream')
 def stream():
     def frames():
@@ -57,7 +56,6 @@ def stream():
         finally:
             video.release()
     return Response(frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 
 if __name__ == '__main__':
     # 只供本機測試；0 讓系統挑選空閒連接埠，測試完後關閉。
@@ -130,7 +128,6 @@ from picamera2 import Picamera2
 from ultralytics import YOLO
 from werkzeug.serving import make_server
 
-
 def main():
     app = Flask(__name__)
     model = YOLO('yolov8n.pt')
@@ -179,7 +176,6 @@ def main():
         worker.join()
         server.server_close()
         print('server stopped', flush=True)
-
 
 if __name__ == '__main__':
     main()
@@ -231,7 +227,6 @@ from flask import Flask, Response, jsonify
 from picamera2 import Picamera2
 from ultralytics import YOLO
 from werkzeug.serving import make_server
-
 
 def main():
     app = Flask(__name__)
@@ -337,7 +332,6 @@ def main():
         server.server_close()
         print('server stopped', flush=True)
 
-
 if __name__ == '__main__':
     main()
 ```
@@ -365,6 +359,10 @@ server stopped
 ## 練習與後續應用
 
 解釋 HTTP 請求、路由、回應內容類型和 JPEG 影格各自的工作。如果收到 200 但無法解碼圖片，應先檢查哪些資料？進一步設計頁面時，可考慮服務停止方式及影格傳輸延遲。
+
+## 常見錯誤與排查
+
+若瀏覽器連不上，先確認 Flask 程式是否在執行、埠號沒有被其他程序使用、URL 指向正確裝置；127.0.0.1 只代表執行瀏覽器的本機。串流停住時檢查相機是否釋放、HTTP response 是否持續產生 JPEG frame，並正常停止開發伺服器。
 
 ## 與原文章的差異
 

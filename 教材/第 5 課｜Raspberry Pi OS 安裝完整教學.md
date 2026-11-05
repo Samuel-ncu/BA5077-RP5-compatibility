@@ -1,12 +1,13 @@
 # 第 5 課｜Raspberry Pi OS 安裝完整教學
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222880489) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222880489) · 更新日期：2026-11-05
+> **Trixie 狀態：**本課以 Trixie 64 位元作主要教學目標；待重測項目以[基線與測試矩陣](./乾淨系統基線與測試矩陣.md)標示。Bookworm 舊輸出不代表新系統已通過。
 
 > 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)。
 
 ## 學習目標
 
-了解如何使用 Raspberry Pi Imager，為 Raspberry Pi 5 準備 Raspberry Pi OS。這台 RP5 已有可用的 Bookworm 系統；**本次沒有重新燒錄或驗證新安裝流程**。
+了解如何使用 Raspberry Pi Imager，為 Raspberry Pi 5 準備 Raspberry Pi OS Trixie 64 位元。這台 RP5 目前使用 Trixie；**本次沒有重新燒錄或驗證全新安裝流程**，Imager 的操作仍是依官方資料整理的指引。
 
 ## 背景與原理
 
@@ -38,7 +39,7 @@ flowchart LR
 
 ## 版本選擇
 
-目前這台機器使用 Bookworm，已用於既有的相機、OpenCV 和部分 AI 測試。若日後使用官方 AI HAT+ 2，請先確認 [官方 AI 軟體文件](https://www.raspberrypi.com/documentation/computers/ai.html)對 Raspberry Pi OS 版本的要求；本次沒有在現有卡上升級或測試 HAT。
+目前測試卡使用 Trixie，已用於基線、相機和 OpenCV 測試；沒有在現有卡上重新燒錄。若需要比較 Bookworm，請使用備用 microSD 並將輸出標為舊版測試。若日後使用官方 AI HAT+ 2，請先確認 [官方 AI 軟體文件](https://www.raspberrypi.com/documentation/computers/ai.html)對 Raspberry Pi OS 版本的要求；本次沒有測試 HAT。
 
 Raspberry Pi OS 有不同版本及桌面／Lite 選擇。官方文件列出的版本可能隨時間改變；不要把此教材已測試的 Bookworm 環境誤認為官方當前唯一版本。[Raspberry Pi OS 官方文件](https://www.raspberrypi.com/documentation/computers/os.html)提供最新版本資訊。
 
@@ -68,10 +69,18 @@ Raspberry Pi OS 有不同版本及桌面／Lite 選擇。官方文件列出的�
 
 目前可用第二課的型號、系統和記憶體查詢熟悉既有設備，但這只能證明現有系統能使用，不能替代一次全新安裝的驗證。
 
+## 預期結果
+
+完成安裝後，RP5 應能從所選 Trixie 64 位元媒體啟動，進入初次設定桌面，並能重新執行第 2 課的系統查詢。本文目前是操作指引，首次安裝流程仍待實測。
+
+## 常見錯誤與排查
+
+Imager 選錯磁碟會覆寫該媒體上的資料。寫入前對照裝置容量與名稱，確認目標是備用 microSD；不要在唯一的測試卡上照步驟重灌。
+
 ## 與原文章的差異
 
 - 以目前的 Raspberry Pi Imager 流程描述操作，並明確標出燒錄會清除目標裝置。
-- 加入本次使用 Bookworm、AI HAT+ 2 版本選擇，以及備用卡與備份的考量。
+- 將 Trixie 64 位元列為主要目標，加入備用卡及備份的考量；保留 Bookworm 作舊版比較。
 - 原文章流程未在本次重新燒錄實測，請以 Imager 當前畫面為準。
 - 增加初學者背景、流程示意及備用卡練習；示意圖不代表本次完成燒錄。
 - 明確區分官方安裝指引與實際測試，新增學生安裝前檢查及完成後驗證項目。

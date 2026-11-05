@@ -1,16 +1,24 @@
 # 第 10 課｜Raspberry Pi 5 安裝與設定 VNC Viewer
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222855754) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222855754) · 更新日期：2026-11-05
+> **Trixie 狀態：**本課以 Trixie 64 位元作主要教學目標；待重測項目以[基線與測試矩陣](./乾淨系統基線與測試矩陣.md)標示。Bookworm 舊輸出不代表新系統已通過。
 
 > 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)。
 
 ## 學習目標
 
-使用電腦上的 VNC Viewer 連接 RP5 的圖形桌面。Viewer 是觀看端，RP5 必須有相容的 VNC 伺服器；連線方式與系統使用 X11 或 Wayland 有關。
+使用電腦上的 VNC Viewer 連接 RP5 的圖形桌面。Viewer 是觀看端，RP5 必須有相容的 VNC 伺服器；Trixie 主要路徑使用 Wayland/WayVNC。
 
 ## 確認伺服器
 
-本次 RP5 使用 X11，並檢查現有 VNC 服務：
+以下是 Trixie/Wayland 的初步狀態檢查：
+
+`bash
+echo "$XDG_SESSION_TYPE"
+pgrep -a wayvnc || true
+`
+
+輸出為 `wayland` 表示目前桌面工作階段是 Wayland；找到 `wayvnc` 程序表示該程序正在執行。它們是狀態線索，VNC 用戶端仍須實際連線驗證。以下服務名稱是 Bookworm/X11 歷史檢查，不是 Trixie 主流程：
 
 ```bash
 systemctl is-active vncserver-x11-serviced
@@ -22,14 +30,14 @@ systemctl is-active vncserver-x11-serviced
 active
 ```
 
-這表示本機使用的服務已啟動；其他 Raspberry Pi OS 版本或 Wayland 桌面可能使用不同伺服器。
+active 只表示該服務已啟動，不能證明遠端用戶端能連線或看到桌面。此輸出是 Bookworm/X11 歷史紀錄，不是 Trixie 測試結果。
 
 ## 連線流程
 
 1. 確保電腦可以連到 RP5，並查明 RP5 的位址。
 2. 在電腦開啟 VNC Viewer，輸入 RP5 的位址。
 3. 首次連線若要求確認伺服器身分，先核對指紋；輸入認證資料時由使用者自行操作，不要把密碼放進教材或聊天。
-4. 連線後確認視窗顯示的是 RP5 桌面。本次已由使用者完成登入並看到桌面。
+4. 連線後確認視窗顯示的是 RP5 桌面；Trixie 主流程的 WayVNC/RealVNC 用戶端與鍵鼠控制仍待逐步截圖驗證。
 
 ## 背景與核心概念
 
@@ -64,7 +72,7 @@ flowchart LR
 
 ### 本次觀察與限制
 
-這次在電腦上的 VNC Viewer 已能顯示 RP5 桌面，並由使用者自行完成認證；RP5 的服務查詢結果見上方。這不代表不同 Raspberry Pi OS 版本、Wayland 桌面或其他網路環境使用同一組服務名稱。本篇尚未保存適合公開的登入及設定畫面。
+過去已有一次 VNC 畫面連線紀錄，但當時記載為 X11，不能代替目前 Trixie/Wayland 的逐步重測。Trixie 用戶端顯示畫面、鍵鼠輸入、重新連線和服務狀態都需分別核對。本篇尚未保存適合公開的登入及設定畫面。
 
 ### 練習
 
@@ -74,13 +82,25 @@ flowchart LR
 
 ## 實機遠端桌面畫面
 
-本次重新登入 RP5 的遠端桌面後，實際在桌面開啟 qiv；[第 8 課的視窗截圖](./圖檔/lesson08-qiv-screenshot.png)由該遠端桌面擷取並裁切。截圖可展示遠端桌面上顯示程式的結果，但裁切後不含 VNC 連線介面，不能作為登入步驟或安裝設定畫面的替代；這些步驟尚未補拍。
+先前在遠端桌面開啟 qiv 的畫面有[第 8 課截圖](./圖檔/lesson08-qiv-screenshot.png)，但它是舊版操作證據，不能代表 Trixie/Wayland。本課需要補上 Trixie 的服務狀態、連線畫面和鍵鼠輸入確認。
+
+## 預期結果
+
+成功連線時，VNC 用戶端應顯示 RP5 桌面，而且滑鼠或鍵盤輸入有回應。畫面可見、連線狀態與鍵鼠輸入是三種需分別確認的結果。
+
+## 常見錯誤與排查
+
+連線錯誤可能是伺服器、協定、網路或用戶端不相容。先確認 RP5 正在執行與目前桌面相容的遠端桌面服務；不要以 X11 的 service 名稱判斷 Wayland 狀態。
+
+## 準備項目
+
+RP5 與操作端電腦需要連到可互相通訊的網路；操作端需有 VNC Viewer，RP5 需執行與目前 Wayland 桌面相容的遠端桌面服務。開始前先知道應連線的 RP5 名稱或位址；驗證時不要在公開教材記錄帳號、IP 或認證資料。
 
 ## 與原文章的差異
 
-- 補充 X11、Wayland 與 VNC 伺服器的差異，並保留本機服務的實測輸出。
+- 將 Trixie Wayland/WayVNC 設為主要路徑，並把 X11 服務檢查明確標為舊版紀錄。
 - 加入首次連線的身分確認；本次沒有把帳號密碼放入教材。
-- 已實際連上桌面，但尚未保存可公開的操作截圖。
+- 遠端操作曾成功連線；Trixie 的端到端操作截圖仍待重做。
 
 參考：[Raspberry Pi 官方遠端存取文件](https://www.raspberrypi.com/documentation/computers/remote-access.html)。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。

@@ -1,8 +1,9 @@
 # 第 17 課｜使用 OpenCV 讀取灰階圖檔
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222886366) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222886366) · 更新日期：2026-11-05
+> **Trixie 狀態：**本課以 Trixie 64 位元作主要教學目標；待重測項目以[基線與測試矩陣](./乾淨系統基線與測試矩陣.md)標示。Bookworm 舊輸出不代表新系統已通過。
 
-> 本課已在 Thonny 實測：合成彩色圖轉灰階並存檔。完整原文情境及其他舊案例仍須依下文標示重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 既有 Thonny 測試只代表舊環境的合成圖轉灰階並存檔；本課 Trixie/Python 3.13 的完整重測仍待完成。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -10,7 +11,9 @@
 
 ## 事前準備
 
-系統 OpenCV 與 NumPy 已可匯入；程式在目前目錄寫入 `lesson17-gray.png`。
+在 Trixie/Python 3.13 使用[第 14 課的 OpenCV 建立流程](./Thonny環境與套件安裝.md)建立新的環境，並在 Thonny 選取它。環境至少包含 `opencv-python==4.12.0.88` 和 `numpy==2.2.4`。本課的基本範例以合成圖為輸入，另有讀取圖片檔的練習；無需相機。請先確認圖片路徑可由 Thonny 工作目錄讀取。
+
+OpenCV 和 NumPy 需安裝於本課新建的隔離 venv；程式在目前目錄寫入 `lesson17-gray.png`。
 
 請在自己的練習目錄操作。已存在的同名輸出檔可能被覆寫，先確認路徑；用不著將任何相機照片上傳公開儲存庫。
 
@@ -42,7 +45,7 @@ saved True
 
 ![第 17 課在 Thonny 的程式與 Shell 實際畫面](./圖檔/lesson17-thonny2.png)
 
-本次選用既有環境 `/home/pi/myenv/bin/python3`。本次基本範例先產生合成圖；下方另以 Thonny 讀取先前的相機實拍素材。圖形視窗顯示仍待重測。 相機或影像相關套件的準備及可重現環境請參考[Thonny 環境指南](./Thonny環境與套件安裝.md)。
+以下這筆 Thonny 操作畫面屬於先前測試環境，不是 Trixie 截圖。基本範例先產生合成圖；下方另以 Thonny 讀取相機實拍素材。Trixie 的重新執行和圖形視窗顯示仍待重測。 相機或影像相關套件的準備及可重現環境請參考[Thonny 環境指南](./Thonny環境與套件安裝.md)。
 
 `saved True` 表示 OpenCV 成功寫入圖片。灰階圖片只有一個通道；若寫入失敗，檢查目前資料夾權限。
 
@@ -125,7 +128,7 @@ cv2.destroyAllWindows()
 print('window closed', flush=True)
 ```
 
-本次使用 RP5 系統 OpenCV 實際輸出節錄：
+Bookworm 歷史測試的 RP5 系統 OpenCV 輸出節錄（不是 Trixie 證據）：
 
 ```text
 image shape: (240, 320)
@@ -136,6 +139,14 @@ window closed
 ![RP5 顯示灰階圖片的視窗截圖](./圖檔/lesson17-opencv-window.png)
 
 這是遠端桌面擷取並裁切的操作截圖；圖中的灰色矩形是合成資料，滑鼠游標也出現在視窗中。顯示灰階圖需要圖形桌面與支援 GUI 的 OpenCV；本次沒有測試原文外部圖片。視窗程式在取得按鍵或等待 60 秒後結束。
+
+## 預期結果
+
+讀取成功時，灰階影像陣列只有高、寬兩個維度，資料型別為 uint8；若使用 imread，寫入結果應為 True。
+
+## 常見錯誤與排查
+
+若 imread 回傳 None，先檢查檔名、工作目錄、大小寫和素材是否下載完成；轉換或存檔前確認讀取成功。
 
 ## 與原文章的差異
 
