@@ -83,6 +83,10 @@ top class: 957 custard apple 0.0625
 
 ![Thonny 在獨立環境執行 TFLite 圖片分類](./圖檔/thonny-tflite-clean-test.png)
 
+![先前 Thonny 單圖分類的另一張截圖](./圖檔/supp-tflite-classify-thonny.png)
+
+*圖：先前保存的 Thonny 單圖分類畫面；畫面顯示的解譯器是 `/home/pi/myenv/bin/python3`，截圖日期未另記。這張圖與上方獨立環境測試為不同環境紀錄，輸出數值相同，不代表本次在 Trixie 重新執行。*
+
 這些是模型對這張生成圖片給出的分數，不能用來確認水果品種或估計整體準確率。不同版本與輸入可能改變結果。
 
 ## 即時相機分類：Thonny 實測 50 張影格

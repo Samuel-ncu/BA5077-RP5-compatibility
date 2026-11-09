@@ -26,6 +26,23 @@ active
 
 這只確認 `xauth` 存在與 SSH 服務啟動，**不代表 X11 圖形轉發已測試成功**。
 
+## 現有 Trixie：Raspberry Pi Connect 狀態紀錄
+
+2026-11-09 使用 Raspberry Pi Connect 的**桌面分享**操作這台 RP5，並在桌面終端機執行 `rpi-connect status`，畫面顯示：
+
+```text
+Signed in: yes
+Subscribed to events: yes
+Screen sharing: allowed (1 session active)
+Remote shell: allowed (0 sessions active)
+```
+
+![現有 Trixie 的 Connect 狀態實測截圖](./圖檔/lesson06-trixie-connect-status.png)
+
+*圖：RP5 桌面終端機的實際截圖，已裁切。數字代表截圖當時的連線狀態。Remote shell 顯示 allowed 僅表示允許，不代表本次已完成遠端終端機操作驗證。*
+
+這次由 Connect 桌面分享實際操作 RP5；Connect 遠端終端機的完整流程和 MobaXterm X11 視窗轉發仍待實測、補圖。Connect 遠端終端機、MobaXterm 的單一程式視窗轉發與第 10 課的完整桌面分享是不同方式；請參考 [Raspberry Pi Connect 官方文件](https://www.raspberrypi.com/documentation/services/connect.html)。
+
 ## 操作方式
 
 1. 在 Windows 開啟 MobaXterm，建立指向 RP5 的 SSH 連線。
@@ -78,7 +95,7 @@ flowchart LR
 
 - 區分 SSH 連線成功與 X11 轉發成功；本次只驗證前者與 `xauth`。
 - 不將安裝整套桌面元件列為所有使用者的必備步驟。
-- 尚未完成 MobaXterm 轉發實測與畫面截圖。
+- 補上現有 Trixie 的 Connect 狀態截圖；Connect 遠端終端機完整流程與 MobaXterm X11 轉發仍未實測。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
 - 新增轉發原理和排查順序；仍未把本機工具存在誤認為端到端成功。
