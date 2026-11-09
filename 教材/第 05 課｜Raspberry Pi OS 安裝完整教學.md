@@ -1,4 +1,4 @@
-# 第 5 課｜Raspberry Pi OS 安裝完整教學
+# 第 05 課｜Raspberry Pi OS 安裝完整教學
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222880489) · 更新日期：2026-10-29
 

@@ -1,4 +1,4 @@
-# 第 7 課｜連接 Raspberry Pi 5 相機模組
+# 第 07 課｜連接 Raspberry Pi 5 相機模組
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222855742) · 更新日期：2026-10-29
 

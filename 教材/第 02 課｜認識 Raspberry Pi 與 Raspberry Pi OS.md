@@ -1,4 +1,4 @@
-# 第 2 課｜認識 Raspberry Pi 與 Raspberry Pi OS
+# 第 02 課｜認識 Raspberry Pi 與 Raspberry Pi OS
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222880459) · 更新日期：2026-10-29
 

@@ -1,4 +1,4 @@
-# 第 6 課｜使用 MobaXterm 對 Raspberry Pi 啟用 X11 轉發
+# 第 06 課｜使用 MobaXterm 對 Raspberry Pi 啟用 X11 轉發
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222855718) · 更新日期：2026-10-29
 

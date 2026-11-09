@@ -1,4 +1,4 @@
-# 第 3 課｜網路基礎與作業系統：應用於 Raspberry Pi（上）
+# 第 03 課｜網路基礎與作業系統：應用於 Raspberry Pi（上）
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222880474) · 更新日期：2026-10-29
 

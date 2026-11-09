@@ -1,4 +1,4 @@
-# 第 9 課｜Raspberry Pi 的 UNIX 指令教學
+# 第 09 課｜Raspberry Pi 的 UNIX 指令教學
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222855934) · 更新日期：2026-10-29
 

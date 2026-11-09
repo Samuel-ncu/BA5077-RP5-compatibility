@@ -1,4 +1,4 @@
-# 第 8 課｜Raspberry Pi 5 安裝與使用 qiv 圖片檢視器
+# 第 08 課｜Raspberry Pi 5 安裝與使用 qiv 圖片檢視器
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222855730) · 更新日期：2026-10-29
 
