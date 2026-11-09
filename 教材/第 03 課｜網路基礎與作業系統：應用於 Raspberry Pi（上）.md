@@ -38,7 +38,7 @@ flowchart LR
 printf 'eth0: '; cat /sys/class/net/eth0/operstate
 ```
 
-本機實際輸出：
+先前 Bookworm 系統的實際輸出：
 
 ```text
 eth0: up
@@ -52,13 +52,37 @@ eth0: up
 getent hosts localhost
 ```
 
-本機實際輸出：
+先前 Bookworm 系統的實際輸出：
 
 ```text
 ::1             localhost ip6-localhost ip6-loopback
 ```
 
 `localhost` 指向本機；這項測試不證明外網 DNS 或網際網路可用。
+
+## 跟著做：目前 Trixie 的網路介面與名稱解析
+
+2026-11-09 在 RP5 既有 Trixie 桌面開啟終端機，逐行執行下面命令；這次沒有重灌系統，也沒有修改網路設定。`eth0` 通常是有線介面、`wlan0` 通常是無線介面，實際名稱應以自己的系統為準。
+
+```bash
+getent hosts localhost
+cat /sys/class/net/eth0/operstate
+cat /sys/class/net/wlan0/operstate
+```
+
+本次實際輸出依序為：
+
+```text
+::1             localhost ip6-localhost ip6-loopback
+down
+up
+```
+
+![目前 Trixie 終端機的名稱解析、有線與無線介面狀態實際截圖](./圖檔/lesson03-trixie-network.png)
+
+這是透過 Pi Connect 操作 RP5 時的終端機截圖，為閱讀及不顯示其他畫面而裁切。測試時 `eth0` 回傳 `down`、`wlan0` 回傳 `up`；它們各自描述當時的介面狀態，**不代表每台 RP5 都應該得到相同答案**。本次仍能透過 Wi-Fi 遠端操作；單獨的 `up` 也不能證明網際網路或每個服務一定可用。
+
+`localhost` 的 `::1` 是 IPv6 本機位址，只用來確認本機名稱解析，不能推論外網 DNS 正常。若介面不存在而出現找不到檔案，先在 RP5 的終端機用 `ip -br link` 查看實際介面名稱；公開作業前請檢查截圖，避免公開不必要的網路資料。
 
 ## 練習與後續應用
 
@@ -114,6 +138,6 @@ boot-firmware-present
 
 - 增加電腦直連 RP5 的情境，並分開說明介面狀態、IP 位址與名稱解析。
 - 命令與輸出取自本次 RP5 實測；未將實際區網位址寫入公開教材。
-- 尚未補拍本課畫面。
+- 新增現有 Trixie 的 Pi Connect 終端機操作截圖與介面狀態；先前 Bookworm 的有線狀態保留作比較。
 - 加入作業系統、IP、名稱解析與服務入口的初學者背景、示意圖和練習。
 - 依原文作業系統主題增加核心、發行版、GUI 與檔案系統，並補上目錄查詢實測。

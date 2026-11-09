@@ -108,7 +108,7 @@ finally:
     server.server_close()
 ```
 
-在 RP5 的 Thonny 選「檔案 → 開啟」開啟上方範例，按綠色執行按鈕。2026-10-29 在此 RP5 的 Thonny 實際輸出：
+在 RP5 的 Thonny 選「檔案 → 開啟」開啟上方範例，按綠色執行按鈕。2026-10-29 在先前 Bookworm 環境的 Thonny 實際輸出：
 
 ```text
 HTTP status: 200
@@ -116,6 +116,25 @@ response: Hello, AIoT!
 ```
 
 ![Thonny 實際執行本機 HTTP 範例](./圖檔/lesson04-http-thonny.png)
+
+### 在現有 Trixie 系統操作（2026-11-09）
+
+這次使用 Raspberry Pi 5 現有的 Debian 13 Trixie 環境、Thonny 與系統 Python 3.13.5；並非全新安裝的系統。這個範例使用 Python 標準函式庫，不需要另外安裝套件。
+
+1. 在 RP5 取得[本課 Python 範例](./範例程式/第04課-本機網頁.py)，下載與放置方式請見[素材下載與使用](./練習素材/素材下載與使用.md)。
+2. 開啟 Thonny，選「File → Open」找到並開啟此範例。確認右下角選用 RP5 的系統 Python 3。
+3. 點選綠色執行鈕，觀察下方 Shell。執行完成後會回到 `>>>` 提示符號。
+
+本次在 Thonny 實際得到：
+
+```text
+HTTP status: 200
+response: Hello, AIoT!
+```
+
+![現有 Trixie 系統中，Thonny 的程式與實際輸出](./圖檔/lesson04-http-trixie-thonny.png)
+
+*圖：RP5 上 Thonny 實際執行畫面，為方便閱讀而裁切。路徑與檔名可依個人存放位置不同；輸出結果的兩行文字應相同。*
 
 ### 讀懂結果
 
@@ -134,6 +153,6 @@ response: Hello, AIoT!
 
 - 新增本機實測的 Linux、ARM64、APT 與 SSH 服務檢查。
 - 不將全面升級或啟動網頁伺服器視為閱讀文章的必要步驟。
-- 新增本機 HTTP 範例的 Thonny 操作截圖；SSH 與 Apache 設定步驟未補拍。
+- 新增既有 Trixie 系統的 Thonny 本機 HTTP 實測及操作截圖；SSH 與 Apache 設定步驟未補拍，乾淨系統尚未驗證。
 - 補充 SSH、套件管理、連線流程圖及學生練習；原文網頁伺服器情境仍未在本篇完整實測。
 - 新增本機回送 HTTP 的實作及真實輸出；原文的 Apache 和對外網頁伺服器仍未完成實測。

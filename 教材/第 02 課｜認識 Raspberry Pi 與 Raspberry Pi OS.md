@@ -6,7 +6,7 @@
 
 ## 學習目標
 
-認識 Raspberry Pi 單板電腦和 Raspberry Pi OS，並能在自己的機器上確認型號、架構、核心數及 Python 版本。Raspberry Pi OS 是針對 Raspberry Pi 調整的 Linux 系統；本次機器使用的版本以 Debian 12 Bookworm 為基礎。
+認識 Raspberry Pi 單板電腦和 Raspberry Pi OS，並能在自己的機器上確認型號、架構、核心數及 Python 版本。Raspberry Pi OS 是針對 Raspberry Pi 調整的 Linux 系統；本教材先前的實測以 Debian 12 Bookworm 為基礎；下方另記錄現有 Debian 13 Trixie 的實測。
 
 ## 需要準備什麼
 
@@ -47,7 +47,7 @@ printf 'cores: '; getconf _NPROCESSORS_ONLN
 python3 --version
 ```
 
-本次實際輸出：
+先前 Bookworm 系統的實際輸出：
 
 ```text
 model: Raspberry Pi 5 Model B Rev 1.0
@@ -60,7 +60,7 @@ Python 3.11.2
 
 記憶體可用 `free -h` 查看；這台機器的總記憶體曾顯示約 7.9 GiB，對應 8 GB 機型。可用量隨當時執行的程式而變。
 
-### 本次記憶體實測
+### 先前 Bookworm 記憶體實測
 
 ```bash
 free -h
@@ -74,7 +74,7 @@ Swap:          2.0Gi          0B       2.0Gi
 
 `available` 是估計可供程式使用的記憶體，會隨工作負載改變。`buff/cache` 包含系統用來加快讀取的快取；`Swap` 是利用儲存裝置的交換空間，不是另一條實體 RAM。
 
-### 本次系統與儲存裝置實測
+### 先前 Bookworm 系統與儲存裝置實測
 
 ```bash
 cat /etc/os-release | head -1
@@ -90,6 +90,57 @@ mmcblk0     29.7G disk
 ```
 
 29.7G 是這次的儲存裝置容量，不是 RAM。`/` 是主要系統檔案所在的掛載位置；還有多少可用空間需要另用 `df -h` 查詢。
+
+## 跟著做：在目前的 Trixie 系統查詢
+
+2026-11-09 使用 Pi Connect 的 RP5 桌面操作已存在的終端機；本機並非剛重灌的乾淨系統。此課是基本系統認識，使用系統終端機；後續 Python 程式課主要使用 Thonny。
+
+1. 在 RP5 桌面開啟 **Terminal（終端機）**；若用 Raspberry Pi Connect，先連上桌面分享，再在 RP5 內開啟終端機。
+2. 依序輸入以下命令並按 Enter。`cat` 查詢型號，`echo` 換行；接著查詢架構、核心數、Python、記憶體、儲存裝置及系統名稱。
+
+```bash
+cat /proc/device-tree/model; echo
+uname -m
+getconf _NPROCESSORS_ONLN
+python3 --version
+free -h
+lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS
+head -1 /etc/os-release
+```
+
+本次在終端機操作的結果如下；記憶體使用量、裝置名稱與容量會依實際系統不同：
+
+```text
+Raspberry Pi 5 Model B Rev 1.0
+aarch64
+4
+Python 3.13.5
+               total        used        free      shared  buff/cache   available
+Mem:           7.9Gi       1.2Gi       4.0Gi       163Mi       2.9Gi       6.7Gi
+Swap:          2.0Gi          0B       2.0Gi
+NAME         SIZE TYPE MOUNTPOINTS
+loop0          2G loop
+mmcblk0     119.3G disk
+├─mmcblk0p1  512M part /boot/firmware
+└─mmcblk0p2 118.7G part /
+zram0          2G disk [SWAP]
+PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+```
+
+![RP5 Trixie 終端機顯示型號、記憶體、儲存與系統的實際截圖](./圖檔/lesson02-trixie-system.png)
+
+上圖為 Pi Connect 桌面中的實際終端機畫面，為了閱讀而裁切。`7.9Gi` 是系統看見的記憶體，對應 8 GB 型號；`119.3G` 是這張 microSD 的容量，兩者用途不同。`zram0` 是這台系統顯示的交換裝置；不同安裝方式可能不同。
+
+### 與先前 Bookworm 結果比較
+
+| 項目 | 先前 Bookworm | 目前 Trixie |
+| --- | --- | --- |
+| 系統名稱 | Debian GNU/Linux 12 (bookworm) | Debian GNU/Linux 13 (trixie) |
+| Python | 3.11.2 | 3.13.5 |
+| microSD | 約 29.7G | 約 119.3G |
+| 環境狀態 | 先前既有系統 | 目前既有系統，非全新重灌 |
+
+版本差異可能影響套件安裝；不能把 Bookworm 的安裝結果直接當作 Trixie 成功的證據。後續課程會逐項記錄適用環境。
 
 ## 檢查與排除
 
@@ -125,6 +176,6 @@ CPU 核心數是能力的一個指標，不等於所有程式都會自動同時�
 
 - 補上這台 RP5 的實際命令與輸出；原文的機型與作業系統介紹仍適用作背景知識。
 - 將硬體架構與軟體相容性分開說明，避免把 ARM64 視為所有套件均可安裝。
-- 尚未補拍本課畫面。
+- 新增現有 Trixie 系統的電腦操作截圖與輸出；舊 Bookworm 輸出保留為版本對照。
 - 新增初學者元件解說、概念圖、記憶體及儲存裝置實測與練習題；概念圖不是截圖。
 - 補充 CPU、記憶體、儲存和作業系統協同工作的說明及自我檢查。

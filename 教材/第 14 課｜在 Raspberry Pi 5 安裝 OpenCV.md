@@ -1,190 +1,173 @@
 # 第 14 課｜在 Raspberry Pi 5 安裝 OpenCV
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222877021) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222877021) · 本次實測：2026-11-09 · [教材目錄](./README.md)
 
-> Thonny 重測進行中：請先看本篇標示「Thonny 實測」的段落；其他既有輸出依原測試方式標示，完整情境仍待重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 實測環境：Raspberry Pi 5、8 GB RAM、現有 Debian GNU/Linux 13（Trixie）、64 位元、Python 3.13.5。已在 Thonny 新建虛擬環境，完成安裝、繪圖、存檔及顯示視窗。這是已有使用資料的系統，並非全新重灌驗證。
 
-## 學習目標
+## 學習目標與背景
 
-確認目前 Python 執行環境載入的 OpenCV 版本與實際模組位置。
+完成後，你能在 Thonny 建立並選用獨立環境、安裝 OpenCV，並畫出、保存及顯示一張圖片。
 
-## 事前準備
+OpenCV 是影像處理工具：圖片可以表示為許多像素的陣列，程式可以改變像素顏色、尋找形狀，或處理相機畫面。OpenCV 的 Python 模組叫 `cv2`；NumPy 則用陣列保存圖片資料。
 
-使用 RP5 已存在的系統 Python 與 OpenCV。
-
-請在自己的練習目錄操作。已存在的同名輸出檔可能被覆寫，先確認路徑；用不著將任何相機照片上傳公開儲存庫。
-
-## 程式與執行
-
-將下列程式存為 `第14課.py`。這是本次在 RP5 上執行的程式；完整檔案也在[範例程式](./範例程式/第14課.py)。
-
-```python
-import cv2
-print("opencv", cv2.__version__)
-print("path", cv2.__file__)
-```
-
-先前此段由終端機的系統 Python 執行；Thonny 的新環境範例及實測請看下方。
-
-## 本機實際輸出
-
-```text
-opencv 4.10.0-dev
-path /usr/lib/python3/dist-packages/cv2/__init__.py
-```
-
-路徑顯示此 Python 實際載入的套件；不同系統會不同。此機套件管理器的版本紀錄與 Python 匯入版本不同，不可只憑其中一個數字判斷。
-
-## 背景與核心概念
-
-### 為什麼要安裝 OpenCV？
-
-OpenCV 提供讀取影像、色彩轉換、輪廓與模型推論等函式。Python 的 `import cv2` 是載入模組；程式庫版本、CPU 架構及安裝環境都可能影響可用功能。
-
-### 思考、練習與後續應用
-
-解釋「版本顯示成功」和「所有 OpenCV 擴充功能都能使用」的差別；比較系統 Python 與虛擬環境。
-
-先確認依賴與磁碟空間，再選擇合適版本；未來更新時應重測實際需要的功能。
-
-進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
-
-## 概念流程圖
+不同課可能需要不同版本的套件。**虛擬環境**是各自獨立的 Python 套件資料夾；在 Thonny 選哪個環境，就在該環境安裝及執行。本課環境先用於繪圖，尚未驗證能直接用於相機或所有其他課程。
 
 ```mermaid
 flowchart LR
-    A["選擇 Python 執行環境"]
-    B["準備相容 OpenCV"]
-    C["匯入 cv2"]
-    D["測試所需功能"]
-    A --> B --> C --> D
+ A[Thonny 選用虛擬環境] --> B[安裝 OpenCV 與 NumPy]
+ B --> C[匯入 cv2 並繪圖]
+ C --> D[儲存 PNG 並顯示視窗]
 ```
 
-此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
+*上圖為觀念說明，不是操作截圖。*
 
-## 舊紀錄：終端機獨立環境安裝 OpenCV
+## 準備
 
-以下保留先前終端機實測供比較；學生請優先使用下方 Thonny 實測。
+- Raspberry Pi 5 桌面、可使用的滑鼠與鍵盤或 Raspberry Pi Connect 桌面分享、網路連線與 Thonny。
+- 本練習自行產生圖片，不需要下載圖片或相機。下載下方程式時，在 GitHub 點連結，再使用 **Raw → 另存新檔**，存到 RP5 容易找到的位置；也可以直接複製文中程式到 Thonny。詳見[素材下載與使用](./練習素材/素材下載與使用.md)。
+- 請使用自己的新空資料夾，避免覆蓋既有環境。本例環境叫 `opencv-course-env`，可使用其他名稱。
 
-上方測試的是系統已存在的 OpenCV。為了練習安裝，本次另在 `/tmp/ba5077-opencv-clean-20261029` 建立新的 Python 虛擬環境，安裝無 GUI 的 `opencv-python-headless`；沒有變更系統 Python 的 OpenCV。下列安裝需要網路及可用磁碟空間。`/tmp` 可能在重新開機後清除，因此適合短暫練習，不適合保存重要作業。
+## 步驟 1：用 Thonny 建立獨立環境
 
-在 RP5 上，先確認下列練習目錄不存在；如果已存在，請選另一個新路徑，並同步調整後續命令。執行時使用自己的練習目錄，不要直接覆寫既有環境：
+1. 在 RP5 桌面開啟 **Thonny**。上方選單選 **Tools → Options → Interpreter**。
+2. 點選右下方 **New virtual environment**，閱讀提示後按 **OK**。
+3. 在個人資料夾（Home）建立一個新的空資料夾，例如 `opencv-course-env`。進入空資料夾後按 **OK**，等待建立完成。
+4. 確認 **Python executable** 指向新環境中的 `bin/python3`，按 **OK**。回到主畫面後，右下角也應顯示新環境路徑。
 
-```bash
-python3 -m venv /tmp/ba5077-opencv-clean-20261029
-/tmp/ba5077-opencv-clean-20261029/bin/python -m pip install 'numpy<2' opencv-python-headless==4.10.0.84
+![Thonny 中選取新建的虛擬環境](./圖檔/lesson14-trixie-env.png)
+
+*圖：RP5 上實際建立的環境設定畫面，已裁切。本例路徑為 `/home/pi/opencv-course-env/bin/python3`；你的使用者名稱與路徑可不同。*
+
+## 步驟 2：安裝 OpenCV
+
+本次新環境在 **Tools → Manage packages** 出現 `ModuleNotFoundError: No module named 'pkg_resources'`，套件管理器未能完成操作。下圖是本次實際畫面，不是所有版本都會發生。
+
+![Thonny 套件管理器缺少 pkg_resources 的實測畫面](./圖檔/lesson14-trixie-pkg-error.png)
+
+本課在 Thonny 以以下安裝程式完成安裝。程式透過目前選用的 Python 執行 pip；它會從套件來源取得指定版本，也會安裝供此版 Thonny 使用的 `setuptools`。
+
+1. 下載[第 14 課 Trixie 安裝程式](./範例程式/第14課-Trixie-Thonny安裝.py)，或將下方程式複製到新的 Thonny 編輯視窗並存檔。
+2. 確認 Thonny 右下角仍是剛建的虛擬環境。若剛才看到紅色錯誤，先關閉套件管理器，再按工具列的紅色 **Stop/Restart backend** 重啟解譯器。
+3. 在 Thonny 開啟安裝程式，按綠色 **Run**。等待 Shell 出現完成訊息；安裝需要網路，初次下載時間依網路而異。
+
+```python
+"""第 14 課：在選定的 Thonny 虛擬環境安裝 OpenCV。"""
+import subprocess
+import sys
+
+print("Python:", sys.executable, flush=True)
+packages = ["setuptools==80.9.0", "numpy==2.2.6", "opencv-python==4.12.0.88"]
+subprocess.run([sys.executable, "-m", "pip", "install", *packages], check=True)
+print("Installation completed. Restart the Thonny interpreter.", flush=True)
 ```
 
-本機安裝輸出節錄：
+本次 Shell 輸出節錄：
 
 ```text
-Collecting numpy<2
-  Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (14.2 MB)
-Collecting opencv-python-headless==4.10.0.84
-  Using cached opencv_python_headless-4.10.0.84-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (29.3 MB)
-Installing collected packages: numpy, opencv-python-headless
-Successfully installed numpy-1.26.4 opencv-python-headless-4.10.0.84
+Python: /home/pi/opencv-course-env/bin/python3
+Successfully installed numpy-2.2.6 opencv-python-4.12.0.88 setuptools-80.9.0
+Installation completed. Restart the Thonny interpreter.
 ```
 
-`Using cached` 表示這次從本機快取取得套件；其他學生初次執行時可能看到下載進度，版本解析結果也可能不同。
+![Thonny 安裝 OpenCV 完成畫面](./圖檔/lesson14-trixie-install.png)
 
-### 實測：檢查相依與功能
+*圖：本次 RP5 的 Thonny 操作截圖，已裁切。NumPy 為下載；OpenCV 顯示 `Using cached`，表示使用了本機快取。套件來源未來可能變動。*
 
-```bash
-/tmp/ba5077-opencv-clean-20261029/bin/python -m pip check
-/tmp/ba5077-opencv-clean-20261029/bin/python -c 'import cv2,numpy; print("OpenCV:",cv2.__version__); print("NumPy:",numpy.__version__); print("SIFT available:",hasattr(cv2,"SIFT_create")); print("bgsegm available:",hasattr(cv2,"bgsegm"))'
+4. 完成後按紅色 **Stop/Restart backend** 重新啟動解譯器，再進行下一步。
+
+## 步驟 3：畫圖、存檔、開啟視窗
+
+1. 下載[繪圖測試程式](./範例程式/第14課-Trixie-OpenCV測試.py)，或複製下面完整程式到 Thonny 並存檔。
+2. 確認右下角仍選用步驟 1 的環境，按綠色 **Run**。
+3. 應出現黑底、綠色圓形的視窗。點選圖片視窗後按任意鍵，或等 30 秒，視窗就會關閉。
+4. 在 RP5 的檔案管理員打開 **Pictures**，找到 `lesson14-opencv.png`。程式避免覆蓋同名檔案；若想再執行一次，先將原圖片改名，或修改程式中的輸出檔名。
+
+```python
+"""第 14 課：建立、保存與顯示一張 OpenCV 圖片。"""
+from pathlib import Path
+import sys
+import cv2
+import numpy as np
+
+image = np.zeros((240, 320, 3), dtype=np.uint8)
+cv2.circle(image, (160, 120), 70, (0, 255, 0), -1)
+cv2.putText(image, "OpenCV", (80, 225), cv2.FONT_HERSHEY_SIMPLEX,
+            1, (255, 255, 255), 2)
+out = Path.home() / "Pictures" / "lesson14-opencv.png"
+if out.exists():
+    raise FileExistsError(f"File exists: {out}. Rename it before running.")
+if not cv2.imwrite(str(out), image):
+    raise RuntimeError(f"Could not save: {out}")
+print("Python:", sys.version.split()[0], flush=True)
+print("OpenCV:", cv2.__version__, flush=True)
+print("NumPy:", np.__version__, flush=True)
+print("Image shape:", image.shape, flush=True)
+print("Center BGR:", image[120, 160].tolist(), flush=True)
+print("Saved:", out, flush=True)
+print("Showing window: press any key or wait 30 seconds.", flush=True)
+cv2.imshow("Lesson 14 OpenCV", image)
+cv2.waitKey(30000)
+cv2.destroyAllWindows()
+print("Window closed.", flush=True)
 ```
 
-本機實際輸出：
+本次 Thonny Shell 的實際輸出如下；`Saved` 路徑依使用者名稱不同：
 
 ```text
-No broken requirements found.
-OpenCV: 4.10.0
-NumPy: 1.26.4
-SIFT available: True
-bgsegm available: False
-```
-
-`pip check` 只檢查套件宣告的依賴是否滿足；`SIFT available: True` 表示此環境能找到該名稱，不等於所有實際圖片都已測試。`bgsegm available: False` 表示這個環境不能直接執行需要 `cv2.bgsegm` 的第 27 課 MOG 範例；第 27 課使用的是本機另一個有該模組的 OpenCV。
-
-`headless` 套件不包含 GUI 功能，不能假設 `imshow` 能在這個環境開啟視窗；也不能假設不含系統套件的乾淨虛擬環境可以匯入系統 Picamera2。需要桌面、相機或額外模組時，必須針對所選環境另行安裝與實測。不要在同一環境同時安裝多個共享 `cv2` 名稱的 OpenCV 變體，參考[OpenCV Python 套件說明](https://pypi.org/project/opencv-python-headless/)及 [Python 虛擬環境文件](https://docs.python.org/3/library/venv.html)。
-
-### 學生練習
-
-比較系統 Python 的 `4.10.0-dev` 與這個獨立環境的 `4.10.0`；解釋為什麼兩個 Python 會載入不同版本。再說明 `bgsegm` 為何要在使用第 27 課之前單獨檢查。此測試未驗證 GUI，也未從原文的完整編譯流程重新編譯 OpenCV。
-
-## 舊紀錄：終端機安裝畫面（不是 Thonny）
-
-為確認安裝可在隔離環境重現，本次在 RP5 新建 `/tmp/ba5077-install-screen-test`，執行以下[完整測試腳本](./範例程式/第14課-隔離安裝.sh)。這個路徑僅供本次示範，`/tmp` 可能在重新開機後清除；學生應自行選擇新的空目錄，先確認不會覆寫既有環境。腳本最後的 90 秒等待只為保留截圖時間，不是安裝所需步驟。
-
-```bash
-#!/bin/bash
-set -euo pipefail
-printf 'Create isolated Python environment\n'
-python3 -m venv /tmp/ba5077-install-screen-test
-source /tmp/ba5077-install-screen-test/bin/activate
-printf 'Install verified package versions\n'
-python -m pip install --disable-pip-version-check --progress-bar off 'numpy==1.26.4' 'opencv-python-headless==4.10.0.84'
-printf '\nCheck dependencies and import\n'
-python -m pip check
-python -c "import cv2,numpy; print('OpenCV:',cv2.__version__); print('NumPy:',numpy.__version__); print('SIFT:',hasattr(cv2,'SIFT_create'))"
-printf 'Installation test completed.\n'
-sleep 90
-```
-
-這次實際輸出節錄：
-
-```text
-Using cached numpy-1.26.4-...
-Using cached opencv_python_headless-4.10.0.84-...
-Successfully installed numpy-1.26.4 opencv-python-headless-4.10.0.84
-No broken requirements found.
-OpenCV: 4.10.0
-NumPy: 1.26.4
-SIFT: True
-Installation test completed.
-```
-
-![RP5 的 OpenCV 安裝與驗證操作截圖](./圖檔/lesson14-install-screenshot.png)
-
-此圖由 RP5 遠端桌面擷取，裁切後保留安裝終端機；這次 pip 使用既有快取，因此不是重新從網路完整下載的證據。`pip check` 只檢查已宣告的相依關係，`SIFT: True` 只確認介面存在。此獨立環境是 headless 版本，不包含圖形視窗支援；第 19、20 課的 GUI 截圖是以另一個具 GTK3 支援的系統 OpenCV 完成，不可混為一談。Picamera2 在此隔離環境與原文完整編譯流程仍未測。
-
-## Thonny 實測：建立環境、安裝與開啟視窗
-
-請先依[Thonny 環境與套件安裝](./Thonny環境與套件安裝.md)建立獨立環境並確認右下角為該環境。此次透過 Thonny 執行[安裝程式](./範例程式/第14課-Thonny安裝套件.py)，使用選定的解譯器安裝 `numpy==1.26.4` 與 `opencv-python==4.10.0.84`。不要把不同 OpenCV 變體同時裝進同一環境。
-
-本機 Shell 實際輸出節錄：
-
-```text
-Installing collected packages: numpy, opencv-python
-Successfully installed numpy-1.26.4 opencv-python-4.10.0.84
-Installation completed. Restart Thonny interpreter before testing.
-```
-
-![在 Thonny 執行套件安裝後的 Shell 輸出](./圖檔/thonny-package-install.png)
-
-接著在 Thonny 開啟[第 12 課的測試程式](./範例程式/第12課-Thonny測試.py)，按綠色執行鈕：
-
-```text
-OpenCV version: 4.10.0
-Image shape: (120, 160, 3)
+Python: 3.13.5
+OpenCV: 4.12.0
+NumPy: 2.2.6
+Image shape: (240, 320, 3)
 Center BGR: [0, 255, 0]
+Saved: /home/pi/Pictures/lesson14-opencv.png
+Showing window: press any key or wait 30 seconds.
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in "/home/pi/opencv-course-env/lib/python3.13/site-packages/cv2/qt/plugins"
+Window closed.
 ```
 
-![Thonny 新環境中的 OpenCV 匯入測試](./圖檔/thonny-newenv-demo.png)
+![Thonny 執行 OpenCV 並顯示綠色圓形的實測畫面](./圖檔/lesson14-trixie-demo.png)
 
-再開啟[影像視窗測試](./範例程式/第14課-Thonny視窗測試.py)，按執行：畫面顯示綠色圓形，約 30 秒或在圖片視窗按鍵後結束；Shell 先後顯示 `Opening image window` 和 `Window closed`。
+*圖：本次 RP5 上 Thonny、程式輸出及 OpenCV 視窗的實際截圖，已裁切。本次雖顯示 Wayland 相關訊息，視窗仍正常開啟及關閉；其他桌面設定不保證有相同結果。*
 
-![Thonny 執行 OpenCV 圖形視窗的實際畫面](./圖檔/thonny-opencv-window.png)
+![程式實際產生的 PNG 圖片](./圖檔/lesson14-trixie-output.png)
 
-此環境尚未驗證 Picamera2、bgsegm 等擴充模組，也不是所有後續課程通用的環境；不同課程須依相依需求另行測試。
+*圖：本次程式在 RP5 產生的 PNG 成果圖。*
+
+## 讀懂結果
+
+- `Image shape: (240, 320, 3)` 表示高 240、寬 320，每個像素有 3 個顏色數值。
+- OpenCV 一般以 **BGR（藍、綠、紅）**順序表示彩色像素；`[0, 255, 0]` 因此是綠色。
+- `cv2.imwrite` 存檔；`cv2.imshow` 顯示圖片；`destroyAllWindows` 關閉視窗。成功匯入並不代表所有擴充或相機功能都已驗證。
+
+## 常見問題
+
+- **`No module named cv2`：**檢查右下角選用的是否為剛安裝套件的環境，重新啟動解譯器後再執行。
+- **`No module named pkg_resources`：**本次是套件管理器錯誤；依步驟 2 關閉管理器、重啟解譯器，再執行本課安裝程式。若仍失敗，記下完整錯誤和網路狀態。
+- **`FileExistsError`：**程式不覆蓋同名圖片。將原圖改名或修改輸出檔名後再執行。
+- **有 Wayland 訊息但視窗已出現：**本次有此訊息且視窗可用。若視窗未出現或程式中止，保留完整錯誤並檢查桌面與 OpenCV 套件；不能只憑本次結果保證其他系統也可顯示。
+- **相機套件找不到：**本環境尚未驗證 Picamera2，不要把本課繪圖結果視為相機已完成。
+
+## 練習與應用
+
+1. 將 `(0, 255, 0)` 改成 `(255, 0, 0)`，觀察顏色變化；改用新檔名保存。
+2. 調整圓心與半徑，思考座標從圖片哪個角落開始。
+3. 後續可將相機照片轉成陣列，用類似方法畫出偵測框或標示結果。
+
+## Bookworm 和 Trixie 的差別
+
+| 項目 | 先前 Bookworm 紀錄 | 本次 Trixie 實測 |
+|---|---|---|
+| Python 與套件 | 曾在獨立環境測試 Python 3.11、OpenCV 4.10.0、NumPy 1.26.4 | Python 3.13.5、OpenCV 4.12.0、NumPy 2.2.6 |
+| 安裝與 GUI | 曾在 Thonny 測試獨立環境及視窗 | 在新建 Thonny 環境以安裝程式安裝，畫圖、存檔、開窗成功 |
+| 限制 | 歷史紀錄；不代表目前系統 | 非重灌系統；相機及全部擴充未測 |
+
+系統發行版的 APT `python3-opencv` 與虛擬環境 pip 的 `opencv-python` 是不同安裝路徑，版本和能否互相看見取決於環境。Debian 官方套件清單列有 [Bookworm 與 Trixie 的版本](https://packages.debian.org/search?keywords=python3-opencv)，但本課**沒有在 Trixie 從 APT 重新安裝並驗證**。
 
 ## 與原文章的差異
 
-- 新增 Thonny 建立環境、程式安裝套件和開啟影像視窗的操作與截圖；套件管理器問題及替代操作見共用指南。
-- 原文包含多種安裝方式；本版先驗證既有安裝，避免同時安裝多個 OpenCV 變體。若缺少套件，另參考共用安裝紀錄。
-- 上述文字輸出是本次實機紀錄，其他版本或環境可能不同。
-- 新增隔離環境中實際安裝與驗證的終端機截圖。
-- 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
-- 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
-- 新增獨立環境實際安裝 headless OpenCV、依賴檢查及 SIFT／bgsegm 存在檢查；未宣稱測試 GUI 或原文完整編譯流程。
+- 原文介紹 APT、命令列虛擬環境與原始碼編譯；本課聚焦初學者在 Thonny 建立環境、安裝並驗證，沒有重做原始碼編譯。
+- 原文的虛擬環境範例同時列出 `opencv-python` 與 `opencv-python-headless`；本課只裝桌面版。兩者使用同一個 `cv2` 名稱，[套件官方說明](https://pypi.org/project/opencv-python/4.12.0.88/)要求同一環境只選一種變體。
+- 新增 Trixie／Python 3.13 的實測版本、Thonny 套件管理器錯誤與安裝替代方式、真實截圖、實際輸出及圖片成果。
+- [先前 Bookworm 完整紀錄](./歷史紀錄/第14課-Bookworm-20261029.md)保留為版本對照，不視為 Trixie 或全新系統測試。相機和其他 OpenCV 擴充功能仍需依各課另行驗證。
+
+延伸閱讀：[OpenCV Python 教學](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) · [Python 虛擬環境](https://docs.python.org/3/library/venv.html)。

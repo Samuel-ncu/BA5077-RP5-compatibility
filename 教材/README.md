@@ -6,10 +6,10 @@
 
 | 文章 | 狀態 |
 | --- | --- |
-| [第 01 課｜BA5077 AIoT 產品發展實作課程介紹](./%E7%AC%AC%2001%20%E8%AA%B2%EF%BD%9CBA5077%20AIoT%20%E7%94%A2%E5%93%81%E7%99%BC%E5%B1%95%E5%AF%A6%E4%BD%9C%E8%AA%B2%E7%A8%8B%E4%BB%8B%E7%B4%B9.md) | 已補背景與圖例；完整情境與操作截圖待補 |
-| [第 02 課｜認識 Raspberry Pi 與 Raspberry Pi OS](./%E7%AC%AC%2002%20%E8%AA%B2%EF%BD%9C%E8%AA%8D%E8%AD%98%20Raspberry%20Pi%20%E8%88%87%20Raspberry%20Pi%20OS.md) | 已補背景與圖例；完整情境與操作截圖待補 |
-| [第 03 課｜網路基礎與作業系統：應用於 Raspberry Pi（上）](./%E7%AC%AC%2003%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8A%EF%BC%89.md) | 已補背景與圖例；完整情境與操作截圖待補 |
-| [第 04 課｜網路基礎與作業系統：應用於 Raspberry Pi（下）](./%E7%AC%AC%2004%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8B%EF%BC%89.md) | 已補背景與圖例；完整情境與操作截圖待補 |
+| [第 01 課｜BA5077 AIoT 產品發展實作課程介紹](./%E7%AC%AC%2001%20%E8%AA%B2%EF%BD%9CBA5077%20AIoT%20%E7%94%A2%E5%93%81%E7%99%BC%E5%B1%95%E5%AF%A6%E4%BD%9C%E8%AA%B2%E7%A8%8B%E4%BB%8B%E7%B4%B9.md) | 課程介紹與產品構想練習；本課不需程式實作 |
+| [第 02 課｜認識 Raspberry Pi 與 Raspberry Pi OS](./%E7%AC%AC%2002%20%E8%AA%B2%EF%BD%9C%E8%AA%8D%E8%AD%98%20Raspberry%20Pi%20%E8%88%87%20Raspberry%20Pi%20OS.md) | 現有 Trixie 系統規格查詢已實測並附截圖；全新系統待測 |
+| [第 03 課｜網路基礎與作業系統：應用於 Raspberry Pi（上）](./%E7%AC%AC%2003%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8A%EF%BC%89.md) | 現有 Trixie 的介面狀態與名稱解析已測並附截圖；其他情境待查 |
+| [第 04 課｜網路基礎與作業系統：應用於 Raspberry Pi（下）](./%E7%AC%AC%2004%20%E8%AA%B2%EF%BD%9C%E7%B6%B2%E8%B7%AF%E5%9F%BA%E7%A4%8E%E8%88%87%E4%BD%9C%E6%A5%AD%E7%B3%BB%E7%B5%B1%EF%BC%9A%E6%87%89%E7%94%A8%E6%96%BC%20Raspberry%20Pi%EF%BC%88%E4%B8%8B%EF%BC%89.md) | 現有 Trixie 已在 Thonny 執行本機 HTTP 並截圖；Apache 與跨機情境待測 |
 | [第 05 課｜Raspberry Pi OS 安裝完整教學](./%E7%AC%AC%2005%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20OS%20%E5%AE%89%E8%A3%9D%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8.md) | 已補背景與圖例；完整情境與操作截圖待補 |
 | [第 06 課｜使用 MobaXterm 對 Raspberry Pi 啟用 X11 轉發](./%E7%AC%AC%2006%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20MobaXterm%20%E5%B0%8D%20Raspberry%20Pi%20%E5%95%9F%E7%94%A8%20X11%20%E8%BD%89%E7%99%BC.md) | 已補背景與圖例；完整情境與操作截圖待補 |
 | [第 07 課｜連接 Raspberry Pi 5 相機模組](./%E7%AC%AC%2007%20%E8%AA%B2%EF%BD%9C%E9%80%A3%E6%8E%A5%20Raspberry%20Pi%205%20%E7%9B%B8%E6%A9%9F%E6%A8%A1%E7%B5%84.md) | 已補相機實拍案例；完整情境仍待測 |
@@ -19,7 +19,7 @@
 | [第 11 課｜Raspberry Pi 的 vi 與 nano 編輯器教學與比較](./%E7%AC%AC%2011%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20vi%20%E8%88%87%20nano%20%E7%B7%A8%E8%BC%AF%E5%99%A8%E6%95%99%E5%AD%B8%E8%88%87%E6%AF%94%E8%BC%83.md) | 已補背景與圖例；完整情境與操作截圖待補 |
 | [第 12 課｜使用 Thonny IDE 與 OpenCV 進行 Python 開發](./%E7%AC%AC%2012%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20Thonny%20IDE%20%E8%88%87%20OpenCV%20%E9%80%B2%E8%A1%8C%20Python%20%E9%96%8B%E7%99%BC.md) | 已補背景與圖例；完整情境與操作截圖待補 |
 | [第 13 課｜Raspberry Pi 使用攝影機完整指南](./%E7%AC%AC%2013%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E4%BD%BF%E7%94%A8%E6%94%9D%E5%BD%B1%E6%A9%9F%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97.md) | 已補背景與圖例；完整情境與操作截圖待補 |
-| [第 14 課｜在 Raspberry Pi 5 安裝 OpenCV](./%E7%AC%AC%2014%20%E8%AA%B2%EF%BD%9C%E5%9C%A8%20Raspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%20OpenCV.md) | 已補背景與圖例；完整情境與操作截圖待補 |
+| [第 14 課｜在 Raspberry Pi 5 安裝 OpenCV](./%E7%AC%AC%2014%20%E8%AA%B2%EF%BD%9C%E5%9C%A8%20Raspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%20OpenCV.md) | 現有 Trixie 已在 Thonny 新建環境、安裝 OpenCV 並繪圖截圖；全新系統及相機待驗證 |
 | [第 15 課｜在 Raspberry Pi 5 使用 Libcamera、Picamera2 與 OpenCV](./%E7%AC%AC%2015%20%E8%AA%B2%EF%BD%9C%E5%9C%A8%20Raspberry%20Pi%205%20%E4%BD%BF%E7%94%A8%20Libcamera%E3%80%81Picamera2%20%E8%88%87%20OpenCV.md) | 已補背景與圖例；完整情境與操作截圖待補 |
 | [第 16 課｜Python 結合 OpenCV 與 Picamera2：影片錄製與即時影像處理](./%E7%AC%AC%2016%20%E8%AA%B2%EF%BD%9CPython%20%E7%B5%90%E5%90%88%20OpenCV%20%E8%88%87%20Picamera2%EF%BC%9A%E5%BD%B1%E7%89%87%E9%8C%84%E8%A3%BD%E8%88%87%E5%8D%B3%E6%99%82%E5%BD%B1%E5%83%8F%E8%99%95%E7%90%86.md) | 已補相機實拍案例；完整情境仍待測 |
 | [第 17 課｜使用 OpenCV 讀取灰階圖檔](./%E7%AC%AC%2017%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20OpenCV%20%E8%AE%80%E5%8F%96%E7%81%B0%E9%9A%8E%E5%9C%96%E6%AA%94.md) | 已補相機實拍案例；完整情境仍待測 |
