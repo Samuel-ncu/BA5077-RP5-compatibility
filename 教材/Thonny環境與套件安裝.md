@@ -218,3 +218,7 @@ camera released
 ## 既有 Trixie 的 YOLO CPU 環境（2026-11-10）
 
 第 39 課以 Thonny 建立獨立 Python 3.13 CPU 環境，完成 COCO8 單回合訓練與權重重新載入；環境程式、版本、下載及限制見[第 39 課](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)。該環境的 PyTorch 為 CPU 版本，與相機／OpenCV 擴充環境分開；不代表全新重灌系統已驗證。
+
+## 既有 Trixie 的 LiteRT 單圖環境（2026-11-10）
+
+依[補充 3 的步驟](./補充%203｜🧠%20TensorFlow%20Lite%20%28TFLite%29%20教學入門指南.md)在 Thonny 執行 [建立環境程式](./範例程式/Thonny建立Trixie-LiteRT環境.py)，選擇尚不存在的新目錄；安裝後切換到新目錄的 `bin/python`。在既有 Trixie Python 3.13.5，NumPy 2.2.4、OpenCV 4.12.0.88 和 ai-edge-litert 2.3.0 的安裝及分類已測；安裝使用既有快取，不等於全新系統驗證。此環境不繼承系統套件，尚未整合 Picamera2。
