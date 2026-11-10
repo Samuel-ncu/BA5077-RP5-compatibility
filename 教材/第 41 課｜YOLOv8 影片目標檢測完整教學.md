@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222899833) · 更新日期：2026-10-29
 
-> **部分實測**：已在 Thonny 測試四影格及由四影格重複製成的兩分鐘影片；真實動態長影片和乾淨環境安裝待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
+> **部分實測**：既有 Trixie 的 Thonny 已測 24 張逐步平移的合成影片推論、讀回與播放；真實動態長影片和全新系統安裝仍待驗。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
 
@@ -10,7 +10,7 @@
 
 ## 準備與素材
 
-本次在這台 RP5 的既有 `/home/pi/myenv/bin/python3` 環境執行，含 Python 3.11.2、Ultralytics 8.3.50、PyTorch 2.5.1，以及 OpenCV。第 42、43 課另使用 Picamera2。這是本機既有混合環境；在全新虛擬環境透過 Thonny 安裝全部 YOLO 套件仍待實測，不能當成已驗證的乾淨安裝教學。
+本次在這台 RP5 的既有 `/home/pi/myenv/bin/python3` 環境執行，含 Python 3.11.2、Ultralytics 8.3.50、PyTorch 2.5.1，以及 OpenCV。第 42、43 課另使用 Picamera2。這是當時既有混合環境；2026-11-10 既有 Trixie 新建 CPU 環境的影片測試另見下文，不代表全新重灌系統已驗證。
 
 在瀏覽器下載並解壓本倉庫，依[素材下載與使用說明](./練習素材/素材下載與使用.md)建立新的練習資料夾；模型由[第 39 課](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)的 Thonny 下載程式取得，並放入同一資料夾。
 
@@ -210,6 +210,146 @@ output playback seconds: 120.0
 
 Thonny 偵測器可能對 `cv2.VideoWriter_fourcc` 顯示靜態提示。本次程式實際建立並讀回 360 張，這個提示並非此次執行失敗；若你的 Shell 實際報錯，應先確認 OpenCV 版本與影片編碼器。
 
+## 既有 Trixie：合成移動影片的逐格推論與播放（2026-11-10）
+
+此例以[公開的校正圖](./圖檔/objects-board.png)為來源，將影像每次水平平移 3 像素，建立 24 張不同影格的影片。原圖是先前相機拍攝螢幕上 AI 生成物件並校正後的照片；**影片的移動由程式合成，不是真實物體運動或新拍攝的相機影片**。它可以練習影片編碼、逐格推論、讀回和播放，不能用來評估實景遮擋或真實動態影片的準確率。
+
+1. 建立新的練習資料夾，放入 `objects-board.png`、依[第 39 課](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)取得的預訓練 `yolov8n.pt`，以及[本例程式](./範例程式/第41課-Thonny合成動態影片.py)。本次使用原始預訓練模型，並非第 39 課單回合後的權重。
+2. Thonny 選擇第 39 課 CPU 環境，開啟程式並按 Run。本次既有 Trixie 使用 Python 3.13.5、Ultralytics 8.4.208、PyTorch 2.15.0+cpu、OpenCV 5.0.0；解譯器是 `/home/pi/ba5077-yolov8-cpu-trixie-20261110/bin/python3`。本次測試副本名為 `moving.py`，內容與本例程式相同。
+3. 程式會建立輸入、輸出影片和首尾影格比較圖；若輸入或輸出影片同名已存在會停止，請用新的目錄。比較圖同名時可能覆寫，先確認沒有需要保留的檔案。
+
+```python
+from pathlib import Path
+import time
+
+import cv2
+import numpy as np
+from ultralytics import YOLO
+
+folder = Path(__file__).resolve().parent
+source = cv2.imread(str(folder / 'objects-board.png'))
+if source is None:
+    raise RuntimeError('Put objects-board.png next to the script')
+for name in ('lesson41-moving-input.avi', 'lesson41-moving-output.avi'):
+    if (folder / name).exists():
+        raise FileExistsError('Use a new folder; output exists: ' + name)
+frame_size = (480, 270)
+base = cv2.resize(source, frame_size)
+fps = 2.0
+writer = cv2.VideoWriter(str(folder / 'lesson41-moving-input.avi'), cv2.VideoWriter_fourcc(*'MJPG'), fps, frame_size)
+if not writer.isOpened():
+    raise RuntimeError('Cannot create input video')
+try:
+    for i in range(24):
+        shift = -35 + 3 * i
+        matrix = np.float32([[1, 0, shift], [0, 1, 0]])
+        writer.write(cv2.warpAffine(base, matrix, frame_size, borderValue=(255, 255, 255)))
+finally:
+    writer.release()
+
+model = YOLO(str(folder / 'yolov8n.pt'))
+video = cv2.VideoCapture(str(folder / 'lesson41-moving-input.avi'))
+output = cv2.VideoWriter(str(folder / 'lesson41-moving-output.avi'), cv2.VideoWriter_fourcc(*'MJPG'), fps, frame_size)
+if not video.isOpened() or not output.isOpened():
+    video.release()
+    output.release()
+    raise RuntimeError('Cannot open video input or output')
+count = 0
+counts = []
+first = last = None
+start = time.monotonic()
+try:
+    while True:
+        ok, frame = video.read()
+        if not ok:
+            break
+        result = model.predict(frame, imgsz=320, device='cpu', verbose=False)[0]
+        annotated = result.plot()
+        output.write(annotated)
+        counts.append(len(result.boxes))
+        count += 1
+        if first is None:
+            first = annotated.copy()
+        last = annotated.copy()
+finally:
+    video.release()
+    output.release()
+elapsed = time.monotonic() - start
+if count != 24 or first is None or last is None:
+    raise RuntimeError(f'Expected 24 frames, got {count}')
+if not cv2.imwrite(str(folder / 'lesson41-moving-first-last.png'), cv2.hconcat([first, last])):
+    raise RuntimeError('Cannot save comparison image')
+check = cv2.VideoCapture(str(folder / 'lesson41-moving-output.avi'))
+readback = 0
+try:
+    while True:
+        ok, _ = check.read()
+        if not ok:
+            break
+        readback += 1
+finally:
+    check.release()
+print('generated frames:', 24)
+print('playback FPS:', fps)
+print('processed frames:', count)
+print('first and last detections:', counts[0], counts[-1])
+print('decoded output frames:', readback)
+print('elapsed seconds:', round(elapsed, 2))
+print('saved: lesson41-moving-output.avi, lesson41-moving-first-last.png')
+```
+
+本次 Thonny 實際輸出：
+
+```text
+generated frames: 24
+playback FPS: 2.0
+processed frames: 24
+first and last detections: 3 3
+decoded output frames: 24
+elapsed seconds: 3.41
+saved: lesson41-moving-output.avi, lesson41-moving-first-last.png
+```
+
+![既有 Trixie 的 Thonny 影片推論與讀回輸出](./圖檔/lesson41-trixie-moving-thonny-20261110.png)
+
+![本次程式輸出的第一與最後影格](./圖檔/lesson41-trixie-moving-first-last-20261110.png)
+
+[下載本次 RP5 產生的輸出影片](./練習素材/lesson41-trixie-moving-output-20261110.avi)。它是由上述既有校正圖透過程式位移、YOLO 偵測及編碼的結果，不是實景錄影。首尾影格各有三個框；程式未逐項核對中間各影格的正確性。影片設定 2 FPS，24 張的播放長度為 12 秒；3.41 秒是此次逐格讀取、推論與寫出的時間，不包含後續讀回，數值隨負載及版本改變。
+
+### 在 Thonny 播放成果
+
+把[播放程式](./範例程式/第41課-Thonny合成影片播放.py)與產生的 `lesson41-moving-output.avi` 放在同一資料夾，在 Thonny 開啟並按 Run。若使用上方下載的成果影片，請先複製到練習資料夾並改名為 `lesson41-moving-output.avi`。畫面視窗可按 q 提前結束；不按鍵時會播到影片結束。
+
+```python
+from pathlib import Path
+import cv2
+
+folder = Path(__file__).resolve().parent
+video = cv2.VideoCapture(str(folder / 'lesson41-moving-output.avi'))
+if not video.isOpened():
+    raise RuntimeError('Cannot open output video; run the previous example first')
+count = 0
+try:
+    while True:
+        ok, frame = video.read()
+        if not ok:
+            break
+        cv2.imshow('YOLO moving video playback', frame)
+        count += 1
+        if cv2.waitKey(500) & 0xFF == ord('q'):
+            break
+finally:
+    video.release()
+    cv2.destroyAllWindows()
+print('displayed frames:', count)
+```
+
+本次 Shell 輸出 `displayed frames: 24`，並目視到播放視窗：
+
+![Thonny 實際播放合成影片的操作畫面](./圖檔/lesson41-trixie-moving-playback-20261110.png)
+
+Shell 另顯示 Qt 字型目錄提示，但本次視窗仍可播放。若無法建立或開啟影片，核對 OpenCV、MJPG 編碼支援、輸出目錄及檔名；若未顯示視窗，先確認圖形桌面可用。練習觀察首尾影格的框如何移動，並說明播放 FPS 與推論速度的差別。全新重灌系統、真正的動態場景及較長的實景影片仍待驗。
+
 ## 練習與應用
 
 觀察四影格的框是否一致；再自行更換影片並記錄框數。為什麼四影格成功不能保證長影片效能？可延伸到物品計數，並比較漏檢、誤檢與每秒處理速度。
@@ -217,4 +357,4 @@ Thonny 偵測器可能對 `cv2.VideoWriter_fourcc` 顯示靜態提示。本次�
 ## 與原文章的差異
 
 - 以 RP5 CPU 和 Thonny 執行，採可下載的四影格練習影片；並非原文所有影片及即時情境。
-- 新增兩分鐘重複影格影片、實測處理時間、讀回和前 12 張播放截圖；真實動態長影片與乾淨安裝仍待驗證。
+- 新增既有 Trixie 的 24 張平移合成影片推論、讀回及完整播放；保留舊兩分鐘重複影格測試。真實動態長影片與全新系統仍待驗。
