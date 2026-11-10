@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886591) · 更新日期：2026-10-29
 
-> 已在 Thonny 實測下載 YOLOv4-tiny 模型、設定與類別檔，並對一張相機拍攝的生成素材做 CPU 偵測；即時相機、效能及空白圖仍待重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 已在既有 Trixie 的 Thonny 實測 YOLOv4-tiny 相機連續 CPU 推論與退出；本次最後影格沒有標籤，有目標的即時辨識仍待驗。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -165,13 +165,96 @@ saved: lesson38-camera-yolov4.png
 
 比較第 40 課的 YOLOv8n 結果與本課 YOLOv4-tiny，記錄類別與框的位置。這兩次測試的模型與前處理不同，且只有一張合成素材，**不能依此比較整體準確率或速度**。再設計有物體、無物體和被遮擋的多張測試資料，記錄誤檢與漏檢。
 
+## 既有 Trixie：Thonny 即時相機 CPU 推論（2026-11-10）
+
+本次在**既有** Trixie、Python 3.13.5、OpenCV 4.12.0、NumPy 2.2.4、Picamera2 0.3.38 的 Thonny 執行；解譯器為 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`，其建立方式見 [Thonny 環境指南](./Thonny環境與套件安裝.md)。這不是全新系統實測。
+
+1. 接妥相機，關閉其他占用相機的程式，鏡頭對準可公開、無個資的場景。建立新的練習資料夾，依上方步驟使用 Thonny 下載三個模型檔；也把[本節程式](./範例程式/第38課-Thonny即時相機YOLOv4.py)放在同一資料夾。本次三檔大小與上方相同，SHA-256 亦與上方列出的三個值一致。
+2. 選同時能匯入 Picamera2、OpenCV 與 NumPy 的解譯器，在 Thonny 開啟本節程式按 Run。程式使用 CPU 逐影格推論並顯示視窗；點選視窗後按 **q** 結束，或最多運行約 30 秒。模型載入及影格推論需要時間，停止時間可能略超過限制。
+3. 視窗上的標籤與框會隨場景改變；Shell 的 `last frame labels` 只描述最後影格的結果，不代表先前每一影格均相同，也不保證有目標一定能偵測。
+
+```python
+from pathlib import Path
+import time
+
+import cv2
+import numpy as np
+from picamera2 import Picamera2
+
+folder = Path(__file__).resolve().parent
+names = (folder / 'coco.names').read_text(encoding='utf-8').splitlines()
+net = cv2.dnn.readNetFromDarknet(str(folder / 'yolov4-tiny.cfg'), str(folder / 'yolov4-tiny.weights'))
+net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+camera = Picamera2()
+frames = 0
+last_labels = []
+started = time.monotonic()
+try:
+    camera.configure(camera.create_preview_configuration(main={'size': (640, 480), 'format': 'RGB888'}))
+    camera.start()
+    while time.monotonic() - started < 30:
+        frame = camera.capture_array()
+        height, width = frame.shape[:2]
+        blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416), swapRB=True, crop=False)
+        net.setInput(blob)
+        outputs = net.forward(net.getUnconnectedOutLayersNames())
+        boxes, scores, classes = [], [], []
+        for output in outputs:
+            for row in output:
+                class_id = int(np.argmax(row[5:]))
+                score = float(row[5 + class_id])
+                if score < 0.4:
+                    continue
+                center_x, center_y, w, h = row[:4] * [width, height, width, height]
+                boxes.append([int(center_x - w / 2), int(center_y - h / 2), int(w), int(h)])
+                scores.append(score)
+                classes.append(class_id)
+        indices = cv2.dnn.NMSBoxes(boxes, scores, 0.4, 0.45)
+        selected = np.array(indices).reshape(-1).tolist() if len(indices) else []
+        last_labels = [names[classes[i]] for i in selected]
+        for i in selected:
+            x, y, w, h = boxes[i]
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, f'{names[classes[i]]} {scores[i]:.2f}', (x, max(20, y - 5)),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        frames += 1
+        cv2.putText(frame, f'frame {frames}', (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        cv2.imshow('YOLOv4-tiny live CPU', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+finally:
+    camera.stop()
+    camera.close()
+    cv2.destroyAllWindows()
+print('frames processed:', frames)
+print('last frame labels:', last_labels)
+print('elapsed seconds:', round(time.monotonic() - started, 1))
+```
+
+本次 Thonny Shell 實際輸出節錄：
+
+```text
+frames processed: 70
+last frame labels: []
+elapsed seconds: 11.5
+```
+
+本次按 q 提早結束，視窗關閉且程式返回提示符；執行時間與影格數受設備與負載影響，不能當作保證速度。Shell 也顯示 Qt `wayland` 外掛提示，但本次預覽有顯示。相機當時對準電腦畫面，本次僅保存不含該影像的 Shell 截圖；因此**沒有可公開的即時預覽截圖**。本次證明相機取像、連續前向推論、顯示及結束流程，最後影格無標籤；不能據此宣稱已驗證有物件時的即時辨識品質。上方單張生成物件正例仍是另一項實測。
+
+![既有 Trixie 在 Thonny 下載三個模型檔](./圖檔/lesson38-trixie-download-20261110.png)
+
+![既有 Trixie 的 Thonny 即時相機推論結束輸出](./圖檔/lesson38-trixie-live-shell-20261110.png)
+
+排錯：若模型讀取失敗，核對三個檔名與路徑；若 `picamera2` 匯入失敗，核對所選環境；若相機忙碌，關閉其他相機程式。練習在取得可公開的物件素材後，記錄不同門檻的框與標籤並人工檢查；本例沿用單張範例的類別分數門檻與跨類 NMS，結果可能有誤檢、漏檢或跨類抑制，不能當成完整準確率評估。
+
 ## 與原文章的差異
 
 - 本次在 Thonny 下載模型並以 CPU 偵測可下載的單張生成素材照片，記錄操作截圖與實際輸出。
 
 - 原文程式含非標準空白且面向相機；本版清理程式並以空白影像先驗證模型。
 - 真實場景的準確率、速度和操作畫面尚未完整驗證。
-- 新增 Thonny 模型下載及單張影像偵測截圖；即時相機操作仍待測。
+- 新增 Thonny 模型下載、單張偵測及既有 Trixie 即時相機推論 Shell 截圖；可公開的即時預覽與有目標辨識待補。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
-- 新增單張相機拍攝生成素材的 YOLOv4-tiny 偵測與圖片；原文即時相機視窗及長時間性能仍待測試。
+- 新增單張生成素材偵測，並在既有 Trixie 測相機即時視窗及按 q 結束；有目標即時辨識和可公開預覽仍待驗。
