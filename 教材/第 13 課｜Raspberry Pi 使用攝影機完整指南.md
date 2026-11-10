@@ -69,10 +69,48 @@ camera (240, 320, 3) uint8
 
 相機擷取可用在影像監測或產品檢測；要得到可信結果，還須驗證光線、拍攝位置、畫質、隱私和錯誤處理。
 
+## 2026-11-10：既有 Trixie 的限時相機預覽
+
+本次使用現有 Trixie、Thonny 的系統 Python `/usr/bin/python3`（3.13.5）及系統 Picamera2，使用已連接的 CSI 相機；這不是新重灌系統。已另外確認第 12 課的獨立 `opencv-course-env` 無法匯入 Picamera2，不能因為 OpenCV 可用就假設相機套件也在該環境。相機須可用且不能被其他程式佔用。
+
+1. 在 RP5 的圖形桌面啟動 Thonny，開啟 **Tools → Options → Interpreter**，選擇包含 Picamera2 的解譯器；本次選系統 `/usr/bin/python3`。確認選擇後在 Shell 測 `from picamera2 import Picamera2`；若匯入失敗，先確認環境與套件，不要在系統 Python 隨意執行 pip。
+2. 在新檔輸入下列程式或開啟[完整範例](./範例程式/第13課-限時相機預覽.py)，再按 F5 或綠色執行鈕。桌面支援 Qt 預覽時會出現畫面，約 20 秒後關閉；第一次觀看前請確認相機不會拍到不願公開的內容。
+
+```python
+from picamera2 import Picamera2, Preview
+from time import sleep
+
+camera = Picamera2()
+try:
+    camera.configure(camera.create_preview_configuration(main={'size': (640, 480)}))
+    camera.start_preview(Preview.QTGL)
+    camera.start()
+    print('Preview started for 20 seconds', flush=True)
+    sleep(20)
+finally:
+    camera.stop()
+    camera.stop_preview()
+    camera.close()
+print('Camera closed')
+```
+
+本次 Thonny 顯示的程式輸出為：
+
+```text
+Preview started for 20 seconds
+Camera closed
+```
+
+相機函式庫另外印出裝置資訊、V4L2 格式警告及 Qt 執行目錄權限警告；此次預覽視窗仍有顯示並自動關閉。第二次執行也顯示上述兩行並結束；結果依圖形環境和相機而異。`finally` 區塊會嘗試停止並釋放相機；若初始化中途失敗，清理呼叫仍可能產生錯誤，請保留完整錯誤訊息排查。
+
+![限時預覽結束後的 Thonny 程式與輸出](./圖檔/lesson13-trixie-preview-end-20261110.jpg)
+
+*圖：實際 Thonny 執行結果；相機預覽已結束。因本次預覽拍到含帳號資訊的螢幕，未公開預覽畫面；不含個資的預覽成果圖仍待補。* 這項測試未驗證錄影或 USB 攝影機。若沒有預覽，檢查是否在圖形桌面、相機是否被佔用、選對 Picamera2 環境及實際錯誤訊息；不要假設不同解譯器套件相同。
+
 ## 與原文章的差異
 
 - 新增以 Thonny 操作的實測與截圖：Picamera2 單張影格擷取；不含預覽或 USB 相機。
 
 - 原文以持續執行的 `libcamera-vid` 接著使用 `VideoCapture(0)`；本版採 Picamera2 單張擷取，避免阻塞並配合本機 CSI 相機。
 - 上述文字輸出是本次實機紀錄，其他版本或環境可能不同。
-- 新增上方基本程式在 Thonny 執行的操作截圖；其他情境以各段落標示為準。
+- 新增既有 Trixie 的限時 Qt 預覽與重開測試；可公開的預覽畫面、錄影和 USB 相機仍待補。
