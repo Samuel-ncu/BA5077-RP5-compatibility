@@ -87,6 +87,18 @@ Center BGR: [0, 255, 0]
 
 本機新環境看到系統 Picamera2、NumPy 1.24.2 與 OpenCV 4.10.0-dev；其他機器的版本可能不同。系統先決條件缺少時，先依教師提供的 Raspberry Pi OS 基本設定完成，再回到 Thonny 檢查與執行。已安裝的套件或其他虛擬環境不要任意覆寫。
 
+## 既有 Trixie：同時使用 Picamera2 與 OpenCV 擴充功能（2026-11-10）
+
+第 25 課 CSRT 等相機範例需要兩者在同一解譯器。本次在既有 Trixie／Python 3.13.5 以 Thonny 建立新的獨立目錄，繼承系統已安裝的 Picamera2，再安裝 OpenCV 擴充套件；這不是全新系統的安裝驗證。繼承系統套件表示這個環境並非完全隔離，系統更新仍可能影響它。
+
+1. 確認系統已可使用 Picamera2，並有 `venv`、網路及足夠空間；下載並開啟 [建立環境程式](./範例程式/Thonny建立Trixie相機OpenCV擴充環境.py)。其中 `target` 應改成自己帳號主目錄下**不存在**的新資料夾；若已存在程式會停止，不要刪除舊資料。
+2. 在 Thonny 按 F5：程式執行系統 Python 建立帶 `--system-site-packages` 的環境，安裝 `numpy==2.2.4` 與 `opencv-contrib-python==4.12.0.88`。不要另外在此環境混裝其他提供 `cv2` 的 OpenCV 套件。下圖是本機安裝成功的 Thonny 截圖；本機從快取取得套件，其他設備可能需下載。
+3. 選 **Run → Configure interpreter**，以瀏覽選取新目錄的 `bin/python3`。先在 Shell 檢查 `import cv2` 與 `from picamera2 import Picamera2`；`hasattr(cv2, 'TrackerCSRT_create')` 為 `True` 才表示 CSRT 介面可用。
+
+![既有 Trixie 的 Thonny 建立相機與 OpenCV 擴充環境](./圖檔/thonny-trixie-camera-contrib-env-20261110.png)
+
+本機新增路徑為 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`。安裝後另以此解譯器檢查：OpenCV `4.12.0`、NumPy `2.2.4`，Picamera2 可匯入，CSRT 和 `bgsegm` 屬性均存在；這些匯入與屬性檢查由終端機執行，**不等於相機追蹤已驗收**。若系統沒有 Picamera2 或版本不相容，請先依系統官方文件準備，再重建新環境；遇到失敗不要將未完成的環境視為可用。
+
 ## 第 25～27 課：在 Thonny 建立 OpenCV 擴充環境
 
 第 25 課的 CSRT 追蹤器與第 27 課的 `bgsegm` MOG 需要包含擴充功能的 OpenCV。本次於 RP5、Python 3.11 使用新建的**隔離環境**實測，不影響原有環境。它不會自動包含 Picamera2，因此相機即時程式仍需相機環境。
