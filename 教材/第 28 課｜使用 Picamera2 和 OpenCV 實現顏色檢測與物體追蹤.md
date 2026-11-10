@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886522) · 更新日期：2026-10-29
 
-> 已在 Thonny 實測：合成紅色區塊與 HSV 遮罩；相機及即時追蹤情境待 Thonny 重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 已在既有 Trixie 的 Thonny 實測六張合成移動紅色影格的 HSV 偵測；相機及即時追蹤情境待 Thonny 重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 背景：為什麼用顏色找物體？
 
@@ -80,6 +80,64 @@ red pixels 400
 ![第 28 課的實際程式輸出](./圖檔/lesson28-mask.png)
 
 左側為合成紅色區塊，右側為 HSV 遮罩。 圖片由本課程式在 RP5 執行時儲存，是程式輸出，不是操作畫面截圖。
+
+## 既有 Trixie：六張合成移動色塊（2026-11-10，Thonny 實測）
+
+此例由程式建立六張 320 × 180 合成影格，紅方塊每次向右移 35 像素，逐張以 HSV 遮罩找出最大紅色輪廓和中心。**不是相機影片或即時影像**；一次只測單一紅色物件，也沒有跨影格物件身分關聯。
+
+在新練習目錄下載 [完整程式](./範例程式/第28課-合成移動色塊.py)，於 Thonny 開啟並按 Run；程式會在同目錄寫入 `lesson28-generated-motion.png`，執行前請確認同名檔案可覆寫。本次為既有 Trixie、Python 3.13.5、OpenCV 4.12.0、NumPy 2.2.4，選用 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`；環境建立方式見 [Thonny 環境指南](./Thonny環境與套件安裝.md)。這是既有系統，並非重灌後驗證。
+
+```python
+from pathlib import Path
+import cv2
+import numpy as np
+
+folder = Path(__file__).resolve().parent
+centers = []
+panels = []
+for index in range(6):
+    image = np.full((180, 320, 3), 235, dtype=np.uint8)
+    left = 30 + index * 35
+    cv2.rectangle(image, (left, 65), (left + 29, 94), (0, 0, 255), -1)
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    low = cv2.inRange(hsv, (0, 100, 100), (10, 255, 255))
+    high = cv2.inRange(hsv, (170, 100, 100), (179, 255, 255))
+    mask = cv2.bitwise_or(low, high)
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    candidates = [c for c in contours if cv2.contourArea(c) >= 100]
+    if not candidates:
+        centers.append(None)
+        continue
+    x, y, w, h = cv2.boundingRect(max(candidates, key=cv2.contourArea))
+    centers.append((x + w // 2, y + h // 2))
+    cv2.rectangle(image, (x, y), (x + w - 1, y + h - 1), (0, 180, 0), 2)
+    cv2.putText(image, f'frame {index + 1}', (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 1)
+    panels.append(image)
+if len(panels) != 6:
+    raise RuntimeError('Some generated frames did not contain a red region')
+output = folder / 'lesson28-generated-motion.png'
+if not cv2.imwrite(str(output), cv2.vconcat([cv2.hconcat(panels[:3]), cv2.hconcat(panels[3:])])):
+    raise RuntimeError('Could not save result')
+print('frames:', len(centers))
+print('red detections:', sum(center is not None for center in centers))
+print('centers:', centers)
+print('saved:', output.name)
+```
+
+本次 Thonny Shell 實際輸出：
+
+```text
+frames: 6
+red detections: 6
+centers: [(45, 80), (80, 80), (115, 80), (150, 80), (185, 80), (220, 80)]
+saved: lesson28-generated-motion.png
+```
+
+![既有 Trixie 的 Thonny 程式與 Shell 截圖](./圖檔/lesson28-trixie-thonny-motion-20261110.png)
+
+![程式產生的六張合成色塊偵測結果](./圖檔/lesson28-trixie-generated-motion-20261110.png)
+
+第一張是 Thonny 操作截圖；第二張是程式合成並標框的結果圖。每張影格獨立偵測最大紅色區域；練習比較相鄰中心的 x 座標，並加入第二個更大的紅色方塊觀察為何可能改追其他物件。真實相機的曝光、反光、背景和 HSV 閾值不同，不能以此結果代替相機驗收。
 
 ## 先前終端機實測（Thonny 相機情境待重測）：RP5 相機拍攝螢幕色塊
 
@@ -241,6 +299,6 @@ saved: lesson28-motion.png
 
 - 原文以相機追蹤顏色；本版包含合成圖、單張實拍及六張連續影格的有限測試，尚未驗證持續即時顯示與多目標追蹤。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
-- 新增合成紅色遮罩在 Thonny 操作的截圖；相機情境的操作截圖待補。
+- 新增單張紅色遮罩及六張合成移動色塊的 Thonny 操作截圖；相機情境的操作截圖待補。
 - 追加 RP5 實拍螢幕色塊的單張照片偵測；尚未完成原文的即時追蹤。
 - 新增六張相機影格的連續色彩偵測；未測試長時間即時視窗、多目標或穩定幀率。
