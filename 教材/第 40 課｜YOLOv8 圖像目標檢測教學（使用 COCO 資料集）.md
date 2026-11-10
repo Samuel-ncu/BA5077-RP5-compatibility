@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222899812) · 更新日期：2026-10-29
 
-> **部分實測。** 已用 Thonny 在 RP5 CPU 對一張相機照片推論；新建環境安裝 YOLO、拍攝流程及真實物件測試仍待補齊。[逐篇進度](./Thonny逐篇實測狀態.md) · [素材下載說明](./練習素材/素材下載與使用.md)
+> **部分實測。** 已在既有 Trixie 的新建 CPU 環境以 Thonny 對可下載的生成素材照片推論；自行拍攝、真實物件及全新系統仍待驗。[逐篇進度](./Thonny逐篇實測狀態.md) · [素材下載說明](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -16,7 +16,7 @@
 
 測試圖片的內容先由 AI 生成，再顯示在螢幕上，經 RP5 相機拍攝及透視校正；蘋果、香蕉與杯子是圖片中的生成物件，不是真實擺放的物品。[下載校正後的相機照片](./圖檔/objects-board.png)。原始全景照片含周圍環境，未公開。這是單張照片，不是即時影片。
 
-本次使用第 39 課所述既有 `/home/pi/myenv/bin/python3`，已有 Ultralytics、PyTorch 和 OpenCV；全新環境的套件安裝仍未驗證。請在 Thonny 選擇已具備這些套件的 Python，並完成[第 39 課模型下載](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)。
+先前測試使用 `/home/pi/myenv/bin/python3`；2026-11-10 既有 Trixie 的新建 CPU 環境測試另見下文，全新重灌系統的套件安裝仍未驗證。請在 Thonny 選擇已具備這些套件的 Python，並完成[第 39 課模型下載](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)。
 
 ## 在 Thonny 操作
 
@@ -62,6 +62,29 @@ saved: lesson40-yolov8.png
 
 照片尺寸以「高、寬、色彩通道」表示；輸出三個框。上方結果圖來自先前對同一張校正後照片的 RP5 推論，本次 Thonny 再次對該照片推論並得到上述數值。不同模型或輸入條件可能產生不同結果。
 
+## 既有 Trixie 新建 CPU 環境實測（2026-11-10）
+
+依 [第 39 課 CPU 環境與模型準備](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)建立環境後，將上方的程式、`objects-board.png` 和**預訓練** `yolov8n.pt` 放到同一新的練習資料夾。在 Thonny 選擇該 CPU 環境，開啟程式並按 Run；本次副本名為 `detect.py`，與上方程式內容相同。程式寫入 `lesson40-yolov8.png`，請先確認不會覆寫要保留的資料。
+
+本次為既有 Trixie、Python 3.13.5、Ultralytics 8.4.208、PyTorch 2.15.0+cpu、OpenCV 5.0.0；解譯器 `/home/pi/ba5077-yolov8-cpu-trixie-20261110/bin/python3`。此處使用原始預訓練 `yolov8n.pt`，不是第 39 課 COCO8 訓練後的 `best.pt`。相機素材沿用先前拍攝螢幕上 AI 生成物件並校正的照片，不是本次新拍或真實水果。
+
+本次 Thonny 實際輸出：
+
+```text
+image: (675, 1200, 3)
+detections: 3
+class: cup confidence: 0.958
+class: banana confidence: 0.93
+class: apple confidence: 0.895
+saved: lesson40-yolov8.png
+```
+
+![既有 Trixie 的 Thonny YOLOv8 圖片偵測截圖](./圖檔/lesson40-trixie-thonny-20261110.png)
+
+![既有 Trixie 的 YOLOv8 生成素材偵測結果](./圖檔/lesson40-trixie-yolov8-20261110.png)
+
+第一張是操作截圖，第二張是本次程式產生的結果圖；標籤分數、順序與框可能隨套件版本、模型和影像變動。這次只測一張生成素材照片，不代表真實場景的準確率，也不是全新系統實測。若找不到模型或圖片，先核對檔名、目前解譯器及三個檔案所在的練習資料夾。
+
 ## 練習與後續應用
 
 - 把其中一個物品局部遮住，再觀察框與分數是否改變；記錄你自己的結果。
@@ -74,4 +97,4 @@ saved: lesson40-yolov8.png
 
 - 本版以 RP5 CPU 和 Thonny 執行，素材為相機拍攝螢幕上的 AI 生成圖，並非原文外部圖像或完整 COCO 資料集。
 - 新增可下載的校正照片、程式、操作截圖與實際輸出；新拍照片及校正步驟尚未在 Thonny 重測。
-- 本次沿用既有 YOLO 環境，乾淨虛擬環境的套件安裝、真實物件及即時影片尚待驗證。
+- 2026-11-10 在既有 Trixie 新建 CPU 環境重測；全新重灌系統安裝、自行拍攝及真實物件仍待驗證。
