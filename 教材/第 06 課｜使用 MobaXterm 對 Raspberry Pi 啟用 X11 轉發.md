@@ -41,7 +41,34 @@ Remote shell: allowed (0 sessions active)
 
 *圖：RP5 桌面終端機的實際截圖，已裁切。數字代表截圖當時的連線狀態。Remote shell 顯示 allowed 僅表示允許，不代表本次已完成遠端終端機操作驗證。*
 
-這次由 Connect 桌面分享實際操作 RP5；Connect 遠端終端機的完整流程和 MobaXterm X11 視窗轉發仍待實測、補圖。Connect 遠端終端機、MobaXterm 的單一程式視窗轉發與第 10 課的完整桌面分享是不同方式；請參考 [Raspberry Pi Connect 官方文件](https://www.raspberrypi.com/documentation/services/connect.html)。
+上圖是 2026-11-09 的紀錄；下方另記 2026-11-10 的遠端終端機操作。MobaXterm X11 視窗轉發仍待實測。
+
+## 現有 Trixie 實測：Connect 遠端終端機
+
+2026-11-10 使用既有系統（Debian 13 Trixie、64 位元，Python 3.13.5；Connect 客戶端 2.14.0），在 Windows 的 Chrome 操作已登入且已連結裝置的 Connect。這不是新重灌系統。先確認裝置已開機、連網，且裝置清單顯示 Online 與 Remote shell；首次登入或連結裝置請參考[官方文件](https://www.raspberrypi.com/documentation/services/connect.html)，登入和授權由帳號持有人完成。
+
+1. 在 Connect 的 Devices 頁找到自己的 RP5，按右側 **Connect via → Remote shell**。不要選成 Screen sharing；後者是完整桌面分享。
+
+   ![Connect 裝置清單中的遠端終端機選單](./圖檔/lesson06-trixie-connect-menu-20261110.jpg)
+
+   *圖：實際瀏覽器操作畫面，已裁切；截圖時裝置名稱左側被裁去。*
+
+2. 等待新頁面連線並出現提示字元，輸入 `uname -m` 後按 Enter。這個命令查詢架構，不會修改檔案。本次輸出為 `aarch64`；提示字元中的使用者和主機名稱可能不同。
+
+   ```text
+   $ uname -m
+   aarch64
+   ```
+
+   ![Connect 遠端終端機執行 uname 的結果](./圖檔/lesson06-trixie-remote-shell-20261110.jpg)
+
+   *圖：遠端終端機實際輸出，已裁切。*
+
+3. 輸入 `exit` 並按 Enter；本次頁面顯示 **Connection closed** 和 Reconnect。這會結束該終端機工作階段；重新連線會建立新的工作階段。
+
+若長時間停在等待畫面，確認裝置上線、Connect 已登入且允許 Remote shell，並檢查網路；不要只憑 `allowed` 判定連線成功。這次也以 `rpi-connect status` 看到 Remote shell 在操作時為 1 個工作階段，但操作後才確認關閉畫面。這次沒有測試重新開機後連線或 MobaXterm X11。
+
+遠端終端機傳送文字指令，不提供整個桌面；X11 轉發讓支援的單一圖形程式視窗在另一台電腦顯示；Connect Screen sharing 分享整個遠端桌面。官方文件指出 Connect 桌面分享需要 Wayland，而遠端終端機是另一種連線方式。
 
 ## 操作方式
 
@@ -93,9 +120,9 @@ flowchart LR
 
 ## 與原文章的差異
 
-- 區分 SSH 連線成功與 X11 轉發成功；本次只驗證前者與 `xauth`。
+- 區分 SSH 連線成功與 X11 轉發成功；先前僅驗證 SSH 與 `xauth`，本次另測 Connect 遠端終端機。
 - 不將安裝整套桌面元件列為所有使用者的必備步驟。
-- 補上現有 Trixie 的 Connect 狀態截圖；Connect 遠端終端機完整流程與 MobaXterm X11 轉發仍未實測。
+- 補上現有 Trixie 的 Connect 狀態及遠端終端機連線、命令和結束紀錄；MobaXterm X11 轉發仍未實測。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
 - 新增轉發原理和排查順序；仍未把本機工具存在誤認為端到端成功。
