@@ -1,6 +1,6 @@
 # 使用 Flask 和 YOLO 打造即時物件偵測網頁介面
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222901408) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222901408) · 更新日期：2026-11-10
 
 > **部分實測**：已在 Thonny 測試本機 HTTP 四張 JPEG，以及相機經 YOLO 送至 RP5 瀏覽器的 150 張影格及兩分鐘串流；數小時運作與乾淨環境安裝待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
@@ -10,11 +10,11 @@
 
 ## 準備
 
-本次在這台 RP5 的既有 `/home/pi/myenv/bin/python3` 環境執行，含 Python 3.11.2、Ultralytics 8.3.50、PyTorch 2.5.1，以及 OpenCV。第 42、43 課另使用 Picamera2。這是本機既有混合環境；在全新虛擬環境透過 Thonny 安裝全部 YOLO 套件仍待實測，不能當成已驗證的乾淨安裝教學。
+下方原有本機相機測試在這台 RP5 的既有 `/home/pi/myenv/bin/python3` 環境執行，含 Python 3.11.2、Ultralytics 8.3.50、PyTorch 2.5.1，以及 OpenCV。第 42、43 課另使用 Picamera2。這是本機既有混合環境；2026-11-10 另在既有 Trixie 建立獨立 CPU 環境並安裝套件，參見本頁跨裝置測試。全新重灌系統安裝仍待驗證。
 
 在瀏覽器下載並解壓本倉庫，依[素材下載與使用說明](./練習素材/素材下載與使用.md)建立新的練習資料夾；模型由[第 39 課](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)的 Thonny 下載程式取得，並放入同一資料夾。
 
-將[四影格影片](./練習素材/lesson42-input.avi)和[本機 HTTP 測試程式](./範例程式/Flask-YOLO-短影片串流.py)複製到同一練習資料夾，並放入 `yolov8n.pt`。影片是 RP5 拍攝螢幕上的 AI 生成圖後經校正得到。確認選擇的 Python 也能匯入 Flask；這次 Flask 從系統套件匯入，全新安裝步驟尚待測試。
+將[四影格影片](./練習素材/lesson42-input.avi)和[本機 HTTP 測試程式](./範例程式/Flask-YOLO-短影片串流.py)複製到同一練習資料夾，並放入 `yolov8n.pt`。影片是 RP5 拍攝螢幕上的 AI 生成圖後經校正得到。確認選擇的 Python 也能匯入 Flask；原有本機測試的 Flask 從系統套件匯入；新的獨立環境安裝紀錄見本頁後段。
 
 ## 在 Thonny 實驗
 
@@ -360,7 +360,108 @@ server stopped
 
 ![Thonny 顯示兩分鐘實測的輸出與服務停止](./圖檔/flask-120s-thonny.png)
 
-平均 6.9 FPS 為此場景服務端產生影格數除以實測時間；不同模型、環境、影格內容和負載會影響結果，也不能視為客戶端播放速度或偵測準確率。這是單一瀏覽器和兩分鐘測試；跨裝置、多客戶端、數小時穩定性、所有異常停止情境與乾淨環境安裝仍待驗證。
+平均 6.9 FPS 為此場景服務端產生影格數除以實測時間；不同模型、環境、影格內容和負載會影響結果，也不能視為客戶端播放速度或偵測準確率。這是單一瀏覽器和兩分鐘測試；跨裝置相機直播、多客戶端、所有異常停止情境與全新系統安裝仍待驗證。
+
+## 既有 Trixie：電腦跨裝置觀看有限影片（2026-11-10）
+
+本次使用既有 Trixie，Python 3.13.5 的第 39 課 CPU 環境，Ultralytics 8.4.208、PyTorch 2.15.0+cpu、OpenCV 5.0.0；透過 Thonny 在同一環境安裝 Flask 3.1.3。安裝畫面：[Thonny 套件安裝紀錄](./圖檔/flask-trixie-install-20261110.png)。環境與建置方式詳見[第 39 課](./第%2039%20課｜YOLOv8%20與%20COCO%20資料集完整教學.md)。
+
+1. 依第 39 課準備環境和 `yolov8n.pt`，在 Thonny 選擇該環境的 Python，使用「工具 → 管理套件」安裝 Flask；或在 Thonny 執行下列安裝程式，完成後重啟執行環境：
+
+   ```python
+   import subprocess, sys
+   subprocess.run([sys.executable, '-m', 'pip', 'install', 'Flask'], check=True)
+   ```
+
+2. 將[四影格影片](./練習素材/lesson42-input.avi)、`yolov8n.pt` 和[區網示範程式](./範例程式/Flask-YOLO-Thonny區網四影格.py)放入同一個練習資料夾。影片來自 RP5 拍攝螢幕上的 AI 生成圖並校正，不是新拍的即時相機或真實物件。
+3. 可在 Thonny 開啟該程式並執行；本次跨裝置驗證為使用同一直譯器透過 SSH 啟動程式，並非宣稱這次服務由 Thonny 啟動。Shell 顯示 `Listening port:` 後，在同網路的另一台電腦輸入 `http://<RP5-IP>:<顯示的埠號>/`。埠號每次可能不同。RP5 的 IP 可在桌面網路資訊查詢。
+4. 瀏覽器應短暫顯示帶偵測框的影片影格；四張全部處理後結束，影像可能因瀏覽器處理串流結束而消失。Shell 出現 `frames served: 4` 和 `server closed`。辨識標籤、信心值與速度會因版本和素材而變。
+
+此程式的 `0.0.0.0` 在所有網路介面監聽，**沒有登入或加密保護**；僅在信任的網路用不含個資的素材練習，不要轉發埠號或對外公開。限一個影像串流，等待 90 秒或串流結束後關閉；若程式未正常結束，可按 Thonny 停止鈕。它不是正式部署服務。
+
+實測：另一台 Windows 電腦的瀏覽器顯示 apple、banana、cup 偵測框；服務端輸出 `frames served: 4`、`server closed`。這是短暫預錄影片跨裝置測試，不代表跨裝置相機直播、多用戶或實景辨識已完成。先前 RP5 本機瀏覽器的相機測試仍依原紀錄保留；新重灌系統尚未測試。
+
+![Windows 瀏覽器顯示 RP5 傳送的四影格偵測畫面](./圖檔/flask-trixie-lan-browser-20261110.png)
+
+完整程式：
+
+```python
+from pathlib import Path
+import threading
+import time
+
+import cv2
+from flask import Flask, Response
+from ultralytics import YOLO
+from werkzeug.serving import WSGIRequestHandler, make_server
+
+
+def main():
+    folder = Path(__file__).resolve().parent
+    model = YOLO(str(folder / 'yolov8n.pt'))
+    app = Flask(__name__)
+    finished = threading.Event()
+    stats = {'frames': 0}
+    stream_lock = threading.Lock()
+
+    @app.get('/')
+    def home():
+        return ('<!doctype html><html><head><meta charset="utf-8">'
+                '<title>RP5 YOLO test</title></head><body>'
+                '<h1>RP5 YOLO video test</h1>'
+                '<p>Four prerecorded frames; stream ends automatically.</p>'
+                '<img src="/stream" alt="YOLO video output">'
+                '</body></html>')
+
+    @app.get('/stream')
+    def stream():
+        if not stream_lock.acquire(blocking=False):
+            return 'Stream already in use', 409
+
+        def frames():
+            video = cv2.VideoCapture(str(folder / 'lesson42-input.avi'))
+            try:
+                if not video.isOpened():
+                    raise RuntimeError('Cannot open lesson42-input.avi')
+                while stats['frames'] < 4:
+                    ok, frame = video.read()
+                    if not ok:
+                        break
+                    result = model.predict(frame, imgsz=320, device='cpu', verbose=False)[0]
+                    ok, jpeg = cv2.imencode('.jpg', result.plot())
+                    if not ok:
+                        raise RuntimeError('JPEG encoding failed')
+                    stats['frames'] += 1
+                    yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n'
+                    time.sleep(1)  # 讓讀者有時間觀察各張影格。
+                yield b'--frame--\r\n'
+            finally:
+                video.release()
+                finished.set()
+                stream_lock.release()
+        return Response(frames(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+    class QuietHandler(WSGIRequestHandler):
+        def log_request(self, code='-', size='-'):
+            pass
+
+    server = make_server('0.0.0.0', 0, app, threaded=True, request_handler=QuietHandler)
+    worker = threading.Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    print('Listening port:', server.server_port, flush=True)
+    print('Open from the same LAN: http://<RP5-IP>:<port>/', flush=True)
+    try:
+        finished.wait(90)
+    finally:
+        server.shutdown()
+        server.server_close()
+        print('frames served:', stats['frames'], flush=True)
+        print('server closed', flush=True)
+
+
+if __name__ == '__main__':
+    main()
+```
 
 ## 練習與後續應用
 
@@ -370,4 +471,4 @@ server stopped
 
 - 本版先測有限影片，再以 Thonny 測本機瀏覽器的相機即時串流；示範限定 150 張影格及約 70 秒服務，不等同原文持續直播。
 - 新增 Thonny 實測、實際輸出及兩次不同實驗的瀏覽器畫面；有限影片程式曾出現 Thonny 自動啟動行為，相機範例改在函式內建立應用。
-- 使用本機既有套件環境，已另測兩分鐘單用戶串流；乾淨安裝、跨裝置及數小時穩定性待驗證。
+- 使用本機既有套件環境，已另測兩分鐘單用戶串流；全新系統安裝與跨裝置相機直播待驗證。
