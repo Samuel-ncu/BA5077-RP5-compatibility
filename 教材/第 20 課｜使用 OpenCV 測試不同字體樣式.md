@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886399) · 更新日期：2026-10-29
 
-> 本課基本繪圖程式已在 Thonny 重新執行；結果視窗的原完整流程仍待 Thonny 重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 本課基本繪圖程式已在 Thonny 重新執行；既有 Trixie 的 Thonny 字型、存檔與視窗實測見下方。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標
 
@@ -82,9 +82,67 @@ saved True
 
 ## 先前測試：RP5 圖形桌面顯示結果
 
-先前以終端機和系統 OpenCV 開啟同一類結果圖，保留視窗截圖作為歷史紀錄；**這張圖不是 Thonny 執行截圖**。使用 Thonny 開啟本課圖片的完整操作仍待重測。可先在[第 14 課](./Thonny環境與套件安裝.md)練習經 Thonny 開啟基本 OpenCV 視窗。
+先前以終端機和系統 OpenCV 開啟同一類結果圖，保留視窗截圖作為歷史紀錄；**這張圖不是 Thonny 執行截圖**。此歷史紀錄當時尚未完成 Thonny 視窗流程；現有 Trixie 的新實測見下節。可先在[第 14 課](./Thonny環境與套件安裝.md)練習經 Thonny 開啟基本 OpenCV 視窗。
 
 ![先前終端機測試的 OpenCV 結果視窗](./圖檔/lesson20-opencv-window.png)
+
+## 2026-11-10：現有 Trixie 的 Thonny 字型與視窗
+
+本次在既有 Trixie 的 Thonny 選用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0），使用以下[完整範例](./範例程式/第20課-字型與視窗-trixie.py)。這不是全新系統實測。程式每次建立新的暫存資料夾並在 Shell 顯示位置，避免覆寫；重要作品請從該資料夾另存，因為 `/tmp` 可能被清理。
+
+在 Thonny 開啟或輸入程式、確認解譯器後按 F5。視窗顯示八行英文；點視窗再按任意鍵關閉，若未按鍵則等待 60 秒。初次測試的預設視窗在遠端桌面超出可視範圍；以下程式改為可調整視窗並設定大小，重新執行後八行都可看到。
+
+```python
+from pathlib import Path
+from tempfile import mkdtemp
+import cv2
+import numpy as np
+
+folder = Path(mkdtemp(prefix='ba5077-lesson20-'))
+image = np.full((600, 700, 3), 255, dtype=np.uint8)
+fonts = [
+    ('SIMPLEX', cv2.FONT_HERSHEY_SIMPLEX),
+    ('PLAIN', cv2.FONT_HERSHEY_PLAIN),
+    ('DUPLEX', cv2.FONT_HERSHEY_DUPLEX),
+    ('COMPLEX', cv2.FONT_HERSHEY_COMPLEX),
+    ('TRIPLEX', cv2.FONT_HERSHEY_TRIPLEX),
+    ('COMPLEX_SMALL', cv2.FONT_HERSHEY_COMPLEX_SMALL),
+    ('SCRIPT_SIMPLEX', cv2.FONT_HERSHEY_SCRIPT_SIMPLEX),
+    ('SCRIPT_COMPLEX', cv2.FONT_HERSHEY_SCRIPT_COMPLEX),
+]
+for index, (name, font) in enumerate(fonts):
+    cv2.putText(image, f'{name}: OpenCV', (15, 60 + index * 70), font, 0.8, (0, 0, 0), 1, cv2.LINE_AA)
+print('fonts drawn:', len(fonts))
+print('saved:', cv2.imwrite(str(folder / 'fonts.png'), image))
+print('folder:', folder)
+cv2.namedWindow('Fonts', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('Fonts', 700, 450)
+cv2.imshow('Fonts', image)
+print('Window open', flush=True)
+cv2.waitKey(60000)
+cv2.destroyAllWindows()
+print('Window closed')
+```
+
+本次 Shell 輸出節錄如下，路徑的隨機部分每次不同：
+
+```text
+fonts drawn: 8
+saved: True
+folder: /tmp/ba5077-lesson20-xwejt6t8
+Window open
+Window closed
+```
+
+本次另出現 Qt 找不到 `wayland` 平台外掛的訊息，但視窗仍可顯示並以按鍵關閉；若其他機器無法顯示，請檢查所選環境、圖形桌面及完整錯誤。另以檔案工具確認寫出的 PNG 為 700×600 像素。
+
+![Thonny 與八種字型視窗](./圖檔/lesson20-trixie-thonny-window-20261110.jpg)
+
+*圖：本次 RP5 桌面分享中，Thonny 與 OpenCV 的實際畫面。*
+
+![關閉字型視窗後的輸出](./圖檔/lesson20-trixie-thonny-closed-20261110.jpg)
+
+*圖：本次按鍵關閉後的 Shell 實際輸出。* 這次只測英文 Hershey 字型；繁體中文字型顯示仍未驗證。
 
 ## 與原文章的差異
 
