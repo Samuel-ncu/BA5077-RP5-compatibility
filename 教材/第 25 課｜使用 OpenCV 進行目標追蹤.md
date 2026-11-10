@@ -170,11 +170,86 @@ saved: lesson25-csrt.png
 
 練習：先預測目標移到畫面邊緣或被遮住時的結果，再自行測試並記錄成功與失敗。若測不到，檢查測試頁是否正在動畫、相機是否被占用、四角座標和目標顏色是否正確。
 
+## 既有 Trixie 影片追蹤（2026-11-10，終端機實測）
+
+本例使用 [lesson16-camera.avi](./練習素材/lesson16-camera.avi)：這是先前 RP5 相機拍攝螢幕動畫後，裁切、透視校正及灰階處理的 12 張影格。它是可下載的教材影片，並非這次的即時相機畫面。請將影片及[本例完整程式](./範例程式/第25課-影片CSRT.py)放在同一個新的練習資料夾。本例會在該目錄寫入 `lesson25-video-csrt.png`，若同名檔案已存在會覆寫，請先另存。
+
+本機既有 Trixie、Python 3.13.5、OpenCV 4.12.0，使用 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3` 執行。環境建立方法見 [Thonny 環境指南](./Thonny環境與套件安裝.md)。本次透過 SSH 終端機執行以下程式並取得結果；遠端桌面當時未回應輸入，**此範例在 Thonny 的操作及截圖仍待驗證**。學生可在 Thonny 選有 CSRT 的環境後開啟程式及嘗試執行，但這項操作目前不能視為已驗收。
+
+```python
+from pathlib import Path
+
+import cv2
+
+folder = Path(__file__).resolve().parent
+video = cv2.VideoCapture(str(folder / 'lesson16-camera.avi'))
+ok, frame = video.read()
+if not ok:
+    video.release()
+    raise RuntimeError('Cannot read lesson16-camera.avi')
+
+# This box is for frame 1 of the supplied video only: x, y, width, height.
+initial_box = (218, 127, 82, 88)
+tracker = cv2.TrackerCSRT_create()
+tracker.init(frame, initial_box)
+frames = 1
+results = []
+panels = []
+
+def panel(image, box, number):
+    image = image.copy()
+    x, y, w, h = (int(value) for value in box)
+    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    cv2.putText(image, str(number), (20, 65), cv2.FONT_HERSHEY_SIMPLEX,
+                0.8, (0, 255, 0), 2)
+    return image
+
+panels.append(panel(frame, initial_box, frames))
+try:
+    while True:
+        ok, frame = video.read()
+        if not ok:
+            break
+        frames += 1
+        found, box = tracker.update(frame)
+        box = tuple(int(value) for value in box)
+        results.append((bool(found), box))
+        if frames in (4, 8, 12) and found:
+            panels.append(panel(frame, box, frames))
+finally:
+    video.release()
+
+if len(panels) != 4:
+    raise RuntimeError('Could not collect all four tracking panels')
+output = folder / 'lesson25-video-csrt.png'
+if not cv2.imwrite(str(output), cv2.vconcat([cv2.hconcat(panels[:2]), cv2.hconcat(panels[2:])])):
+    raise RuntimeError('Could not save tracking result')
+print('frames read:', frames)
+print('successful updates:', sum(found for found, _ in results), '/', len(results))
+print('first update:', results[0])
+print('last update:', results[-1])
+print('saved:', output.name)
+```
+
+本次實際輸出：
+
+```text
+frames read: 12
+successful updates: 11 / 11
+first update: (True, (251, 127, 82, 88))
+last update: (True, (462, 126, 84, 90))
+saved: lesson25-video-csrt.png
+```
+
+![既有 Trixie 終端機處理影片得到的四張追蹤結果](./圖檔/lesson25-trixie-video-csrt-20261110.png)
+
+上圖是程式產生的結果圖，**不是操作截圖**；綠框顯示初始影格與第 4、8、12 影格中追蹤框的位置。`True` 是追蹤器回報，還要看框是否對準；圖中可觀察框隨圓形從左向右移動。此初始框僅適用所附影片第一張影格，換影片應重新選取；這段短影片不能證明遮擋、多物件、真人或即時相機的表現。練習：比較第一與最後一次更新的 x 座標，並解釋為何只有 11 次更新。
+
 ## 與原文章的差異
 
 - 本次改用 Thonny 與隔離的 OpenCV 擴充環境；逐項可重現範圍以上方截圖與文字為準。
 
-- 原文由使用者在影片上選 ROI；合成例使用固定 ROI 和同一影格，新增的相機實測以顏色自動決定第一張影格的 ROI。
+- 原文由使用者在影片上選 ROI；合成例使用固定 ROI 和同一影格，相機舊例用顏色決定初始框，2026-11-10 影片例使用人工預先量測的固定框。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
 - 新增本次 Thonny 實際操作截圖；其餘情境仍按段落標示測試範圍。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
