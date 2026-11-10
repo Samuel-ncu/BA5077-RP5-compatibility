@@ -149,10 +149,66 @@ response: Hello, AIoT!
 3. 若看到 `ModuleNotFoundError`，確認是在 RP5 的 Python 3 執行；若埠綁定失敗，檢查環境是否限制本機網路。
 
 延伸到感測器時，回應內容可以由固定文字改為溫度或其他數值。但在讓其他裝置連入之前，還需考慮誰能存取、資料是否敏感以及服務失敗時的處理方式。
+## 現有 Trixie 實測：Windows 跨裝置 HTTP（2026-11-10）
+
+這次在既有 Trixie、Thonny 的 `/home/pi/opencv-course-env/bin/python3` 執行下列不需額外套件的範例，再從同一網路的 Windows 電腦提出一次請求。這不是 Apache，也不是全新系統測試。只在可信任的練習網路使用；服務沒有驗證，只傳固定字串，處理一次請求，或在沒有連線時等候 120 秒後關閉。
+
+1. 在 RP5 確認自己的 IPv4 位址；不要把實際私人位址貼到公開教材。
+2. 在 Thonny 建立新檔，貼入下列程式，或下載[完整範例](./範例程式/第04課-跨裝置HTTP.py)後開啟。執行後記下 Shell 顯示的連接埠。
+
+```python
+import socket
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = b'Hello, AIoT!'
+        self.send_response(200)
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+        print('Request handled: 200')
+    def log_message(self, format, *args):
+        pass
+
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
+    probe.connect(('1.1.1.1', 53))
+    address = probe.getsockname()[0]
+with HTTPServer((address, 0), Handler) as server:
+    server.timeout = 120
+    print('Ready port:', server.server_port, flush=True)
+    server.handle_request()
+print('Server closed')
+```
+
+程式透過 UDP socket 選出系統到 `1.1.1.1` 的 IPv4 路由介面，僅查詢本機路由而未送出應用資料；若沒有可用路由，會在啟動服務前失敗。它只綁定所選介面，連接埠 `0` 由系統分配；若有多張網卡，所選介面可能不是電腦所連的網路，應先核對。連接埠每次可能不同。
+
+3. 在本次使用的 Windows PowerShell 7 將 `<RP5位址>` 與 `<連接埠>` 換成當次值，執行以下兩行：
+
+```powershell
+$response = Invoke-WebRequest -Uri 'http://<RP5位址>:<連接埠>/' -TimeoutSec 8 -UseBasicParsing
+$response.StatusCode
+[System.Text.Encoding]::UTF8.GetString($response.Content)
+```
+
+本次 Windows 實際收到狀態 `200`；回應內容以位元組顯示為 `72 101 108 108 111 44 32 65 73 111 84 33`，將這些位元組以 UTF-8 解碼得到 `Hello, AIoT!`。RP5 的 Thonny Shell 當次輸出：
+
+```text
+Ready port: 34055
+Request handled: 200
+Server closed
+```
+
+![RP5 Thonny 跨裝置請求與服務關閉](./圖檔/lesson04-trixie-cross-http-20261110.jpg)
+
+*圖：RP5 桌面分享中 Thonny 的實際程式與輸出；埠號為當次動態值。* `Server closed` 也可能在等候逾時後出現；必須同時看到 `Request handled: 200`，並在另一台電腦確認回應，才能證明本次跨裝置請求成功。第一次因誤讀埠號連線遭拒，核對 Thonny 顯示及監聽狀態後，使用正確埠成功。
+
+若連線遭拒或逾時，先確認程式仍在等候、位址及埠號正確、兩台裝置可互通；網路隔離或防火牆可能限制連線。不要為了練習停用安全防護。此範例只提供暫時且未驗證的 HTTP，不能作為對外正式服務。
+
 ## 與原文章的差異
 
 - 新增本機實測的 Linux、ARM64、APT 與 SSH 服務檢查。
 - 不將全面升級或啟動網頁伺服器視為閱讀文章的必要步驟。
 - 新增既有 Trixie 系統的 Thonny 本機 HTTP 實測及操作截圖；SSH 與 Apache 設定步驟未補拍，乾淨系統尚未驗證。
 - 補充 SSH、套件管理、連線流程圖及學生練習；原文網頁伺服器情境仍未在本篇完整實測。
-- 新增本機回送 HTTP 的實作及真實輸出；原文的 Apache 和對外網頁伺服器仍未完成實測。
+- 新增本機回送 HTTP 的實作及真實輸出；原文的 Apache 仍未完成實測；另已用一次性 Python 服務實測區域網路跨裝置請求。
