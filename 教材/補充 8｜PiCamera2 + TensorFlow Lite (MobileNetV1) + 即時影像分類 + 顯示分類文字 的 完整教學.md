@@ -1,8 +1,8 @@
 # 補充 8｜PiCamera2 + TensorFlow Lite (MobileNetV1) + 即時影像分類 + 顯示分類文字 的 完整教學
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14223038310) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14223038310) · 更新日期：2026-11-10
 
-> **部分實測**：模型和標籤已在 Thonny 下載，單張分類也已在 Thonny 重測。已測獨立單圖分類，並在新建、可讀取系統套件的環境實測相機分類、Q 鍵與兩分鐘連續預覽；全新作業系統安裝仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
+> **部分實測**：先前 Bookworm 已測單圖、相機預覽與 Q 鍵；2026-11-10 既有 Trixie 的 Thonny 另測 LiteRT 相機分類 50 影格及相機重開。此次關閉畫面預覽；Trixie 預覽與 Q 鍵及全新系統仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
 
@@ -12,7 +12,7 @@
 
 ## 環境與素材
 
-本次另以 Thonny 建立並選取獨立環境，安裝 NumPy 1.26.4、OpenCV 4.10.0.84 與 `tflite_runtime` 2.14.0，並實測單張分類；請依 [TFLite 環境安裝說明](./Thonny環境與套件安裝.md)操作。此單圖獨立環境未整合 Picamera2；另見下方相機環境及其系統套件限制。模型和標籤來自 TensorFlow；標籤網址追蹤上游 master，日後內容可能改變。
+先前 Bookworm 以 Thonny 建立並選取獨立環境，安裝 NumPy 1.26.4、OpenCV 4.10.0.84 與 `tflite_runtime` 2.14.0，並實測單張分類；請依 [TFLite 環境安裝說明](./Thonny環境與套件安裝.md)操作。此單圖獨立環境未整合 Picamera2；另見下方相機環境及其系統套件限制。模型和標籤來自 TensorFlow；標籤網址追蹤上游 master，日後內容可能改變。
 
 依[素材下載與使用說明](./練習素材/素材下載與使用.md)取得本倉庫，將[模型下載程式](./範例程式/補充3和8-Thonny下載模型.py)、[分類範例](./範例程式/補充3和8-Thonny照片分類.py)和[相機照片裁切圖](./圖檔/lesson24-camera-roi.png)放在同一個新練習資料夾。照片是 RP5 拍攝螢幕上的 AI 生成物件後裁切所得，不是真實水果。
 
@@ -20,7 +20,7 @@
 
 選擇含上述套件的直譯器，在 Thonny 開啟下載程式並按綠色執行鈕。程式下載 TensorFlow 的模型壓縮檔、取出需要的模型及下載標籤，並印出大小與 SHA-256。需要網路及可容納下載暫存檔的空間；若模型或標籤已存在，請改用新的資料夾。
 
-本次 Thonny 輸出：
+先前 Bookworm 的 Thonny 輸出：
 
 ```text
 Downloading model archive...
@@ -69,7 +69,7 @@ for index in np.argsort(scores)[-3:][::-1]:
     print(f'top class: {index} {labels[index]} {scores[index]:.4f}')
 ```
 
-同一程式及模型在這台 RP5 的 Thonny Shell 實際輸出：
+先前 Bookworm 環境下，這台 RP5 的 Thonny Shell 實際輸出：
 
 ```text
 input shape: (1, 224, 224, 3)
@@ -360,6 +360,103 @@ camera released
 ![兩分鐘測試後重開並停止的 Thonny 畫面](./圖檔/tflite-120s-reopen.png)
 
 截圖中的紅色 `AT-SPI` 提示發生在本次遠端桌面；本次仍能顯示預覽、完成分類並釋放相機，不能據此推斷其他錯誤都可忽略。這是一次兩分鐘測試與重開，不代表數小時穩定性，也不是乾淨作業系統安裝或其他場景的準確率測試。
+
+## 既有 Trixie：Picamera2 與 LiteRT 相機分類（2026-11-10）
+
+此項使用現有 Debian 13 Trixie、Python 3.13.5；與前述 Bookworm 紀錄分開。新環境透過 `--system-site-packages` 讀取現有系統的 Picamera2 及相依套件，因此不是完全隔離的環境；pip 安裝過程使用既有快取。LiteRT 2.3.0、OpenCV 4.12.0 和 NumPy 2.2.4 的組合已在本機測試，全新系統仍待驗證。
+
+1. 在 Thonny 使用本機 Python 3.13 執行[建立相機環境程式](./範例程式/Thonny建立Trixie-LiteRT相機環境.py)，先將 `target` 改成主目錄下不存在的新資料夾；已有的目錄不會被覆蓋。程式依賴系統已可使用 Picamera2，成功時印出 `Picamera2 OK` 及 `Environment ready`。若中途失敗，保留目錄並改名重試。
+2. 在「工具 → 選項 → 直譯器」選擇新環境的 `bin/python`。依[補充 3](./補充%203｜🧠%20TensorFlow%20Lite%20%28TFLite%29%20教學入門指南.md)下載模型及標籤，將 `mobilenet.tflite`、`labels.txt` 與[相機分類程式](./範例程式/補充8-LiteRT-Trixie相機分類.py)放在同一練習資料夾。
+3. 關閉其他使用相機的程式。若要在桌面顯示即時分類文字，可保留 `SHOW_PREVIEW = True`；在預覽視窗按 Q 可要求停止。為避免洩露相機畫面，本次實測將該值改為 `False`，程式不儲存也不顯示相機影像；不顯示時不會處理 Q，會在 50 影格後結束。**本次 Trixie 的預覽與 Q 鍵分支尚未實測**。
+4. 在 Thonny 執行並觀察 Shell；完成後要看到 `camera released`，才能接著執行其他相機程式。如果相機被占用，先關閉先前程式再重試。
+
+第一次實際輸出摘要（未顯示相機畫面）：
+
+```text
+preview: False
+frame 1: monitor 0.3164
+frame 10: monitor 0.3203
+frame 25: monitor 0.3828
+frame 50: monitor 0.3633
+frames: 50 elapsed seconds: 3.32 average FPS: 15.04
+camera released
+```
+
+第一次結束後立刻重跑，相機再次取得 50 張影格並釋放。這些類別與分數是模型對整張影像的輸出；此次沒有公開畫面供人工核對，不可推論辨識正確率。15.04 FPS 是**關閉預覽時**取像、縮放與推論迴圈的平均值，不含相機啟動等待，不代表顯示速度或其他場景效能。
+
+![Thonny 建立可使用 Picamera2 的 LiteRT 環境](./圖檔/supp8-trixie-litert-camera-env-20261110.png)
+
+![Thonny 顯示不含相機畫面的 50 影格分類結果](./圖檔/supp8-trixie-litert-camera-hidden-20261110.png)
+
+完整程式如下；相機色彩順序及所需的 RGB 轉換應與實際 Picamera2 設定一致，換相機或格式後須重新確認：
+
+```python
+from pathlib import Path
+from importlib.metadata import version
+import sys
+import time
+
+import cv2
+import numpy as np
+from ai_edge_litert.interpreter import Interpreter
+from picamera2 import Picamera2
+
+# 不希望畫面顯示在桌面時設為 False；程式仍會記錄分類摘要。
+SHOW_PREVIEW = True
+MAX_FRAMES = 50
+folder = Path(__file__).resolve().parent
+labels = (folder / 'labels.txt').read_text(encoding='utf-8').splitlines()
+model = Interpreter(model_path=str(folder / 'mobilenet.tflite'))
+model.allocate_tensors()
+inp = model.get_input_details()[0]
+out = model.get_output_details()[0]
+if tuple(inp['shape']) != (1, 224, 224, 3) or inp['dtype'] != np.uint8:
+    raise RuntimeError('此範例需要 224x224 RGB uint8 MobileNetV1 模型')
+print('Python:', sys.version.split()[0], 'LiteRT:', version('ai-edge-litert'),
+      'OpenCV:', cv2.__version__, 'NumPy:', np.__version__, flush=True)
+print('preview:', SHOW_PREVIEW, flush=True)
+camera = Picamera2()
+started = False
+count = 0
+try:
+    camera.configure(camera.create_preview_configuration(
+        main={'size': (640, 480), 'format': 'RGB888'}))
+    camera.start()
+    started = True
+    time.sleep(1)
+    begin = time.perf_counter()
+    while count < MAX_FRAMES:
+        frame = camera.capture_array()
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        rgb = cv2.resize(rgb, (224, 224))
+        model.set_tensor(inp['index'], np.expand_dims(rgb, 0))
+        model.invoke()
+        raw = model.get_tensor(out['index'])[0]
+        scale, zero = out['quantization']
+        scores = (raw.astype(np.float32) - zero) * scale
+        if len(labels) != len(scores):
+            raise RuntimeError('標籤數與模型輸出數不一致')
+        i = int(np.argmax(scores))
+        count += 1
+        if count in (1, 10, 25, 50):
+            print(f'frame {count}: {labels[i]} {scores[i]:.4f}', flush=True)
+        if SHOW_PREVIEW:
+            cv2.putText(frame, f'{labels[i]} {scores[i]:.3f}', (10, 35),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            cv2.imshow('LiteRT camera - Q to stop', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+    elapsed = time.perf_counter() - begin
+    print('frames:', count, 'elapsed seconds:', round(elapsed, 2),
+          'average FPS:', round(count / elapsed, 2) if elapsed else 0, flush=True)
+finally:
+    if started:
+        camera.stop()
+    camera.close()
+    if SHOW_PREVIEW:
+        cv2.destroyAllWindows()
+    print('camera released', flush=True)
+```
 
 ## 練習與後續應用
 

@@ -222,3 +222,7 @@ camera released
 ## 既有 Trixie 的 LiteRT 單圖環境（2026-11-10）
 
 依[補充 3 的步驟](./補充%203｜🧠%20TensorFlow%20Lite%20%28TFLite%29%20教學入門指南.md)在 Thonny 執行 [建立環境程式](./範例程式/Thonny建立Trixie-LiteRT環境.py)，選擇尚不存在的新目錄；安裝後切換到新目錄的 `bin/python`。在既有 Trixie Python 3.13.5，NumPy 2.2.4、OpenCV 4.12.0.88 和 ai-edge-litert 2.3.0 的安裝及分類已測；安裝使用既有快取，不等於全新系統驗證。此環境不繼承系統套件，尚未整合 Picamera2。
+
+## 既有 Trixie 的 LiteRT 相機環境（2026-11-10）
+
+[補充 8](./補充%208｜PiCamera2%20%2B%20TensorFlow%20Lite%20%28MobileNetV1%29%20%2B%20即時影像分類%20%2B%20顯示分類文字%20的%20完整教學.md) 使用 [建立環境程式](./範例程式/Thonny建立Trixie-LiteRT相機環境.py) 建立繼承系統套件的環境；依賴系統原有 Picamera2，並使用套件快取。Thonny 已測相機關閉預覽的 50 影格、釋放及重開；預覽、Q 鍵與全新系統待測。
