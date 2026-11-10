@@ -126,13 +126,69 @@ saved: lesson22-camera-face.png
 
 本次在新相機環境再次讀取既有的生成素材照片，偵測到一個人臉；這並非真人測試或即時攝影機測試。
 
+## 2026-11-10：既有 Trixie 的 Thonny Haar 偵測
+
+本次以既有 Trixie 的 Thonny 選用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0），使用先前[相機拍攝並校正的 AI 生成素材](./圖檔/facehand-board.png)。素材是虛構人物，並非真人測試；原始全景未公開。這不是全新系統測試。
+
+1. 將素材下載為 `facehand-board.png`，放入自己的空練習資料夾；[本次範例](./範例程式/第22課-生成素材人臉偵測-trixie.py)的 `folder` 是當次暫存路徑，使用時要改成自己資料夾。輸出的 `face-result.png` 若已存在會被覆寫，先確認位置。
+2. 在 Thonny 選擇含 OpenCV 和 NumPy 的解譯器，輸入或開啟以下程式並按 F5。這次用 `cv2.data.haarcascades` 找到所選 OpenCV 所附 XML；不同安裝若沒有此目錄或模型，需使用可取得的相容 XML 並檢查 `cascade.empty()`。
+3. 確認黑圖及生成素材的候選數量，查看綠框；點選視窗按任意鍵關閉，未按鍵則等候 60 秒。
+
+```python
+from pathlib import Path
+import cv2
+import numpy as np
+
+folder = Path('/tmp/ba5077-lesson22-SKocIi')
+image = cv2.imread(str(folder / 'facehand-board.png'))
+if image is None:
+    raise RuntimeError('Cannot read image; check path')
+model = Path(cv2.data.haarcascades) / 'haarcascade_frontalface_default.xml'
+cascade = cv2.CascadeClassifier(str(model))
+if cascade.empty():
+    raise RuntimeError('Cannot load Haar model')
+blank = np.zeros((240, 320), dtype=np.uint8)
+print('blank faces:', len(cascade.detectMultiScale(blank, 1.1, 5)))
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+faces = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
+for x, y, w, h in faces:
+    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 3)
+print('faces found:', len(faces))
+print('saved:', cv2.imwrite(str(folder / 'face-result.png'), image))
+cv2.namedWindow('Face detection', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('Face detection', 700, 400)
+cv2.imshow('Face detection', image)
+print('Window open', flush=True)
+cv2.waitKey(60000)
+cv2.destroyAllWindows()
+print('Window closed')
+```
+
+本次實際輸出節錄：
+
+```text
+blank faces: 0
+faces found: 1
+saved: True
+Window open
+Window closed
+```
+
+![Thonny 執行 Haar 偵測及生成素材結果](./圖檔/lesson22-trixie-thonny-window-20261110.jpg)
+
+*圖：RP5 Thonny 及 OpenCV 實際視窗；原素材是相機拍攝顯示器上的生成圖，綠框是本次偵測輸出。*
+
+![關閉視窗後的 Thonny 輸出](./圖檔/lesson22-trixie-thonny-closed-20261110.jpg)
+
+*圖：按鍵關閉後的實際輸出。* 另以檔案工具確認輸出 PNG 為 1200×675 像素。Shell 出現 Qt 找不到 `wayland` 平台外掛的訊息，但本次視窗正常顯示並關閉。辨識數量隨素材、參數及版本可能改變；黑圖為零和單張生成臉為一，不能證明真人、不同光線或即時相機的偵測品質。真人與即時情境仍待測。
+
 ## 與原文章的差異
 
 - 新增以 Thonny 操作的實測與截圖：載入 Haar 偵測器並檢查空白圖。
 
 - 原文使用外部圖片與相對路徑的 XML；本版使用本機已驗證的絕對路徑與合成圖。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
-- 尚未保存操作畫面截圖。
+- 已保留先前及既有 Trixie 的 Thonny 操作截圖；真人即時畫面尚未實測。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
 - 本輪新增相機拍攝 AI 生成臉部素材後的 Haar 偵測；原文的真人相機即時視窗尚未完整測試。
