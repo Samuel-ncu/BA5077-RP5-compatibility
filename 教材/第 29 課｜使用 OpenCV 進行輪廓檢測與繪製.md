@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886531) · 實測日期：2026-10-29
 
-> 已在 Thonny 實測：以先前相機照片進行透視校正及輪廓偵測；照片由先前終端機操作拍攝，Thonny 拍照流程待重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 已在既有 Trixie 的 Thonny 用可下載的相機照片校正素材重現輪廓偵測；自行拍照及透視校正流程仍須另行操作。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 ## 學習目標與先備知識
 
@@ -97,6 +97,57 @@ saved: shapes-board.png, shapes-contours.png
 
 RP5 實拍螢幕後，裁出測試圖並做透視校正；黑色線條為程式畫出的輪廓，數字依由左到右排序。這是實拍後經處理的結果，不是安裝畫面。
 
+## 既有 Trixie：使用可下載素材重現輪廓（2026-11-10）
+
+原始全景照片因隱私未公開；為讓學生可直接重現後半段，下載[已公開的校正後測試圖 shapes-board.png](./圖檔/shapes-board.png)及[本例程式](./範例程式/第29課-公開素材輪廓.py)，放到**同一個新的練習資料夾**。此圖是先前 RP5 相機拍攝螢幕上測試圖，再裁切與透視校正的影像；並非此次重新拍攝。程式會在同資料夾產生 `lesson29-contours-result.png`，若已有同名檔會覆寫，請先確認。
+
+在 Thonny 開啟程式，選含 OpenCV 和 NumPy 的解譯器後按 Run。本次既有 Trixie 使用 Python 3.13.5、OpenCV 4.12.0、NumPy 2.2.4，解譯器為 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`；[環境指南](./Thonny環境與套件安裝.md)說明建立方式。這項測試從校正後圖片開始，**不包含拍照或重新校正**，也不是全新系統驗證。
+
+```python
+from pathlib import Path
+import cv2
+import numpy as np
+
+folder = Path(__file__).resolve().parent
+image = cv2.imread(str(folder / 'shapes-board.png'))
+if image is None:
+    raise RuntimeError('Put shapes-board.png beside this script')
+hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+mask = cv2.inRange(hsv, (0, 110, 80), (179, 255, 255))
+mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+large = sorted((c for c in contours if cv2.contourArea(c) > 4000),
+               key=lambda c: cv2.boundingRect(c)[0])
+annotated = image.copy()
+for i, contour in enumerate(large, 1):
+    cv2.drawContours(annotated, [contour], -1, (0, 0, 0), 3)
+    x, y, w, h = cv2.boundingRect(contour)
+    cv2.putText(annotated, str(i), (x, max(30, y - 10)),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+output = folder / 'lesson29-contours-result.png'
+if not cv2.imwrite(str(output), annotated):
+    raise RuntimeError('Cannot save result')
+print('image shape:', image.shape)
+print('large color contours:', len(large))
+print('contour areas:', [round(cv2.contourArea(c), 1) for c in large])
+print('saved:', output.name)
+```
+
+本次 Thonny Shell 實際輸出：
+
+```text
+image shape: (675, 1200, 3)
+large color contours: 3
+contour areas: [47983.0, 60604.0, 33286.5]
+saved: lesson29-contours-result.png
+```
+
+![既有 Trixie Thonny 讀取公開素材與偵測輪廓的截圖](./圖檔/lesson29-trixie-thonny-public-input-20261110.png)
+
+![既有 Trixie 程式輸出的三個輪廓](./圖檔/lesson29-trixie-public-contours-20261110.png)
+
+第一張為 Thonny 操作截圖，第二張為實際程式輸出；三個面積是輪廓幾何面積，素材、版本或門檻改變時可能不同。練習把面積門檻改大，記錄剩餘輪廓，再說明結果與顏色遮罩的關係。找不到素材時先核對檔名及程式所在資料夾；換自己的照片時需自行調整取像、校正及遮罩參數。
+
 ## 逐步理解結果
 
 程式先依四個手動座標取得測試圖，將斜拍的四邊形轉換為矩形，再依 HSV 飽和度篩選有色像素，去除小雜點，最後找出面積大於 4000 的輪廓。此次找到 3 個，不代表任何照片都會得到 3 個。
@@ -111,7 +162,7 @@ RP5 實拍螢幕後，裁出測試圖並做透視校正；黑色線條為程式�
 
 ## 與原文章的差異
 
-- 本次增加 Thonny 影像處理實測與操作截圖；尚未完成的相機流程以文中註記為準。
+- 新增可下載校正素材的既有 Trixie Thonny 重現流程與操作截圖；自行拍照及校正仍以文中註記為準。
 
 - 原文以外部圖片做輪廓範例；本版先以合成矩形驗證 API，再加入這台 RP5 實拍螢幕的彩色形狀。透視校正座標與篩選門檻只適用本次拍攝，須依各自相機調整。
 - 圖片是攝影機拍攝後的影像處理結果，並非安裝截圖。
