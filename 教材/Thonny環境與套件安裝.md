@@ -225,4 +225,4 @@ camera released
 
 ## 既有 Trixie 的 LiteRT 相機環境（2026-11-10）
 
-[補充 8](./補充%208｜PiCamera2%20%2B%20TensorFlow%20Lite%20%28MobileNetV1%29%20%2B%20即時影像分類%20%2B%20顯示分類文字%20的%20完整教學.md) 使用 [建立環境程式](./範例程式/Thonny建立Trixie-LiteRT相機環境.py) 建立繼承系統套件的環境；依賴系統原有 Picamera2，並使用套件快取。Thonny 已測相機關閉預覽的 50 影格、釋放及重開；預覽、Q 鍵與全新系統待測。
+[補充 8](./補充%208｜PiCamera2%20%2B%20TensorFlow%20Lite%20%28MobileNetV1%29%20%2B%20即時影像分類%20%2B%20顯示分類文字%20的%20完整教學.md) 使用 [建立環境程式](./範例程式/Thonny建立Trixie-LiteRT相機環境.py) 建立繼承系統套件的環境；依賴系統原有 Picamera2，並使用套件快取。Thonny 已測相機關閉預覽的 50 影格、釋放及重開；後續預覽、Q 鍵及重開已測；全新系統待測。

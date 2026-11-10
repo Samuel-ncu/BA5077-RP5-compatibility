@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223038310) · 更新日期：2026-11-10
 
-> **部分實測**：先前 Bookworm 已測單圖、相機預覽與 Q 鍵；2026-11-10 既有 Trixie 的 Thonny 另測 LiteRT 相機分類 50 影格及相機重開。此次關閉畫面預覽；Trixie 預覽與 Q 鍵及全新系統仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
+> **部分實測**：先前 Bookworm 已測單圖、相機預覽與 Q 鍵；2026-11-10 既有 Trixie 的 Thonny 另測 LiteRT 相機分類 50 影格及相機重開。另已測 Trixie 預覽、Q 鍵停止與相機重開；全新系統仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
 
@@ -367,7 +367,7 @@ camera released
 
 1. 在 Thonny 使用本機 Python 3.13 執行[建立相機環境程式](./範例程式/Thonny建立Trixie-LiteRT相機環境.py)，先將 `target` 改成主目錄下不存在的新資料夾；已有的目錄不會被覆蓋。程式依賴系統已可使用 Picamera2，成功時印出 `Picamera2 OK` 及 `Environment ready`。若中途失敗，保留目錄並改名重試。
 2. 在「工具 → 選項 → 直譯器」選擇新環境的 `bin/python`。依[補充 3](./補充%203｜🧠%20TensorFlow%20Lite%20%28TFLite%29%20教學入門指南.md)下載模型及標籤，將 `mobilenet.tflite`、`labels.txt` 與[相機分類程式](./範例程式/補充8-LiteRT-Trixie相機分類.py)放在同一練習資料夾。
-3. 關閉其他使用相機的程式。若要在桌面顯示即時分類文字，可保留 `SHOW_PREVIEW = True`；在預覽視窗按 Q 可要求停止。為避免洩露相機畫面，本次實測將該值改為 `False`，程式不儲存也不顯示相機影像；不顯示時不會處理 Q，會在 50 影格後結束。**本次 Trixie 的預覽與 Q 鍵分支尚未實測**。
+3. 關閉其他使用相機的程式。若要在桌面顯示即時分類文字，可保留 `SHOW_PREVIEW = True`；在預覽視窗按 Q 可要求停止。為避免洩露相機畫面，本次實測將該值改為 `False`，程式不儲存也不顯示相機影像；不顯示時不會處理 Q，會在 50 影格後結束。後續已另測預覽和 Q 鍵，見下方紀錄。
 4. 在 Thonny 執行並觀察 Shell；完成後要看到 `camera released`，才能接著執行其他相機程式。如果相機被占用，先關閉先前程式再重試。
 
 第一次實際輸出摘要（未顯示相機畫面）：
@@ -383,6 +383,18 @@ camera released
 ```
 
 第一次結束後立刻重跑，相機再次取得 50 張影格並釋放。這些類別與分數是模型對整張影像的輸出；此次沒有公開畫面供人工核對，不可推論辨識正確率。15.04 FPS 是**關閉預覽時**取像、縮放與推論迴圈的平均值，不含相機啟動等待，不代表顯示速度或其他場景效能。
+
+### 開啟預覽、Q 鍵及重新開啟的實測
+
+同日後續以相同程式將 `SHOW_PREVIEW` 設為 `True`、`MAX_FRAMES` 暫設 500，以保留操作 Q 的時間。預覽確實顯示相機畫面及分類文字；畫面為相機拍攝 Thonny 所在螢幕的即時回饋，並非實體水果。按 Q 後於第 131 張停止，輸出 `frames: 131 elapsed seconds: 9.59 average FPS: 13.66` 與 `camera released`。接著重新開啟相機，使用教材原本 `MAX_FRAMES = 50`、預覽開啟，完成 50 張並自動結束，輸出 `elapsed seconds: 3.8 average FPS: 13.16` 與 `camera released`。
+
+![既有 Trixie 的 LiteRT 相機預覽及分類文字](./圖檔/supp8-trixie-litert-preview-20261110.png)
+
+![按 Q 後的影格數與相機釋放](./圖檔/supp8-trixie-litert-q-stop-20261110.png)
+
+![重新開啟後標準 50 影格自動結束](./圖檔/supp8-trixie-litert-reopen-20261110.png)
+
+這些 FPS 是本次取像、推論及顯示迴圈的平均值，不含啟動相機的等待時間；不同場景與負載會改變結果。畫面上的 `monitor` 和 `web site` 為整張畫面分類的浮動標籤，不是對真實水果或辨識準確率的評估。
 
 ![Thonny 建立可使用 Picamera2 的 LiteRT 環境](./圖檔/supp8-trixie-litert-camera-env-20261110.png)
 

@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14223033888) · 更新日期：2026-11-10
 
-> **部分實測**：先前 Bookworm 已測 TFLite 單圖與相機分類；2026-11-10 既有 Trixie 另以 Thonny 建立 LiteRT 環境、下載模型並完成單圖分類。Trixie 另已測相機 50 影格（關閉預覽）；預覽及全新系統仍待測。[逐篇進度](./Thonny逐篇實測狀態.md)
+> **部分實測**：先前 Bookworm 已測 TFLite 單圖與相機分類；2026-11-10 既有 Trixie 另以 Thonny 建立 LiteRT 環境、下載模型並完成單圖分類。Trixie 相機 50 影格、預覽、Q 鍵及重開另見補充 8；全新系統仍待測。[逐篇進度](./Thonny逐篇實測狀態.md)
 
 ## 學習目標與背景
 
@@ -170,5 +170,5 @@ for index in np.argsort(scores)[-3:][::-1]:
 
 ## 與原文章的差異
 
-- 本版保留 Bookworm 的模型下載、圖片及相機結果；既有 Trixie 另實測 LiteRT 單圖及關閉預覽的相機 50 影格；模型轉換及 Trixie 預覽尚未重做。
+- 本版保留 Bookworm 的模型下載、圖片及相機結果；既有 Trixie 另實測 LiteRT 單圖及相機預覽、Q 鍵與重開；模型轉換尚未重做。
 - 新增相機拍攝生成圖、模型和標籤下載方式及可核對的檔案資訊；即時相機分類及兩分鐘預覽實測見[補充 8](./%E8%A3%9C%E5%85%85%208%EF%BD%9CPiCamera2%20%2B%20TensorFlow%20Lite%20%28MobileNetV1%29%20%2B%20%E5%8D%B3%E6%99%82%E5%BD%B1%E5%83%8F%E5%88%86%E9%A1%9E%20%2B%20%E9%A1%AF%E7%A4%BA%E5%88%86%E9%A1%9E%E6%96%87%E5%AD%97%20%E7%9A%84%20%E5%AE%8C%E6%95%B4%E6%95%99%E5%AD%B8.md)；全新系統安裝仍待驗證。
