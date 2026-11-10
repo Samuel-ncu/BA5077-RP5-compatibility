@@ -72,12 +72,74 @@ flowchart LR
 
 此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
 
+## 2026-11-10：既有 Trixie 的生成素材 LBPH 流程
+
+本次使用現有 Trixie、Thonny 選用 `/home/pi/ba5077-contrib-trixie-20261109/bin/python3`、Python 3.13.5 和 OpenCV 4.12.0。此獨立環境支援 `cv2.face`；第 14 課的一般 OpenCV 環境不應假設具有相同擴充功能。此環境已存在，本次沒有驗證全新系統安裝。
+
+教材素材為[生成的人臉與手部圖片](./圖檔/facehand-board.png)：先將生成圖顯示於螢幕，再由 RP5 相機拍攝、裁切並校正，不是真人影像。下列流程先以 Haar 偵測這張圖的人臉，再用該區域訓練 LBPH，最後以**同一張區域**預測。這只用於驗證程式路徑，不是獨立測試、真人識別或準確率評估；只訓練一個標籤也不能證明能辨別陌生人。
+
+1. 建立自己的空練習資料夾，下載上述素材並命名為 `facehand-board.png`。
+2. 在 Thonny 的 **Tools → Options → Interpreter** 選擇支援 `cv2.face` 的獨立環境。開啟[本次範例](./範例程式/第23課-生成素材LBPH-trixie.py)，將 `folder` 改成自己的資料夾；以下路徑只是當次暫存位置。此程式會從所選 OpenCV 的 `cv2.data.haarcascades` 找模型，若沒有該資料或模型，應確認安裝並使用可取得的相容 XML。
+3. 按 F5，確認只找到一個候選臉及預測結果，視窗顯示訓練用灰階臉部；點視窗並按任意鍵結束，未按鍵則等候 60 秒。
+
+```python
+from pathlib import Path
+import cv2
+import numpy as np
+
+folder = Path('/tmp/ba5077-lesson23-FcArl6')
+image = cv2.imread(str(folder / 'facehand-board.png'))
+if image is None:
+    raise RuntimeError('Cannot read image')
+model = Path(cv2.data.haarcascades) / 'haarcascade_frontalface_default.xml'
+cascade = cv2.CascadeClassifier(str(model))
+if cascade.empty():
+    raise RuntimeError('Cannot load Haar model')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+faces = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
+print('face candidates:', len(faces))
+if len(faces) != 1:
+    raise RuntimeError('Expected one face in the practice image')
+x, y, w, h = faces[0]
+face = cv2.resize(gray[y:y+h, x:x+w], (100, 100))
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.train([face], np.array([0], dtype=np.int32))
+label, distance = recognizer.predict(face)
+print('training images:', 1)
+print('predicted label:', label)
+print('distance:', round(distance, 4))
+cv2.imshow('Training face', face)
+print('Window open', flush=True)
+cv2.waitKey(60000)
+cv2.destroyAllWindows()
+print('Window closed')
+```
+
+本次 Shell 實際輸出節錄：
+
+```text
+face candidates: 1
+training images: 1
+predicted label: 0
+distance: 0.0
+Window open
+Window closed
+```
+
+![Thonny 中的生成素材 LBPH 訓練與視窗](./圖檔/lesson23-trixie-lbph-window-20261110.jpg)
+
+*圖：本次 Thonny 實際執行與裁切後的生成素材臉部。*
+
+![關閉視窗後的預測輸出](./圖檔/lesson23-trixie-lbph-closed-20261110.jpg)
+
+*圖：按鍵關閉後的實際輸出。* `distance` 是模型的距離值，不是正確率或百分比；本次訓練與預測是同一張圖，結果不能推廣。Shell 出現 Qt 找不到 `wayland` 平台外掛的訊息，本次視窗仍正常顯示並關閉；其他環境需依完整錯誤排查。若候選數不是一，程式會停止而不訓練。真人資料、未見影像、辨識效果、Picamera2 即時流程及全新系統安裝仍待驗證。
+
 ## 與原文章的差異
 
 - 新增以 Thonny 操作的實測與截圖：使用合成灰階矩陣訓練及預測 LBPH。
 
 - 原文使用人臉資料集與相機；本版先以合成資料驗證流程，不把合成結果當成真人辨識成果。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
-- 尚未保存操作畫面截圖。
+- 已保留舊合成矩陣與現有 Trixie 生成素材的 Thonny 操作截圖；真人和即時相機流程尚未驗證。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
