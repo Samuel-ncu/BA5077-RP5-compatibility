@@ -14,7 +14,7 @@
 
 本教學程式使用合成資料，沒有把私人相機影像上傳公開 repo；請在自己的練習目錄操作。
 
-## 在 Thonny 實測：兩張校正圖的特徵比對
+## 先前 Thonny 實測：兩張校正圖的特徵比對（Python 3.11 環境）
 
 這項實驗由第 31～33 課共用：兩張圖由 RP5 在不同時間拍攝相同螢幕圖案後裁切及校正，不是兩個真實場景。對同一組素材比較 SIFT 與 ORB 的特徵點與候選配對，能看到同一問題可使用不同方法；候選配對數不等於正確率。
 
@@ -37,6 +37,30 @@ saved: feature-camera-orb-matches.png
 ![在 RP5 的 Thonny 執行第 31～33 課共同特徵比對](./圖檔/lesson31-33-thonny-clean.png)
 
 截圖的 `lesson31-33.py` 是上方 Thonny 範例的測試副本。右下角顯示測試用的獨立環境。**此環境的 SURF 無法建立**；程式保留其他演算法並如實顯示不可用。下方舊紀錄的 SURF 成功來自另一套先前環境，不代表此安裝方式也能啟用 SURF。尚未在此新環境比較三種方法或測試自行拍攝的原圖。
+
+## 既有 Trixie：共同校正圖的版本相容性實測（2026-11-10）
+
+為確認現有 Trixie、Python 3.13 環境的相容性，使用上方可下載的兩張校正圖和[共同程式](./範例程式/第31至33課-Thonny校正圖比對.py)，放在同一個新練習資料夾，在 Thonny 開啟程式並按 Run。執行會在該目錄寫入 SIFT 與 ORB 匹配圖，請先確認同名檔可覆寫。本次程式測試副本名為 `features.py`，內容與共同程式相同；相機照片為先前拍攝並校正的螢幕測試圖，並非本次新拍。
+
+本次是既有 Trixie、Python 3.13.5、NumPy 2.2.4、opencv-contrib-python 4.12.0.88，Thonny 解譯器為 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`；建立方式見[環境指南](./Thonny環境與套件安裝.md)。以下是 Shell 實際輸出：
+
+```text
+SURF unavailable in this OpenCV build
+SIFT keypoints: 1320 1192
+SIFT cross-check matches: 567
+saved: feature-camera-sift-matches.png
+ORB keypoints: 1200 1200
+ORB cross-check matches: 432
+saved: feature-camera-orb-matches.png
+```
+
+![既有 Trixie 的 Thonny 執行共同特徵比對](./圖檔/lesson31-33-trixie-thonny-20261110.png)
+
+![既有 Trixie 的 SIFT 候選匹配結果](./圖檔/lesson31-33-trixie-sift-20261110.png)
+
+![既有 Trixie 的 ORB 候選匹配結果](./圖檔/lesson31-33-trixie-orb-20261110.png)
+
+第一張是 Thonny 操作截圖，其後兩張是程式結果圖。此建置的 SURF 嘗試建立時不可用，程式因此繼續執行 SIFT、ORB；**這不代表 SURF 已在此環境完成驗收**。下方較早的另一套 nonfree 建置曾有 SURF 終端機成功紀錄，兩者不可混為一談。匹配數是演算法產生的候選數，圖中可見不對應的連線，不能當作準確率；改圖、參數或版本可能得到不同結果。自行拍攝、SURF 在目前環境可用的方式及全新系統驗證均待處理。
 
 ## 先前終端機範例（待 Thonny 重測）
 
@@ -194,7 +218,7 @@ SIFT 和 SURF 使用 L2 距離，本例 ORB 使用 Hamming 距離。各方法的
 
 - 新增以 Thonny 使用兩張可下載校正圖的實測；此新環境 SURF 不可用，SIFT、ORB 成功。
 
-- 新版 SIFT 改用 `cv2.SIFT_create()`；本次環境的 SURF 實測可建立，其他環境需自行確認。
+- 新版 SIFT 改用 `cv2.SIFT_create()`；較早另一套 nonfree 建置的 SURF 曾可建立，2026-11-10 既有 Trixie 環境的 SURF 不可用。
 - 以上是本機實際合成資料輸出；不同版本可能產生不同數值。
 - 新增上方共同範例的 Thonny 操作截圖；其他情境依文章標記。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
