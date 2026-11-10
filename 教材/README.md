@@ -15,9 +15,9 @@
 | [第 07 課｜連接 Raspberry Pi 5 相機模組](./%E7%AC%AC%2007%20%E8%AA%B2%EF%BD%9C%E9%80%A3%E6%8E%A5%20Raspberry%20Pi%205%20%E7%9B%B8%E6%A9%9F%E6%A8%A1%E7%B5%84.md) | 已補相機實拍案例；完整情境仍待測 |
 | [第 08 課｜Raspberry Pi 5 安裝與使用 qiv 圖片檢視器](./%E7%AC%AC%2008%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20qiv%20%E5%9C%96%E7%89%87%E6%AA%A2%E8%A6%96%E5%99%A8.md) | 已補背景與圖例；完整情境與操作截圖待補 |
 | [第 09 課｜Raspberry Pi 的 UNIX 指令教學](./%E7%AC%AC%2009%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20UNIX%20%E6%8C%87%E4%BB%A4%E6%95%99%E5%AD%B8.md) | 已補背景與圖例；完整情境與操作截圖待補 |
-| [第 10 課｜Raspberry Pi 5 安裝與設定 VNC Viewer](./%E7%AC%AC%2010%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E8%A8%AD%E5%AE%9A%20VNC%20Viewer.md) | 已補背景與圖例；完整情境與操作截圖待補 |
+| [第 10 課｜Raspberry Pi 5 安裝與設定 VNC Viewer](./%E7%AC%AC%2010%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%E8%88%87%E8%A8%AD%E5%AE%9A%20VNC%20Viewer.md) | 既有 Trixie Connect 桌面分享、雙向文字剪貼簿、中斷及重連已測；首次登入和 VNC 安裝設定待測 |
 | [第 11 課｜Raspberry Pi 的 vi 與 nano 編輯器教學與比較](./%E7%AC%AC%2011%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E7%9A%84%20vi%20%E8%88%87%20nano%20%E7%B7%A8%E8%BC%AF%E5%99%A8%E6%95%99%E5%AD%B8%E8%88%87%E6%AF%94%E8%BC%83.md) | 已補背景與圖例；完整情境與操作截圖待補 |
-| [第 12 課｜使用 Thonny IDE 與 OpenCV 進行 Python 開發](./%E7%AC%AC%2012%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20Thonny%20IDE%20%E8%88%87%20OpenCV%20%E9%80%B2%E8%A1%8C%20Python%20%E9%96%8B%E7%99%BC.md) | 已補背景與圖例；完整情境與操作截圖待補 |
+| [第 12 課｜使用 Thonny IDE 與 OpenCV 進行 Python 開發](./%E7%AC%AC%2012%20%E8%AA%B2%EF%BD%9C%E4%BD%BF%E7%94%A8%20Thonny%20IDE%20%E8%88%87%20OpenCV%20%E9%80%B2%E8%A1%8C%20Python%20%E9%96%8B%E7%99%BC.md) | 既有 Trixie 的 Thonny／OpenCV 4.12.0 範例與輸出已測；安裝及圖像視窗情境待查 |
 | [第 13 課｜Raspberry Pi 使用攝影機完整指南](./%E7%AC%AC%2013%20%E8%AA%B2%EF%BD%9CRaspberry%20Pi%20%E4%BD%BF%E7%94%A8%E6%94%9D%E5%BD%B1%E6%A9%9F%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97.md) | 已補背景與圖例；完整情境與操作截圖待補 |
 | [第 14 課｜在 Raspberry Pi 5 安裝 OpenCV](./%E7%AC%AC%2014%20%E8%AA%B2%EF%BD%9C%E5%9C%A8%20Raspberry%20Pi%205%20%E5%AE%89%E8%A3%9D%20OpenCV.md) | 現有 Trixie 已在 Thonny 新建環境、安裝 OpenCV 並繪圖截圖；全新系統及相機待驗證 |
 | [第 15 課｜在 Raspberry Pi 5 使用 Libcamera、Picamera2 與 OpenCV](./%E7%AC%AC%2015%20%E8%AA%B2%EF%BD%9C%E5%9C%A8%20Raspberry%20Pi%205%20%E4%BD%BF%E7%94%A8%20Libcamera%E3%80%81Picamera2%20%E8%88%87%20OpenCV.md) | 已補背景與圖例；完整情境與操作截圖待補 |

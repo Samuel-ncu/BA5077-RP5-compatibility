@@ -112,6 +112,20 @@ Center BGR: [0, 255, 0]
 
 ![Thonny 新虛擬環境的程式和輸出](./圖檔/thonny-newenv-demo.png)
 
+## 2026-11-10：既有 Trixie 的 Thonny 重測
+
+使用現有 Trixie、Python 3.13.5，於 Thonny 的解譯器設定中選擇先前第 14 課建立的 `/home/pi/opencv-course-env/bin/python3`。在編輯器貼入上方完整範例，按綠色執行鍵（或 F5）；本次直接執行尚未存檔的編輯器內容，Shell 顯示：
+
+```text
+OpenCV version: 4.12.0
+Image shape: (120, 160, 3)
+Center BGR: [0, 255, 0]
+```
+
+![既有 Trixie 的 Thonny 程式、輸出與解譯器](./圖檔/lesson12-trixie-thonny-20261110.jpg)
+
+*圖：實際桌面分享中的 Thonny 執行畫面；解譯器顯示於右下角。* 這次沿用已安裝套件的環境，沒有重新驗證全新系統或 Thonny 安裝；此範例未顯示圖像視窗。學生如需保存，請用 File → Save As 存入自己的練習資料夾。環境建立與 OpenCV 視窗測試可參考[第 14 課](./第%2014%20課｜在%20Raspberry%20Pi%205%20安裝%20OpenCV.md)。
+
 ## 與原文章的差異
 
 - 先檢查現有 Thonny 與 OpenCV，並區分終端機 Python 與 Thonny 解譯器。
