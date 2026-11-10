@@ -121,11 +121,69 @@ sh 第09課-檔案練習.sh
 3. 若要保留檔案過夜或繳交作業，為何不應只依賴暫存目錄？
 
 原文還涵蓋系統管理與其他指令，本次未逐條重測。請勿把不理解的刪除或系統設定命令直接用在正式資料上。
+## 2026-11-10：現有 Trixie 終端機實測
+
+這次透過 Raspberry Pi Connect 遠端終端機操作既有 Debian 13 Trixie 的 RP5；不是新重灌系統。原文也包含重新命名、權限、封存、系統及網路指令。本次建立新的暫存目錄練習，沒有操作既有使用者檔案。
+
+### 建立、移動與查詢
+
+逐行輸入；提示符號 `$` 不需輸入。`mktemp` 每次產生不同名稱，後續都在該新目錄操作。
+
+```bash
+lesson09_dir=$(mktemp -d /tmp/ba5077-lesson09-XXXXXX)
+cd "$lesson09_dir"
+pwd
+printf 'Hello AIoT\n' > note.txt
+mkdir archive
+mv note.txt archive/renamed.txt
+chmod u+x archive/renamed.txt
+ls -l archive
+grep 'AIoT' archive/renamed.txt
+```
+
+本次 `pwd` 顯示 `/tmp/ba5077-lesson09-BM5qE0`，`grep` 顯示 `Hello AIoT`；`ls -l` 中該檔的權限欄為 `-rwxrw-r--`。檔名隨機部分、權限、擁有者和時間會依環境不同。`mv` 目的地已有同名檔時可能覆寫；這次目的地在剛建立的空目錄。`chmod u+x` 只是示範增加擁有者的執行權限，不表示這個文字檔是可執行程式。
+
+![實際建立練習檔、移動、修改權限與搜尋](./圖檔/lesson09-trixie-move-permission-20261110.jpg)
+
+*圖：Connect 遠端終端機實際操作畫面。*
+
+### 封存、檢視、解壓及比較
+
+在同一個練習目錄繼續執行。解壓前先檢查來源與檔名，並使用空的目標目錄，避免覆寫檔案。
+
+```bash
+tar -czf bundle.tar.gz archive
+tar -tzf bundle.tar.gz
+mkdir restored
+tar -xzf bundle.tar.gz -C restored
+cmp archive/renamed.txt restored/archive/renamed.txt && echo MATCH
+```
+
+本次封存清單為 `archive/`、`archive/renamed.txt`，最後輸出 `MATCH`。`cmp` 相同時以成功狀態結束，因此 `&&` 後的訊息才會執行。
+
+![實際封存、列出及比較結果](./圖檔/lesson09-trixie-archive-20261110.jpg)
+
+*圖：Connect 遠端終端機實際操作畫面；長命令在終端機換行顯示。*
+
+### 查詢儲存空間與本機連線
+
+```bash
+df -h /
+ps -p $$ -o comm=
+ping -c 1 127.0.0.1
+```
+
+當次根目錄所在檔案系統顯示容量 `117G`、已用 `8.9G`、可用 `104G`、使用率 `8%`；目前 shell 名稱顯示 `bash`。回送測試顯示 `1 packets transmitted, 1 received, 0% packet loss`；實際容量、速度與輸出會變動。`127.0.0.1` 只測 RP5 自己的網路堆疊，不能證明對外網路可用。
+
+![實際磁碟、shell 及回送測試輸出](./圖檔/lesson09-trixie-system-20261110.jpg)
+
+*圖：Connect 遠端終端機實際輸出。* 此次未測原文的 `rm`、`chown`、`sudo apt update`、`top`、`htop`、`kill` 或 `pkill`；不要對不明檔案或程序照搬範例。暫存目錄及本次練習檔保留，系統日後可能清理 `/tmp`。
+
 ## 與原文章的差異
 
 - 優先列出已在本機執行且不會修改檔案的基本指令。
 - 不把需要額外安裝的工具視為所有 RP5 均已具備。
-- 原文其他指令與圖形截圖尚未逐條重新測試。
+- 現有 Trixie 新增部分檔案、權限、封存、系統與回送指令及終端機截圖；其他原文管理指令仍待測。
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
 - 新增獨立暫存目錄的檔案建立、複製、比較與 RP5 實際輸出；原文其他管理命令尚未逐條測試。
