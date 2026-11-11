@@ -10,7 +10,9 @@
 
 ## 學習目標
 
-認識 Picamera2 的建立、啟動、擷取與釋放流程。此示範只取得一張影格，不啟動無限錄影程序。
+1. 認識 Picamera2 的建立、啟動、擷取與釋放流程（先只取一張影格）。
+2. 在 Thonny 開一個限時預覽，確認結束後相機能再次使用。
+3. 用終端機的 `rpicam-vid` 錄一段 5 秒影片，用 `ffprobe` 與 OpenCV 檢查影片是否完整；並知道為什麼 RP5 的 CSI 相機不用 `VideoCapture(0)` 直接讀取（見[錄影一節](#2026-11-11用終端機錄一段影片rpicam-vid)）。
 
 ## 背景與原理
 
@@ -111,8 +113,151 @@ Camera closed
 
 *圖：實際 Thonny 執行結果；相機預覽已結束。因本次預覽拍到含帳號資訊的螢幕，未公開預覽畫面；不含個資的預覽成果圖仍待補。* 這項測試未驗證錄影或 USB 攝影機。若沒有預覽，檢查是否在圖形桌面、相機是否被佔用、選對 Picamera2 環境及實際錯誤訊息；不要假設不同解譯器套件相同。
 
+## 2026-11-11：用終端機錄一段影片（rpicam-vid）
+
+前面我們用 Python 一次拿一張影格。原文的做法是先用系統內建的錄影指令把相機畫面錄下來；在現在的 Raspberry Pi OS（Trixie）中，這個指令叫 `rpicam-vid`，舊文章寫的 `libcamera-vid` 是它以前的名字。錄影不是 Python 程式，所以這一段用**終端機**操作，不用 Thonny。
+
+**為什麼要學這一段：**有時候我們只想先錄一段畫面，之後再慢慢用 Python 分析；或想確認「相機本身沒問題」，把相機和自己的程式分開排錯。
+
+### 步驟 1：確認相機被系統看見
+
+在 RP5 桌面左上角開啟**終端機**（黑色視窗圖示），輸入下面這行後按 Enter：
+
+```bash
+rpicam-hello --list-cameras
+```
+
+本次輸出（只節錄開頭）：
+
+```text
+Available cameras
+-----------------
+0 : imx708_wide [4608x2592 10-bit RGGB] (/base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a)
+    Modes: 'SRGGB10_CSI2P' : 1536x864 [120.13 fps - (768, 432)/3072x1728 crop]
+                             2304x1296 [56.03 fps - (0, 0)/4608x2592 crop]
+                             4608x2592 [14.35 fps - (0, 0)/4608x2592 crop]
+```
+
+`0 : imx708_wide` 表示系統找到一台編號 0 的相機，型號 IMX708 廣角。下面的 `Modes` 是感測器支援的尺寸和最快每秒張數。如果顯示 `No cameras available!`，先回到[第 07 課](./第%2007%20課｜連接%20Raspberry%20Pi%205%20相機模組.md)檢查排線；也確認沒有其他程式正在用相機。
+
+### 步驟 2：錄 5 秒影片
+
+先建立練習資料夾並進去，再錄影：
+
+```bash
+mkdir -p ~/lesson13
+cd ~/lesson13
+rpicam-vid -n -t 5000 --width 1280 --height 720 --framerate 30 --codec libav -o lesson13-test.mp4
+```
+
+每個部分的意思：
+
+| 參數 | 意思 |
+| --- | --- |
+| `-n` | 不開預覽視窗。拿掉它就會在桌面看到即時畫面，但用 SSH 等沒有桌面的連線時會出錯。 |
+| `-t 5000` | 錄 5000 毫秒，也就是 5 秒；時間到自動停止。 |
+| `--width 1280 --height 720` | 影片寬 1280、高 720。 |
+| `--framerate 30` | 請相機每秒給 30 張。 |
+| `--codec libav -o lesson13-test.mp4` | 用軟體編碼成 H.264，存成 MP4。RP5 沒有硬體 H.264 編碼器，所以要指定 `libav`。 |
+
+錄影前先看一下鏡頭對著什麼：**影片會存下鏡頭看到的一切**，不要對著帳號、訊息或他人臉孔。若 `~/lesson13` 裡已有 `lesson13-test.mp4`，會被覆寫。
+
+本次執行時，終端機會印出許多以 `[` 開頭的相機日誌，最後幾行是：
+
+```text
+Output #0, mp4, to 'lesson13-test.mp4':
+  Stream #0:0: Video: h264, yuv420p(tv, bt709), 1280x720, q=2-31, 30 fps, 30 tbr, 1000k tbn
+Halting: reached timeout of 5000 milliseconds.
+```
+
+`Halting: reached timeout` 表示 5 秒到了、正常停止，不是錯誤。
+
+### 步驟 3：檢查影片是否真的錄好
+
+用 `ffprobe` 查看影片資訊：
+
+```bash
+ls -l lesson13-test.mp4
+ffprobe -v error -show_entries stream=codec_name,width,height,avg_frame_rate,nb_frames:format=duration,size -of default=nw=1 lesson13-test.mp4
+```
+
+本次輸出：
+
+```text
+-rw-rw-r-- 1 pi pi 780793 Nov 11 17:48 lesson13-test.mp4
+codec_name=h264
+width=1280
+height=720
+avg_frame_rate=3550000/118281
+nb_frames=142
+duration=4.731239
+size=780793
+```
+
+怎麼讀這些數字：檔案約 0.78 MB、H.264 編碼、1280 × 720。`nb_frames=142` 是錄到 142 張；`avg_frame_rate` 是分數，3550000 ÷ 118281 ≈ 30.0，表示平均每秒約 30 張。`duration` 約 4.7 秒而不是剛好 5 秒，是因為相機啟動和曝光穩定花了一點時間，前面的空檔沒有影格。你的數字可能略有不同；只要 `nb_frames` 不是 0、`width` 和 `height` 正確，就代表錄影成功。
+
+也可以在檔案管理員雙擊 `lesson13-test.mp4`，用系統播放器播放。本次沒有截取播放器畫面。
+
+![RP5 相機當時拍到的畫面](./圖檔/lesson13-camera-view-20261111.jpg)
+
+上圖是錄影後緊接著用 `rpicam-still -n -t 1000 --width 1280 --height 720 -o lesson13-frame.jpg` 拍的一張照片，用來讓你知道本次相機看到什麼：鏡頭對著另一個實體螢幕上的測試畫面，深色圓形當時是靜止的。這是相機實拍照片，不是預覽視窗截圖；影片本身沒有上傳到教材庫。
+
+### 步驟 4：用 Python 讀回影片，以及為什麼不要用 `VideoCapture(0)`
+
+原文接著用 OpenCV 的 `cv2.VideoCapture(0)` 直接開相機。**在 RP5 的 CSI 相機上，這條路通常走不通**：本次在 `opencv-course-env` 測試，`VideoCapture(0)` 回報「已開啟」，但讀第一張就失敗：
+
+```text
+VideoCapture(0) opened True read False None
+```
+
+原因是 RP5 的 CSI 相機要經過 libcamera 處理，`/dev/video0` 不是 OpenCV 能直接讀的一般攝影機。所以本教材讀**相機**用 Picamera2（本課上方、第 15 課），讀**影片檔**才用 `VideoCapture`。在 Thonny 選第 14 課的 OpenCV 環境，於 `~/lesson13` 建立下面的程式並執行：
+
+```python
+import cv2
+
+video = cv2.VideoCapture("lesson13-test.mp4")
+print("opened", video.isOpened(), "fps", round(video.get(cv2.CAP_PROP_FPS), 2))
+count = 0
+shape = None
+while True:
+    ok, frame = video.read()
+    if not ok:
+        break
+    count += 1
+    shape = frame.shape
+video.release()
+print("frames read", count, "shape", shape)
+```
+
+本次以 SSH 用 `/home/pi/opencv-course-env/bin/python3` 執行（與 Thonny 相同直譯器，但不是在 Thonny 按 Run）的輸出：
+
+```text
+opened True fps 30.01
+frames read 142 shape (720, 1280, 3)
+```
+
+讀回 142 張，和 `ffprobe` 的 `nb_frames=142` 相同，代表 OpenCV 能完整讀取這支影片。之後第 16 課會把「拍攝」和「處理」寫進同一支 Python 程式。
+
+### 錄影時遇到問題
+
+| 你看到的情況 | 可能原因 | 先試試看 |
+| --- | --- | --- |
+| 錯誤訊息提到 `in use`、`busy` 或相機無法取得 | Thonny 或其他程式正在用相機 | 先停止其他相機程式（Thonny 按紅色 Stop），再錄一次。 |
+| 錯誤訊息提到 encoder 或 `h264` | 沒有加 `--codec libav` | RP5 沒有硬體 H.264 編碼器，請加上 `--codec libav`。 |
+| 用 SSH 連線時出現與 display、預覽視窗有關的錯誤 | 沒加 `-n`，程式想開預覽視窗 | SSH 時加 `-n`；想看預覽請在 RP5 桌面的終端機執行。 |
+| `nb_frames` 比預期少很多 | 解析度或每秒張數太高，軟體編碼跟不上 | 先改成 `--width 640 --height 480 --framerate 15` 比較。 |
+
+### 練習
+
+1. 把 `-t 5000` 改成 `-t 10000`，預測 `nb_frames` 大約多少，再用 `ffprobe` 驗證。
+2. 把 `--framerate 30` 改成 `--framerate 10`，比較檔案大小與 `nb_frames`。
+3. 拿掉 `-n`，在 RP5 桌面的終端機錄一次，觀察預覽視窗；確認畫面中沒有不能公開的內容。
+
+USB 攝影機的錄影方式不同，本機沒有 USB 攝影機，這部分尚未實測。
+
 ## 與原文章的差異
 
+- 2026-11-11 新增 `rpicam-vid` 終端機錄影主線：列出相機、錄 5 秒 1280 × 720 H.264、`ffprobe` 檢查 142 影格約 30 FPS、OpenCV 讀回 142 張，並實測原文 `VideoCapture(0)` 在 RP5 CSI 相機上讀不到影格；附可公開的相機實拍畫面。編修前版本存於[歷史紀錄](./歷史紀錄/第13課-編修前-20261111.md)。
 - 新增以 Thonny 操作的實測與截圖：Picamera2 單張影格擷取；不含預覽或 USB 相機。
 
 - 原文以持續執行的 `libcamera-vid` 接著使用 `VideoCapture(0)`；本版採 Picamera2 單張擷取，避免阻塞並配合本機 CSI 相機。
@@ -122,6 +267,8 @@ Camera closed
 <details>
 <summary>給教師：原有實測範圍與版本備註</summary>
 
-> 本課已在 Thonny 實測：Picamera2 單張影格擷取；不含預覽或 USB 相機。完整原文情境及其他舊案例仍須依下文標示重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 本課已在 Thonny 實測：Picamera2 單張影格擷取；不含預覽或 USB 相機。完整原文情境及其他舊案例仍須依下文標示重測。
+>
+> 2026-11-11 錄影一節：既有 Trixie、rpicam-apps v1.14.0，從另一台電腦以 SSH 執行於 `/home/pi/ba5077-validation-20261111/lesson13/`；影片 SHA-256 `c9221320…1a72`，未入庫。錄影時相機對著螢幕上靜止的測試畫面；`--codec libav` 錄 5 秒得 142 影格。表中的錯誤訊息是常見類型的描述，本次未逐一重現。待補：桌面終端機不加 `-n` 的預覽、播放器畫面、USB 攝影機（需額外硬體）。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 </details>
