@@ -1,24 +1,212 @@
 # 第 16 課｜Python 結合 OpenCV 與 Picamera2：影片錄製與即時影像處理
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222876415) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14222876415) · 教學編排修訂：2026-11-11（編修前版本存於[歷史紀錄](./歷史紀錄/第16課-編修前-20261111.md)）
 
-影片可以想成一連串排好的照片。我們先看一個小範例如何把影格寫入檔案，再讀回看看，最後才接上相機來源。
+上一課我們請相機交出**一張**畫面。可是監視器、行車記錄器或產線檢查，需要的是一張接一張、不停進來的畫面。這一課我們讓 RP5 的相機連續工作：畫面一進來就處理、一邊顯示給你看、一邊存成影片檔，最後再把影片讀回來，確認真的存好了。
 
 第一次準備環境的同學，可以先讀[課前學習說明](./學習前先讀我.md)；操作遇到紅字時，我們用[排錯故事](./程式卡住時怎麼辦.md)一起找原因。
 
-## 學習目標
+## 這一課要完成什麼
 
-先以合成影格建立短影片，再讀回並計算影格數，以驗證影片寫入和讀取。
+1. 說出「影片就是按時間排好的一串影格」，並分辨**相機實際每秒給幾張**與**影片檔標示的播放速度**。
+2. 在 RP5 的 Thonny 執行一支程式：開相機、跳出即時預覽視窗、把處理後的畫面錄成 `lesson16-live.avi`，按 `q` 或時間到就停止。
+3. 看懂 Shell 印出的四個數字：寫入幾張、花了幾秒、實際每秒幾張、讀回幾張，並判斷錄影是否成功。
 
-## 事前準備
+## 先想一想：一邊看、一邊處理、一邊存，為什麼要排順序？
 
-系統 OpenCV 的 MJPG 編碼器可用；程式在目前目錄產生 `lesson16-demo.avi`。
+每張影格都要走過同一條路：**取像 → 處理 → 寫進影片 → 顯示**。這四件事都要花時間。如果處理太慢，下一張畫面就要等，實際每秒張數會變少，錄出來的影片播放起來就會「快轉」或卡頓。所以這一課的程式會自己量時間，印出實際每秒張數；我們不憑感覺說「應該有 10 張」。
 
-請在自己的練習目錄操作。已存在的同名輸出檔可能被覆寫，先確認路徑；用不著將任何相機照片上傳公開儲存庫。
+```mermaid
+flowchart LR
+    A["Picamera2<br/>連續取影格"] --> B["OpenCV 處理<br/>灰階＋邊緣"]
+    B --> C["VideoWriter<br/>寫入 lesson16-live.avi"]
+    B --> D["imshow<br/>即時預覽視窗"]
+    D -->|"按 q 或時間到"| E["釋放相機、關視窗"]
+    C --> F["VideoCapture<br/>讀回並數影格"]
+```
 
-## 程式與執行
+這張流程圖是教學示意，不是操作截圖。
 
-將下列程式存為 `第16課.py`。這是本次在 RP5 上執行的程式；完整檔案也在[範例程式](./範例程式/第16課.py)。
+幾個名詞先在這裡認識：
+
+- **影格（frame）**：影片中的一張畫面。程式裡的 `frame` 變數就是一張影格的數字陣列。
+- **FPS（每秒影格數）**：一秒內有幾張影格。這一課會遇到兩種 FPS：要求相機給的速度，以及程式實際量到的速度。
+- **編碼器（fourcc）**：把影格壓縮成影片檔的方式。這一課用 `MJPG`，它在 RP5 的 OpenCV 中可直接使用，副檔名是 `.avi`。
+
+## 第一步：準備場景、環境與練習資料夾
+
+**為什麼先做這一步：**相機要拍到東西、Python 要能同時找到相機工具和 OpenCV，程式才跑得起來。
+
+1. **相機與場景（在 RP5 旁邊）。**先完成[第 07 課](./第%2007%20課｜連接%20Raspberry%20Pi%205%20相機模組.md)的接線與[第 15 課](./第%2015%20課｜在%20Raspberry%20Pi%205%20使用%20Libcamera、Picamera2%20與%20OpenCV.md)的單張取像。已經能拍照的 RP5 不需要重新拆接。讓相機固定對著一個不含個人資料的畫面，例如另一台螢幕上開啟的[相機測試畫面](./練習素材/RP5相機測試.html)（選「移動追蹤」會有會動的圓形），或桌上一個簡單物品。錄影會存下鏡頭看到的一切，**不要對著有帳號、訊息或他人臉孔的畫面**。
+2. **Thonny 環境（在 RP5 桌面）。**依[環境指南](./Thonny環境與套件安裝.md#選擇今天的學習環境)中「既有 Trixie：同時使用 Picamera2 與 OpenCV 擴充功能」一節，選擇能讀取系統 Picamera2、又裝有 OpenCV 的環境。到 Thonny 的 **Tools → Options → Interpreter** 選好後，回主畫面看右下角路徑。本課紀錄使用的是 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`；你的路徑名稱可能不同，重點是這個環境能 `import picamera2` 和 `import cv2`。
+3. **練習資料夾。**在 RP5 的檔案管理員於家目錄建立新資料夾，例如 `/home/pi/lesson16`。把[本課主程式](./範例程式/第16課-即時錄影與預覽.py)下載放進去。程式會把影片和截圖存在**程式所在的同一個資料夾**；資料夾內若已有同名檔，會被覆寫。
+4. **關掉其他用相機的程式。**同一時間只能有一支程式使用相機。若 Thonny 的其他分頁、終端機或預覽程式正在用相機，先停止它（Thonny 可按紅色 Stop）。
+
+## 第二步：讀程式，先找出四個關鍵動作
+
+完整程式如下，和可下載的[範例程式](./範例程式/第16課-即時錄影與預覽.py)相同：
+
+```python
+from pathlib import Path
+import time
+
+import cv2
+import numpy as np
+from picamera2 import Picamera2
+
+MAX_SECONDS = 20      # 最長錄影秒數；想錄久一點就改這個數字
+FPS = 10              # 要求相機每秒給 10 張，也當作影片的播放速度
+SIZE = (640, 480)     # 寬, 高
+
+folder = Path(__file__).resolve().parent
+video_path = folder / "lesson16-live.avi"
+preview_path = folder / "lesson16-live-preview.png"
+
+camera = Picamera2()
+writer = None
+written = 0
+last_view = None
+start = time.monotonic()
+try:
+    config = camera.create_video_configuration(
+        main={"size": SIZE, "format": "RGB888"},
+        controls={"FrameRate": FPS},
+    )
+    camera.configure(config)
+    camera.start()
+    time.sleep(1)  # 讓曝光與白平衡先穩定
+
+    writer = cv2.VideoWriter(str(video_path), cv2.VideoWriter_fourcc(*"MJPG"), FPS, SIZE)
+    if not writer.isOpened():
+        raise RuntimeError("無法建立 MJPG 影片，請檢查資料夾權限與磁碟空間")
+
+    start = time.monotonic()
+    while True:
+        frame = camera.capture_array()          # 等到下一張影格才回來
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        edges = cv2.Canny(gray, 60, 150)
+        processed = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+        processed[edges > 0] = (0, 255, 0)      # 邊緣畫成綠色
+
+        elapsed = time.monotonic() - start
+        cv2.putText(processed, f"REC {elapsed:4.1f}s frame {written + 1}", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+        writer.write(processed)
+        written += 1
+
+        last_view = cv2.hconcat([frame, processed])
+        cv2.imshow("lesson16 live (press q to stop)", last_view)
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord("q"):
+            print("stopped by q")
+            break
+        if elapsed >= MAX_SECONDS:
+            print("stopped by time limit")
+            break
+finally:
+    elapsed = time.monotonic() - start
+    if writer is not None:
+        writer.release()
+    camera.stop()
+    camera.close()
+    cv2.destroyAllWindows()
+
+if last_view is not None:
+    cv2.imwrite(str(preview_path), last_view)
+
+reader = cv2.VideoCapture(str(video_path))
+read_count = 0
+while True:
+    ok, _ = reader.read()
+    if not ok:
+        break
+    read_count += 1
+reader.release()
+
+print("frames written:", written)
+print("seconds:", round(elapsed, 1))
+print("measured fps:", round(written / elapsed, 1) if elapsed > 0 else 0)
+print("frames read back:", read_count)
+print("saved:", video_path.name, preview_path.name)
+```
+
+先不要急著執行，我們一起在程式中找到這四個地方：
+
+| 動作 | 找哪一行 | 它在做什麼 |
+| --- | --- | --- |
+| 設定相機 | `create_video_configuration(... FrameRate ...)` | 用適合錄影的設定，畫面 640 × 480，請相機每秒給 10 張。 |
+| 準備影片檔 | `cv2.VideoWriter(..., "MJPG", FPS, SIZE)` | 開一個空影片檔。這裡的 `FPS` 只是寫在檔案裡的**播放速度**，不會讓相機變快。尺寸必須和寫進去的影格一致。 |
+| 迴圈 | `while True:` 到 `break` | 每圈取一張、處理、寫入、顯示。`capture_array()` 會等到下一張影格才回來，所以相機的速度決定了迴圈的節奏。 |
+| 清理 | `finally:` 之後 | 不論正常結束或出錯，都關閉影片檔、釋放相機、關視窗，下一支程式才能再用相機。 |
+
+`cv2.waitKey(1)` 有兩個工作：讓預覽視窗有機會更新，並檢查你是否按了鍵。少了它，視窗通常會一片灰白或沒有反應。
+
+## 第三步：在 Thonny 執行，觀察視窗與 Shell
+
+1. 在 RP5 桌面的 Thonny 選 **File → Open**，開啟練習資料夾中的 `第16課-即時錄影與預覽.py`。
+2. 確認右下角是第一步選好的環境，按綠色 **Run**。
+3. 約 1 秒後會跳出標題為 `lesson16 live (press q to stop)` 的視窗。左半是相機原始畫面，右半是灰階加綠色邊緣的處理結果，左上角紅字 `REC` 後面的秒數和影格編號會一直增加。
+4. 想提早停止時，先**點一下預覽視窗**讓它取得鍵盤焦點，再按 `q`。不按的話，20 秒後會自動停止。視窗關閉後，Shell 會印出結果。
+
+Shell 中出現以 `[` 開頭、含 `INFO` 或 `WARN` 的紅色或灰色行，多半是相機程式庫的日誌，不一定是錯誤；真正的錯誤通常以 `Traceback` 開頭。
+
+### 本次 RP5 實測結果（2026-11-11）
+
+環境：Raspberry Pi 5 Model B、既有 Debian 13（Trixie）64 位元、核心 6.18.50+rpt-rpi-2712、Python 3.13.5、OpenCV 4.12.0、NumPy 2.2.4、IMX708 廣角相機；直譯器 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`。**本次程式是從另一台電腦以 SSH 在 RP5 的桌面工作階段啟動，使用與 Thonny 相同的直譯器**；預覽視窗確實顯示在 RP5 桌面，但不是在 Thonny 按 Run，也沒有測按 `q`，是 20 秒自動停止。Thonny 按鈕操作及 `q` 鍵停止仍待補。
+
+```text
+stopped by time limit
+frames written: 202
+seconds: 20.1
+measured fps: 10.0
+frames read back: 202
+saved: lesson16-live.avi lesson16-live-preview.png
+```
+
+![RP5 桌面上的即時預覽視窗，左為相機畫面、右為灰階與邊緣處理結果](./圖檔/lesson16-live-window-20261111.png)
+
+上圖是 RP5 桌面截圖，**只裁切出預覽視窗**，拍攝當下錄到第 98 張、9.7 秒。相機拍的是另一個實體螢幕上開啟的相機測試頁；畫面中的深色圓形在這 20 秒內**沒有移動**（測試頁當時未在播放動畫），所以本次證明的是「連續取像、即時顯示、錄影與讀回」，不是追蹤會動的物體。
+
+![停止前最後一張預覽畫面，右上角顯示 REC 20.1s frame 202](./圖檔/lesson16-live-preview-20261111.png)
+
+這張是程式自動存下的 `lesson16-live-preview.png`，屬於程式輸出，不是操作截圖。錄下的 `lesson16-live.avi` 約 3.1 MB、640 × 480、標示 10 FPS、202 張；影片拍到的是測試頁畫面，未上傳到教材庫。
+
+### 這些數字代表什麼
+
+- `frames written: 202` 與 `frames read back: 202` 相同：寫進去的每一張都讀得回來，影片檔沒有壞。
+- `seconds: 20.1`、`measured fps: 10.0`：在「灰階＋邊緣＋顯示＋寫檔」的負擔下，RP5 仍跟得上相機每秒 10 張的節奏。影片標示的播放速度也是 10，所以播放 202 張約 20 秒，和真實時間一致。
+- 如果你量到的 `measured fps` 明顯低於 10，例如 6，表示處理跟不上；影片仍以 10 FPS 播放時就會比真實時間快。處理方法見下方排錯。
+
+你的數字不一定和這裡相同：場景、光線、畫面大小及 RP5 同時在做的事都會影響速度。判斷成功的方法是：**有跳出會更新的視窗**、**寫入張數和讀回張數相同**、**影片檔可以在資料夾看到且大小不是 0**。
+
+## 第四步：把影片播放出來確認
+
+在 RP5 的檔案管理員打開練習資料夾，雙擊 `lesson16-live.avi`，用系統的影片播放器播放。程式最後那段 `VideoCapture` 迴圈已經自動讀過一次，若想自己看畫面，可在迴圈裡加上 `cv2.imshow` 與 `cv2.waitKey(100)`。你應該看到灰階畫面、綠色邊緣與不斷增加的 `REC` 秒數。本次沒有另外截取播放器畫面；能讀回 202 張是由程式驗證的。
+
+## 遇到問題時
+
+| 你看到的情況 | 可能原因 | 先試試看 |
+| --- | --- | --- |
+| `Camera __init__ sequence did not complete` 或 `Device or resource busy` | 相機正被另一支程式使用 | 停止 Thonny 其他分頁、終端機中的相機程式，必要時重新開 Thonny 再試。參考[排錯故事五](./程式卡住時怎麼辦.md#第五個故事昨天拍過照今天相機打不開)。 |
+| `ModuleNotFoundError: No module named 'picamera2'` 或 `'cv2'` | 右下角的直譯器選錯 | 回第一步，改選能讀取系統 Picamera2 並裝有 OpenCV 的環境。 |
+| `RuntimeError: 無法建立 MJPG 影片` | 資料夾不能寫入或磁碟滿了 | 確認程式放在自己家目錄下的資料夾；以 `df -h` 查空間。 |
+| 沒有跳出視窗，出現 `could not connect to display` 或 `qt.qpa` 錯誤 | 程式不是在 RP5 桌面上執行，例如在純 SSH 終端機 | 請在 RP5 桌面（或 Raspberry Pi Connect 桌面分享）中的 Thonny 執行。 |
+| 視窗出現但按 `q` 沒反應 | 鍵盤焦點在 Thonny 而不在預覽視窗 | 先點一下預覽視窗，再按 `q`；或等 20 秒自動停止。 |
+| `measured fps` 遠低於 10 | 處理太重或畫面太大 | 先把 `SIZE` 改成 `(320, 240)` 再測；或拿掉 `Canny` 那兩行比較。 |
+| 影片播放比真實時間快 | 實際張數少於標示的播放速度 | 把 `FPS` 改成接近你量到的 `measured fps` 再錄一次。 |
+
+## 練習：一次只改一個地方
+
+1. 把 `MAX_SECONDS` 改成 `10`，預測寫入張數大約多少，再執行驗證。
+2. 把 `SIZE` 改成 `(320, 240)`，比較 `measured fps` 和影片檔大小的變化。
+3. 刪掉邊緣那兩行（`edges = ...` 與 `processed[edges > 0] = ...`），只留灰階，看看速度是否改變。
+4. 讓測試頁的圓形動起來，錄一段影片後，以[第 26 課](./第%2026%20課｜使用%20OpenCV%20進行背景差分與運動物體檢測.md)的方法比較第一張與最後一張的差異。
+
+每次只改一項，並把改了什麼、Shell 的四個數字和你的觀察記下來；這樣才知道是哪一個改變造成結果不同。
+
+## 補充一：不用相機，先用合成影格理解影片檔
+
+如果相機還沒準備好，可以先用這支小程式確認 OpenCV 能寫、能讀影片。它自己畫 5 張寫著 0～4 的黑底圖，存成 `lesson16-demo.avi`，再讀回計數。完整檔案在[範例程式](./範例程式/第16課.py)。
 
 ```python
 from pathlib import Path
@@ -45,121 +233,19 @@ reader.release()
 print("video frames", count)
 ```
 
-在 Thonny 選 **File → Open** 開啟 `第16課.py`，確認右下角是包含所需套件的 Python 環境，再點綠色執行鈕。若程式會輸出檔案，先在新的練習目錄操作，避免覆寫。
-
-## Thonny 實測輸出
+注意這支程式用的是相對路徑 `lesson16-demo.avi`，檔案會出現在 Thonny 當下的工作資料夾；通常就是程式所在資料夾。先前在 Thonny 以 `/home/pi/myenv/bin/python3` 執行的輸出：
 
 ```text
 video frames 5
 ```
 
-![第 16 課在 Thonny 的程式與 Shell 實際畫面](./圖檔/lesson16-thonny2.png)
+![第 16 課合成影格程式在 Thonny 的程式與 Shell 畫面](./圖檔/lesson16-thonny2.png)
 
-本次選用既有環境 `/home/pi/myenv/bin/python3`。本次 Thonny 程式以合成影格測試，不等於相機即時錄影；後面的相機影片案例仍待 Thonny 重測。 相機或影像相關套件的準備及可重現環境請參考[Thonny 環境指南](./Thonny環境與套件安裝.md)。
+這是 Thonny 操作截圖；它只證明影片寫入與讀回，和相機無關。
 
-本機成功讀回 5 個影格；不同機器若 `VideoWriter` 無法開啟，需檢查編碼器。此測試使用合成影格，不代表相機即時錄影或聲音已測試。
+## 補充二：較早的相機 12 影格紀錄（終端機執行）
 
-## 背景與核心概念
-
-### 影片與單張照片有什麼關係？
-
-影片可視為按時間排列的影格；每秒影格數影響流暢度與資料量。影像處理程序需考量取像、計算、顯示與寫檔的速度，若處理太慢可能丟影格或增加延遲。
-
-### 思考、練習與後續應用
-
-如果每秒只能處理五張影格，這和每秒拍攝三十張會有什麼差異？檢查目前文章的實測範圍，哪些功能尚未完成？
-
-影片分析可用於運動偵測，但應評估實測速度、錄影容量和拍攝對象的隱私。
-
-延伸閱讀：[官方文件](https://www.raspberrypi.com/documentation/accessories/camera-software.html)。
-
-## 概念流程圖
-
-```mermaid
-flowchart LR
-    A["相機連續取影格"]
-    B["逐張處理"]
-    C["顯示或編碼"]
-    D["影片檔案"]
-    A --> B --> C --> D
-```
-
-
-
-## 舊實測紀錄：相機影格轉灰階並寫入短影片（待 Thonny 重測）
-
-這個實驗使用 RP5 相機拍攝螢幕上移動的紅色圓形。程式連續取得 12 張影格，裁切與透視校正測試圖後轉成灰階，寫入 MJPG 影片，再重新讀取影片檢查影格數。這是有限張數的拍攝與寫檔測試，**不是已驗證的長時間錄影、同步音訊或即時預覽**。
-
-### 事前準備
-
-1. 下載[相機測試畫面](./練習素材/RP5相機測試.html)，在電腦螢幕選「移動追蹤」，並讓 RP5 相機對準該畫面。相機應固定，且不能同時被其他程式占用。
-2. 確認系統 Python 能使用 Picamera2、OpenCV、NumPy 及 MJPG 編碼器。在自己的空練習目錄放入[範例程式](./範例程式/第16課-相機影格與影片.py)。程式會建立 `lesson16-camera.avi` 與 `lesson16-frames.png`；先確認不會覆蓋已有檔案。
-3. `source` 四個座標只對應本次 1920 × 1080 的相機位置。更換相機、畫面大小或位置後，須重新量測測試圖的四角；公開圖片前也要確認是否仍含周圍環境。
-
-```python
-import time
-import cv2
-import numpy as np
-from picamera2 import Picamera2
-
-# 本次相機位置的測試圖四角；不同位置或尺寸須重新量測。
-source = np.float32([[755, 270], [1385, 65], [1484, 412], [856, 604]])
-target = np.float32([[0, 0], [599, 0], [599, 337], [0, 337]])
-matrix = cv2.getPerspectiveTransform(source, target)
-camera = Picamera2()
-writer = None
-panels = []
-written = 0
-try:
-    camera.configure(camera.create_still_configuration(main={'size': (1920, 1080), 'format': 'RGB888'}))
-    camera.start()
-    time.sleep(1)
-    writer = cv2.VideoWriter('lesson16-camera.avi', cv2.VideoWriter_fourcc(*'MJPG'), 5, (600, 338))
-    if not writer.isOpened():
-        raise RuntimeError('無法建立 MJPG 影片')
-    for index in range(12):
-        frame = camera.capture_array()
-        board = cv2.warpPerspective(frame, matrix, (600, 338))
-        gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
-        processed = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
-        cv2.putText(processed, f'frame {index+1}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
-        writer.write(processed)
-        written += 1
-        if index in (0, 5, 11):
-            panels.append(processed)
-        time.sleep(0.2)
-finally:
-    if writer is not None:
-        writer.release()
-    camera.stop()
-    camera.close()
-
-video = cv2.VideoCapture('lesson16-camera.avi')
-read_count = 0
-first_shape = None
-try:
-    while True:
-        ok, image = video.read()
-        if not ok:
-            break
-        if first_shape is None:
-            first_shape = image.shape
-        read_count += 1
-finally:
-    video.release()
-if not cv2.imwrite('lesson16-frames.png', cv2.hconcat(panels)):
-    raise RuntimeError('無法儲存結果圖')
-print('frames written:', written)
-print('frames read:', read_count)
-print('first video frame:', first_shape)
-print('saved: lesson16-camera.avi, lesson16-frames.png')
-```
-
-```bash
-python3 第16課-相機影格與影片.py
-```
-
-### RP5 實際輸出
+2026-10-29 曾用 RP5 相機拍攝螢幕上移動的紅色圓形：連續取 12 張、透視校正到測試圖範圍、轉灰階、寫入 MJPG，再讀回 12 張。程式見[範例程式](./範例程式/第16課-相機影格與影片.py)，其中四個 `source` 座標只對應當次相機位置，換位置必須重新量測。當時以終端機 `python3` 執行，不是 Thonny：
 
 ```text
 frames written: 12
@@ -170,28 +256,28 @@ saved: lesson16-camera.avi, lesson16-frames.png
 
 ![RP5 相機拍攝後轉為灰階的三張影格](./圖檔/lesson16-frames.png)
 
-圖由左到右為本次擷取的第 1、6、12 張影格，經透視校正、灰階轉換並標示影格編號。這是程式結果圖，不是操作截圖。[下載本次處理後的短影片](./練習素材/lesson16-camera.avi)可練習第 26、27 課；完整原始相機畫面未上傳。
+由左到右是第 1、6、12 張，經透視校正、灰階並標示編號，屬程式結果圖。處理後的短片放在[練習素材](./練習素材/lesson16-camera.avi)，可供第 26、27 課練習；完整原始相機畫面未上傳。這段程式每張之間 `sleep(0.2)`，不能證明實際達到 5 FPS，也沒有即時視窗。
 
-### 如何理解與繼續實驗
+## 後續應用與提醒
 
-`VideoWriter` 設定的 5 是影片播放的標稱每秒影格數；程式每次拍攝與處理還需要時間，`sleep(0.2)` 不能證明相機或整條流程實際達到 5 FPS。`frames read: 12` 證明本次重新讀到 12 張影格，不代表畫面一定適用其他編碼器或播放器。
+連續取像加上即時處理，是後面背景差分（第 26、27 課）、顏色追蹤（第 28 課）、物件偵測（第 38、42 課）的共同骨架：把這一課迴圈裡「灰階＋邊緣」那幾行換成別的處理即可。錄影會長時間保存畫面，實際應用前要先想清楚拍到誰、存多久、誰能看。
 
-請比較三張影格中的圓形位置；再調整拍攝張數或等待時間，記錄檔案大小和輸出。若影片無法建立，檢查編碼器、磁碟空間、輸出路徑與寫入權限；若相機無法啟動，先檢查是否被其他程式占用。不要把測試照片或影片中不應公開的內容上傳。
+延伸閱讀：[Raspberry Pi 官方相機軟體文件](https://www.raspberrypi.com/documentation/accessories/camera-software.html)、[OpenCV VideoWriter 說明](https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html)。
 
 ## 與原文章的差異
 
-- 新增以 Thonny 操作的實測與截圖：五張合成影格寫入及讀回影片。
-
-- 原文示範相機即時錄影；本版先用可重現的合成影格測試影片流程，未聲稱已驗證即時錄影。
-- 上述文字輸出是本次實機紀錄，其他版本或環境可能不同。
-- 新增上方基本程式在 Thonny 執行的操作截圖；其他情境以各段落標示為準。
-- 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
-- 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
-- 新增 RP5 相機實拍 12 張影格、寫入 MJPG 並重新讀取的測試；尚未驗證長時間錄影和即時預覽。
+- 2026-11-11 全文重編為零基礎學生路徑，主線改為「相機連續取像＋即時預覽＋錄影＋讀回」，並新增[主程式](./範例程式/第16課-即時錄影與預覽.py)；原有合成影格與 12 影格相機紀錄改列補充。
+- 新增實測：既有 Trixie 的 RP5 相機 640 × 480、20.1 秒 202 張、實測 10.0 FPS、即時視窗與讀回 202 張；附裁切後的桌面視窗截圖和程式輸出圖。場景是螢幕上的靜止圓形。
+- 本次程式以 SSH 在 RP5 桌面工作階段啟動，使用 Thonny 相同直譯器；**Thonny 按 Run、`q` 鍵停止、播放器開啟影片仍待補**，不宣稱已完成學生從零驗收。
+- 原文的錄影方式、聲音及長時間錄影未在本版驗證；本版不錄聲音。
+- 上述文字輸出是本次實機紀錄，其他版本、場景或環境可能不同。
 
 <details>
-<summary>給教師：原有實測範圍與版本備註</summary>
+<summary>給教師：實測範圍與版本備註</summary>
 
-> 本課已在 Thonny 實測：五張合成影格寫入及讀回影片。完整原文情境及其他舊案例仍須依下文標示重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> - 2026-11-11 主線實測：RP5 主機名稱 PR5，`/etc/rpi-issue` 為 Raspberry Pi reference 2026-10-06；程式位於 `/home/pi/ba5077-validation-20261111/lesson16-live/`，以 `XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 DISPLAY=:0` 從 SSH 啟動，桌面截圖以 `grim` 擷取後裁切。OpenCV GUI 後端為 Qt5。程式 SHA-256 `fdc4bb2e…1ce7`，影片 `cda437dc…25ab`。
+> - 當時另有 Thonny 的第 38 課後端在執行但未占用相機；測試前以 `rpicam-still` 確認相機可用。
+> - 需要時再補：在 Thonny 按 Run 與 `q` 停止的操作截圖（需 Raspberry Pi Connect 或現場操作）、移動場景錄影、播放器畫面。合成影格與 2026-10-29 終端機紀錄保持原狀，不重做。
+> - [逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 </details>
