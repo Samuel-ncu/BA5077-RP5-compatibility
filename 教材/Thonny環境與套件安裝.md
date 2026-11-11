@@ -1,6 +1,50 @@
 # 使用 Thonny 建立 Python 環境與安裝 OpenCV
 
-本指南記錄 2026-10-29 在 Raspberry Pi 5、Bookworm 64 位元、Python 3.11 的操作。學生使用 Thonny 編寫與執行 Python，基本系統安裝與設定仍使用作業系統提供的工具。其他課程的相機、AI 模型與特殊模組尚須各自測試。
+本指南包含先前 Bookworm 與既有 Trixie 的不同環境紀錄。學生使用 Thonny 編寫與執行 Python，基本系統安裝與設定仍使用作業系統提供的工具。其他課程的相機、AI 模型與特殊模組尚須各自測試。
+
+## 安裝出錯時，先從這裡處理（2026-11-11 補寫）
+
+目前教材的 OpenCV 安裝在[第 14 課](./第%2014%20課｜在%20Raspberry%20Pi%205%20安裝%20OpenCV.md)，第 11 課是 vi／nano。**既有 Trixie／Python 3.13 請先依第 14 課操作**；本頁下一節的 NumPy 1.26.4／OpenCV 4.10.0 範例是 Bookworm／Python 3.11 歷史紀錄，不能直接套用到 Trixie。
+
+| 看到的錯誤 | 判讀與下一步 |
+| --- | --- |
+| `No matching distribution found for install` | pip 把 `install` 當成要找的套件名稱；這不是 OpenCV 不支援。關閉套件管理器，依下方「修復流程」直接在 Thonny 執行對應版本的安裝程式。 |
+| `ModuleNotFoundError: No module named 'pkg_resources'` | 既有 Thonny 的套件管理功能依賴舊介面，但所用環境無法匯入。不要在套件搜尋欄找 `pkg_resources`；Trixie 使用第 14 課固定版本的安裝程式，安裝包含該介面的 setuptools 80.9.0。 |
+| `No module named cv2` | 套件未安裝成功或 Thonny 選到另一個 Python。比對安裝程式印出的 `Python:` 與右下角路徑，先修正直譯器再測。 |
+| `No matching distribution found for numpy…` 或 `opencv-python…` | 記錄完整套件名稱、Python 版本和平台，確認選用該系統的教材版本；不要把上表的 `install` 錯誤與套件版本不相容混為一談。 |
+
+### 修復流程：關閉錯誤視窗後可以繼續做什麼
+
+1. 關閉 **Tools → Manage packages** 錯誤視窗；回到 **Tools → Options → Interpreter**，確認 Python executable 是自己新建環境的 `bin/python3`。回主畫面後，右下角應顯示相同路徑。
+2. 按紅色 **Stop/Restart backend**。在 Thonny 開新檔，選擇對應的安裝程式並按綠色 **Run**：Trixie／Python 3.13 使用[第14課-Trixie-Thonny安裝.py](./範例程式/第14課-Trixie-Thonny安裝.py)；先前 Bookworm／Python 3.11 的版本參考[第14課-Thonny安裝套件.py](./範例程式/第14課-Thonny安裝套件.py)。執行前閱讀程式，確認它印出的 `Python:` 指向自己的虛擬環境。
+3. 等待安裝程式的 `Installation completed`。若出現 traceback、`CalledProcessError` 或其他 `ERROR`，這次安裝尚未成功；保存完整錯誤，不要只看到下載進度就跳到後續課程。
+4. 再按一次 **Stop/Restart backend**，於同一環境執行以下檢查。Trixie 本課紀錄應為 Python 3.13.5、setuptools 80.9.0、NumPy 2.2.6、OpenCV 4.12.0，且 `pkg_resources available` 為 `True`；使用者名稱和環境目錄可不同。
+
+   ```python
+   import sys
+   import importlib.util
+   from importlib.metadata import version
+   import cv2
+   import numpy as np
+
+   print('Python executable:', sys.executable)
+   print('Python version:', sys.version.split()[0])
+   print('Virtual environment:', sys.prefix != sys.base_prefix)
+   print('setuptools:', version('setuptools'))
+   print('pkg_resources available:', importlib.util.find_spec('pkg_resources') is not None)
+   print('NumPy:', np.__version__)
+   print('OpenCV:', cv2.__version__)
+   ```
+
+5. `Virtual environment` 應為 `True`。若路徑不對，回第 1 步；若版本查詢或匯入仍失敗，在確認路徑後重新執行對應安裝程式。接著依[第 14 課步驟 3](./第%2014%20課｜在%20Raspberry%20Pi%205%20安裝%20OpenCV.md#步驟-3畫圖存檔開啟視窗)驗證繪圖、PNG 存檔與視窗關閉。成功匯入、圖形管理器可用和圖像視窗可用是不同驗收項目；本機先前證據是安裝程式成功及圖像範例成功，未另記錄套件管理器修復後的重新操作驗收。
+
+`install` 錯誤表示安裝引數被當成套件名稱，現有截圖不足以斷定是哪個輸入欄位或檔案造成。如果使用 requirements 檔，每行應是 `numpy==版本` 等套件規格；不要放整行 `pip install …` 或單獨的 `install`。格式可查 [pip 官方說明](https://pip.pypa.io/en/stable/reference/requirements-file-format/)。
+
+固定 setuptools 80.9.0 是這份舊 Thonny 流程的相容處理。[setuptools 官方紀錄](https://setuptools.pypa.io/en/stable/history.html#v82-0-0)說明 82.0.0 移除了 `pkg_resources`；因此不能把「升級到最新版 setuptools」當作此錯誤的通用修法。現有紀錄也不足以判斷原失敗環境是未安裝 setuptools，還是版本已移除此介面。
+
+以上修復方式依既有安裝程式及各課原始截圖整理；2026-11-11 補寫排錯與檢查流程，當日 SSH 連線逾時，未宣稱新一輪 RP5 或全新系統驗證。下方保留不同日期的歷史操作。
+
+## Bookworm 歷史操作（2026-10-29，Python 3.11）
 
 ## 先認識虛擬環境
 

@@ -1,6 +1,6 @@
 # 第 14 課｜在 Raspberry Pi 5 安裝 OpenCV
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14222877021) · 本次實測：2026-11-09 · [教材目錄](./README.md)
+[原始文章](https://liusming.pixnet.net/blog/posts/14222877021) · 本次實測：2026-11-09 · 排錯指引補寫：2026-11-11 · [教材目錄](./README.md)
 
 > 實測環境：Raspberry Pi 5、8 GB RAM、現有 Debian GNU/Linux 13（Trixie）、64 位元、Python 3.13.5。已在 Thonny 新建虛擬環境，完成安裝、繪圖、存檔及顯示視窗。這是已有使用資料的系統，並非全新重灌驗證。
 
@@ -40,6 +40,8 @@ flowchart LR
 
 ## 步驟 2：安裝 OpenCV
 
+**若已看到安裝錯誤，請接著完成本節的 1～4 步，不必重新安裝系統。** `pkg_resources` 錯誤發生在套件管理功能；下列安裝程式從 Thonny 編輯區執行，可以接續安裝。若你的錯誤是 `No matching distribution found for install`，請先看[依錯誤訊息分流的修復流程](./Thonny環境與套件安裝.md#安裝出錯時先從這裡處理2026-11-11-補寫)，不要把 `install` 輸入成套件名稱。
+
 本次新環境在 **Tools → Manage packages** 出現 `ModuleNotFoundError: No module named 'pkg_resources'`，套件管理器未能完成操作。下圖是本次實際畫面，不是所有版本都會發生。
 
 ![Thonny 套件管理器缺少 pkg_resources 的實測畫面](./圖檔/lesson14-trixie-pkg-error.png)
@@ -73,7 +75,9 @@ Installation completed. Restart the Thonny interpreter.
 
 *圖：本次 RP5 的 Thonny 操作截圖，已裁切。NumPy 為下載；OpenCV 顯示 `Using cached`，表示使用了本機快取。套件來源未來可能變動。*
 
-4. 完成後按紅色 **Stop/Restart backend** 重新啟動解譯器，再進行下一步。
+4. 完成後按紅色 **Stop/Restart backend** 重新啟動解譯器。先依[版本與路徑檢查程式](./Thonny環境與套件安裝.md#修復流程關閉錯誤視窗後可以繼續做什麼)核對安裝的確在所選虛擬環境，再進行下一步。原有實測已完成安裝程式與繪圖範例；套件管理器是否恢復搜尋／安裝功能未另行驗收。
+
+**為什麼指定 `setuptools==80.9.0`？** 舊版 Thonny 的套件管理流程可能使用 `pkg_resources`。這個介面由較舊的 setuptools 提供；[官方紀錄](https://setuptools.pypa.io/en/stable/history.html#v82-0-0)指出 82.0.0 已移除它，所以任意升級 setuptools 不一定能解決。此固定版本是已保存的本機相容安裝方式，不代表所有 Thonny 版本都需要它。
 
 ## 步驟 3：畫圖、存檔、開啟視窗
 
@@ -142,7 +146,8 @@ Window closed.
 ## 常見問題
 
 - **`No module named cv2`：**檢查右下角選用的是否為剛安裝套件的環境，重新啟動解譯器後再執行。
-- **`No module named pkg_resources`：**本次是套件管理器錯誤；依步驟 2 關閉管理器、重啟解譯器，再執行本課安裝程式。若仍失敗，記下完整錯誤和網路狀態。
+- **`No module named pkg_resources`：**依步驟 2 關閉管理器、重啟解譯器，在 Thonny 編輯區執行本課安裝程式；成功後重啟並核對路徑、setuptools 版本及模組是否存在。不要直接安裝名為 `pkg_resources` 的套件，也不要以任意升級 setuptools 取代本課相容版本。完整步驟見[共用排錯指南](./Thonny環境與套件安裝.md#修復流程關閉錯誤視窗後可以繼續做什麼)。
+- **`No matching distribution found for install`：**pip 正在找名為 `install` 的套件，與找不到 OpenCV 是不同錯誤。關閉套件管理器並執行本節完整安裝程式；requirements 檔只放套件規格，不能放整行 `pip install …`。
 - **`FileExistsError`：**程式不覆蓋同名圖片。將原圖改名或修改輸出檔名後再執行。
 - **有 Wayland 訊息但視窗已出現：**本次有此訊息且視窗可用。若視窗未出現或程式中止，保留完整錯誤並檢查桌面與 OpenCV 套件；不能只憑本次結果保證其他系統也可顯示。
 - **相機套件找不到：**本環境尚未驗證 Picamera2，不要把本課繪圖結果視為相機已完成。
