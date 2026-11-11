@@ -152,7 +152,49 @@ Shell 中出現以 `[` 開頭、含 `INFO` 或 `WARN` 的紅色或灰色行，�
 
 ### 本次 RP5 實測結果（2026-11-11）
 
-環境：Raspberry Pi 5 Model B、既有 Debian 13（Trixie）64 位元、核心 6.18.50+rpt-rpi-2712、Python 3.13.5、OpenCV 4.12.0、NumPy 2.2.4、IMX708 廣角相機；直譯器 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`。**本次程式是從另一台電腦以 SSH 在 RP5 的桌面工作階段啟動，使用與 Thonny 相同的直譯器**；預覽視窗確實顯示在 RP5 桌面，但不是在 Thonny 按 Run，也沒有測按 `q`，是 20 秒自動停止。Thonny 按鈕操作及 `q` 鍵停止仍待補。
+環境：Raspberry Pi 5 Model B、既有 Debian 13（Trixie）64 位元、核心 6.18.50+rpt-rpi-2712、Python 3.13.5、OpenCV 4.12.0、NumPy 2.2.4、IMX708 廣角相機；直譯器 `/home/pi/ba5077-camera-contrib-trixie-20261110/bin/python3`。
+
+#### 在 Thonny 按 Run：讓它跑滿 20 秒
+
+程式放在 `~/lesson16/第16課-即時錄影與預覽.py`，在 RP5 桌面的 Thonny 用 **File → Open** 開啟，右下角確認為上面的直譯器，按綠色 **Run**。相機對著另一個螢幕上播放的「RP5相機測試.html → 移動追蹤」畫面，所以這次預覽中的紅色圓形**會左右移動**。
+
+![在 Thonny 按 Run 後，RP5 桌面右下方跳出 lesson16 live 預覽視窗，左邊是相機畫面、右邊是灰階加綠色邊緣](./圖檔/lesson16-thonny-preview-20261111.png)
+
+*圖：RP5 桌面的完整操作截圖（2026-11-11）。上方是 Thonny 的程式，右下角狀態列可看到所選直譯器；預覽視窗左上角顯示錄到第 170 張、16.9 秒。相機拍的是螢幕上的生成動畫，不是實物。*
+
+這次沒有按鍵，讓程式跑到時間上限，Shell 印出：
+
+```text
+stopped by time limit
+frames written: 202
+seconds: 20.1
+measured fps: 10.1
+frames read back: 202
+saved: lesson16-live.avi lesson16-live-preview.png
+```
+
+#### 再跑一次：點預覽視窗後按 `q`
+
+再按一次 **Run**，等預覽視窗出現約 6 秒後，**先點一下預覽視窗的標題列**，再按鍵盤的 `q`。視窗立刻關閉，Shell 第一行變成 `stopped by q`：
+
+```text
+stopped by q
+frames written: 63
+seconds: 6.2
+measured fps: 10.1
+frames read back: 63
+saved: lesson16-live.avi lesson16-live-preview.png
+```
+
+![按 q 停止後的 Thonny 畫面，Shell 顯示 %Run 指令、相機日誌及 stopped by q 等結果](./圖檔/lesson16-thonny-q-stop-20261111.png)
+
+*圖：按 `q` 停止後的 Thonny 操作截圖。Shell 最上面的 `%Run '第16課-即時錄影與預覽.py'` 就是按下 Run 時 Thonny 替你輸入的指令；紅色 `INFO`／`WARN` 是相機程式庫日誌，不是錯誤。第二次執行覆寫了第一次的 `lesson16-live.avi`。*
+
+兩次的寫入張數與讀回張數都相同，速度都約每秒 10 張；按 `q` 只是讓錄影提早結束，影片照樣完整。
+
+#### 先前的 SSH 桌面紀錄（同一天較早）
+
+在補上 Thonny 操作前，曾以 SSH 在 RP5 桌面工作階段用同一個直譯器啟動程式（不是在 Thonny 按 Run），當時相機前是靜止的深色圓形：
 
 ```text
 stopped by time limit
@@ -268,7 +310,7 @@ saved: lesson16-camera.avi, lesson16-frames.png
 
 - 2026-11-11 全文重編為零基礎學生路徑，主線改為「相機連續取像＋即時預覽＋錄影＋讀回」，並新增[主程式](./範例程式/第16課-即時錄影與預覽.py)；原有合成影格與 12 影格相機紀錄改列補充。
 - 新增實測：既有 Trixie 的 RP5 相機 640 × 480、20.1 秒 202 張、實測 10.0 FPS、即時視窗與讀回 202 張；附裁切後的桌面視窗截圖和程式輸出圖。場景是螢幕上的靜止圓形。
-- 本次程式以 SSH 在 RP5 桌面工作階段啟動，使用 Thonny 相同直譯器；**Thonny 按 Run、`q` 鍵停止、播放器開啟影片仍待補**，不宣稱已完成學生從零驗收。
+- 首次實測以 SSH 在 RP5 桌面工作階段啟動。同日稍晚補上 **Thonny 按 Run**：相機拍攝螢幕上的移動紅圓，跑滿 20 秒得 202 張（10.1 FPS），再以 `q` 停止得 63 張、6.2 秒，兩次讀回張數皆相同，附兩張完整桌面操作截圖。播放器開啟影片仍待補，不宣稱已完成學生從零驗收。
 - 原文的錄影方式、聲音及長時間錄影未在本版驗證；本版不錄聲音。
 - 上述文字輸出是本次實機紀錄，其他版本、場景或環境可能不同。
 
@@ -277,7 +319,8 @@ saved: lesson16-camera.avi, lesson16-frames.png
 
 > - 2026-11-11 主線實測：RP5 主機名稱 PR5，`/etc/rpi-issue` 為 Raspberry Pi reference 2026-10-06；程式位於 `/home/pi/ba5077-validation-20261111/lesson16-live/`，以 `XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 DISPLAY=:0` 從 SSH 啟動，桌面截圖以 `grim` 擷取後裁切。OpenCV GUI 後端為 Qt5。程式 SHA-256 `fdc4bb2e…1ce7`，影片 `cda437dc…25ab`。
 > - 當時另有 Thonny 的第 38 課後端在執行但未占用相機；測試前以 `rpicam-still` 確認相機可用。
-> - 需要時再補：在 Thonny 按 Run 與 `q` 停止的操作截圖（需 Raspberry Pi Connect 或現場操作）、移動場景錄影、播放器畫面。合成影格與 2026-10-29 終端機紀錄保持原狀，不重做。
+> - 2026-11-11 晚間 Thonny 補測：RP5 IP `192.168.1.78`；從 Windows 以 SSH 通道連到 RP5 上僅聽 127.0.0.1 的臨時 wayvnc（TigerVNC 檢視），在 RP5 桌面的 Thonny 4 開檔、改直譯器、按 Run 與在預覽視窗按 `q`；截圖以 `grim` 擷取整個 RP5 桌面（1920 × 1080），已檢查只含 Thonny、課程檔名與相機拍到的測試頁。相機前是 Windows 第二螢幕以 Chrome kiosk 全螢幕播放 `RP5相機測試.html` 的「移動追蹤」（生成動畫）。程式放在 `~/lesson16/`，影片未入庫。
+> - 仍可補：播放器開啟影片的畫面。合成影格與 2026-10-29 終端機紀錄保持原狀，不重做。合成影格與 2026-10-29 終端機紀錄保持原狀，不重做。
 > - [逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 </details>

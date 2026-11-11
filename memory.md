@@ -22,6 +22,10 @@
 
 - 2026-11-11（續）第 13 課：SSH 終端機 `rpicam-vid -n -t 5000 --width 1280 --height 720 --framerate 30 --codec libav` 錄得 142 影格約 30 FPS，ffprobe 與 opencv-course-env 讀回 142 張；`cv2.VideoCapture(0)` 開啟為 True 但 read False（CSI 不可用此路）。補錄影一節並改列「已做」，USB 相機仍缺硬體。
 
+- 2026-11-11 晚間（IP `192.168.1.78`）：Claude in Chrome 分頁未登入 Pi Connect，電腦操作工具對瀏覽器只有「讀取」權限，所以改在 RP5 以使用者身分開**只聽 127.0.0.1 的臨時 wayvnc**（埠 5911、無驗證），經 SSH `-L` 通道以 Windows 的 TigerVNC 操作 Thonny；完成後已停止並刪除設定。GTK 對話框不吃剪貼簿貼上，路徑改用逐鍵輸入或「…」按鈕選檔。相機素材以獨立暫時設定檔的 Chrome `--kiosk --window-position=1930,10` 在螢幕 2 全螢幕播放（本機 http.server 提供測試頁副本，載入時自動選「移動追蹤」與 80%）。
+  - 第 13 課讀回程式另存 `範例程式/第13課-讀回影片.py`，Thonny 按 Run 讀回 142 張並截圖；第 36 課 Thonny 按 Run status 0（0.4 秒）／status 1 並截圖；第 16 課 Thonny 按 Run 拍移動紅圓 202 張（10.1 FPS）、按 q 停止 63 張，兩張截圖。
+  - 第 28 課全文重編，新程式 `範例程式/第28課-相機紅色追蹤.py`（不做透視校正）：Thonny 相機 20.0 秒 1606 影格、1606 次偵測、中心 x 40～558，改列「已做」。這是相機拍攝螢幕上的生成動畫。
+  - 帳號持有人在 app 的 Terminal 分頁（SSH 執行 `~/ba5077-validation-20261111/sudo-tasks.sh`）自行輸入 sudo 密碼：第 04 課 Apache 2.4.69 安裝、Windows 瀏覽器開預設頁；第 08 課目前 Trixie 原**未裝** qiv（舊 2.3.3 紀錄來自其他系統），`apt install qiv` 3.0.1 並開圖截圖；兩課改列「已做」。補充 7：目前 Trixie 原本沒有 Ollama，官方 `install.sh` 安裝 0.40.16（`/usr/local/lib/ollama` 約 2.2 GB，下載約 1 小時），active／enabled，pull SmolLM2 135M 並 run 一題，改列「已做」；分類計數 39／13／4。Apache、Ollama 服務都保持啟用。紀錄存於 RP5 `~/ba5077-validation-20261111/sudo-installs/`。
 - 2026-11-11 接續第 38 課有目標相機正例：RP5 原有使用者目錄和 `/tmp` 搜尋不到該課模型，已於 `/home/pi/ba5077-validation-20261111/lesson38` 下載原課所列三檔，三個 SHA-256 均與文章記錄一致。使用者重新校正後關閉預覽；既有物件圖放大至第二螢幕，RP5 的 Thonny 執行有目標正例，109 影格按 q 結束，最後標籤 cup、apple、banana。未另存本次操作截圖；實體物件與全新系統待驗。不要重複生成素材或重做已驗證情境。
 
 - 2026-11-11 建立 [56 篇現有系統驗收盤點](./教材/56篇現有系統驗收盤點.md)，彙整既有紀錄而非宣稱逐篇已驗收；第 17、22、23 課修正後範例已補 [SSH 及 Thonny 路徑驗證](./教材/2026-11-11路徑修正驗證紀錄.md)，新操作截圖未保存，其他情境依各課待辦。

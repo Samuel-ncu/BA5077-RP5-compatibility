@@ -118,7 +118,34 @@ experiment("實驗 B：重疊太少的兩張", ["boat1.jpg", "boat6.jpg"], "less
 
 ### 本次 RP5 實測結果（2026-11-11）
 
-環境：Raspberry Pi 5 Model B、既有 Debian 13（Trixie）64 位元、Python 3.13.5、OpenCV 4.12.0；直譯器 `/home/pi/opencv-course-env/bin/python3`（第 14 課建立的環境）。**本次程式是以 SSH 在 RP5 上用這個直譯器執行**，不是在 Thonny 按 Run；Thonny 操作截圖待補。照片以上面的 `curl` 指令下載。
+環境：Raspberry Pi 5 Model B、既有 Debian 13（Trixie）64 位元、Python 3.13.5、OpenCV 4.12.0；直譯器 `/home/pi/opencv-course-env/bin/python3`（第 14 課建立的環境）。照片以上面的 `curl` 指令下載，和程式一起放在 `~/lesson36`。
+
+下面是在 RP5 桌面的 Thonny 按 **Run** 的實際畫面。Shell 被往上拉大，好讓兩個實驗的輸出一次看完；右下角狀態列是 `/home/pi/opencv-course-env/bin/python3`：
+
+![第 36 課在 Thonny 按 Run 後的畫面：上方是程式，下方 Shell 顯示實驗 A status 0、1269 x 531 與實驗 B status 1](./圖檔/lesson36-thonny-run-20261111.png)
+
+*圖：RP5 桌面操作截圖（2026-11-11）。右側 Assistant 面板出現「Module has no attribute "Stitcher_create"」的提醒，那是 Thonny 靜態檢查看不懂 OpenCV 的寫法，程式實際上執行成功，可以忽略。*
+
+Thonny Shell 的文字輸出：
+
+```text
+OpenCV 4.12.0
+實驗 A：三張相鄰照片
+  boat1.jpg: 原始 3888x2592 -> 800x533
+  boat2.jpg: 原始 3888x2592 -> 800x533
+  boat3.jpg: 原始 3888x2592 -> 800x533
+  status: 0 OK 成功
+  seconds: 0.4
+  panorama size: 1269 x 531
+  saved: lesson36-boat-123.jpg
+實驗 B：重疊太少的兩張
+  boat1.jpg: 原始 3888x2592 -> 800x533
+  boat6.jpg: 原始 3888x2592 -> 800x533
+  status: 1 ERR_NEED_MORE_IMGS 找不到足夠重疊，需要更多或更相鄰的照片
+  seconds: 0.1
+```
+
+同一天較早曾以 SSH 用同一個直譯器執行（不是在 Thonny 按 Run），結果相同，只有實驗 A 的秒數是 0.5：
 
 ```text
 OpenCV 4.12.0
@@ -251,7 +278,7 @@ panorama produced True
 ## 與原文章的差異
 
 - 2026-11-11 全文重編為零基礎學生路徑，主線改為**真實相鄰照片**拼接，新增[主程式](./範例程式/第36課-相鄰照片全景.py)、照片下載指令、`status` 對照、失敗對照實驗與排錯表；原有校正圖及合成例改列補充。
-- 新增實測：既有 Trixie 的 RP5，以第 14 課 `opencv-course-env`（OpenCV 4.12.0）拼接 OpenCV 官方測試照片 boat1～3，`status 0`、1269 × 531；boat1＋boat6 回報 `status 1`。程式以 SSH 執行，**Thonny 按 Run 的操作截圖待補**。
+- 新增實測：既有 Trixie 的 RP5，以第 14 課 `opencv-course-env`（OpenCV 4.12.0）拼接 OpenCV 官方測試照片 boat1～3，`status 0`、1269 × 531；boat1＋boat6 回報 `status 1`。首次以 SSH 執行；同日稍晚在 RP5 桌面的 **Thonny 按 Run** 重現相同結果（實驗 A 0.4 秒），附完整操作截圖。
 - 輸入照片來自 OpenCV 官方測試資料，不是 RP5 相機拍攝；學生自行用相機拍攝相鄰照片的延伸尚未實測。
 - 未驗證原文使用的照片、拼接品質評分或速度比較；上述輸出為本次實機紀錄，其他版本或環境可能不同。
 
@@ -259,7 +286,7 @@ panorama produced True
 <summary>給教師：實測範圍與版本備註</summary>
 
 > - 2026-11-11 主線實測位於 `/home/pi/ba5077-validation-20261111/lesson36/`。照片自 `https://raw.githubusercontent.com/opencv/opencv_extra/4.x/testdata/stitching/` 下載，SHA-256：boat1 `c084dab5…3f2e`、boat2 `3bb4e222…33ad`、boat3 `dd3c5c15…3e65`、boat6 `48f20d18…4e34`。opencv_extra 根目錄未見授權檔，因此本庫不收錄原始照片，只收錄縮小後拼接的輸出圖並註明來源；若需更嚴格的授權，可改用自行拍攝的照片取代輸出圖。
-> - 先前兩張校正圖的 Thonny 結果與合成例保持原狀，不重做。待補：Thonny 按 Run 截圖、相機自拍相鄰照片。
+> - 先前兩張校正圖的 Thonny 結果與合成例保持原狀，不重做。2026-11-11 晚間 Thonny 補測：程式與 boat1、2、3、6 複製到學生路徑 `~/lesson36/`，經 SSH 通道連到 RP5 上僅聽本機的臨時 wayvnc，在 Thonny 以 **File → Open** 開檔、選 `opencv-course-env`、按 Run，截圖以 `grim` 擷取整個 RP5 桌面。仍待補：相機自拍相鄰照片。
 > - [逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 </details>

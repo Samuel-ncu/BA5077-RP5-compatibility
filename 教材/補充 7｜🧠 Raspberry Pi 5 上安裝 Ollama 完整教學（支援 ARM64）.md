@@ -1,30 +1,135 @@
 # 補充 7｜🧠 Raspberry Pi 5 上安裝 Ollama 完整教學（支援 ARM64）
 
-[原始文章](https://liusming.pixnet.net/blog/posts/14223038205) · 更新日期：2026-10-29
+[原始文章](https://liusming.pixnet.net/blog/posts/14223038205) · 教學編排修訂：2026-11-11（編修前版本存於[歷史紀錄](./歷史紀錄/補充07-Ollama安裝補測前-20261111.md)）
 
 如果文字模型住在 RP5 裡，Python 要怎麼向它提問？我們先認識本機服務，再送一個小問題看看回答。
 
 第一次準備環境的同學，可以先讀[課前學習說明](./學習前先讀我.md)；操作遇到紅字時，我們用[排錯故事](./程式卡住時怎麼辦.md)一起找原因。
 
-我們先和老師確認 RP5 已安裝並啟動 Ollama，才能進到下面的提問實驗。本頁目前保留的是已準備環境的課堂示例，從新系統安裝 Ollama 的完整步驟尚未補齊。
+這一頁從**一台還沒有 Ollama 的 RP5** 開始：先用官方安裝腳本把 Ollama 裝起來，確認它在背景執行，再下載一個很小的模型問一個問題。後半段再用 Thonny 透過 Python 向它提問。
 
 ## 學習目標
 
-確認本機是否已有 Ollama，以及服務是否啟動。
+1. 用官方安裝腳本在 RP5（ARM64）安裝 Ollama，看懂安裝訊息。
+2. 分辨「程式裝好了」、「服務在執行」、「模型已下載」、「模型能回答」四件不同的事，並各用一個指令確認。
+3. 下載一個小模型並在終端機問它一個問題。
 
 ## 事前準備
 
-本次 RP5 已有 Ollama，以下使用系統現有安裝。
+- RP5 能上網；可用儲存空間至少 3 GB（本次安裝後 `/usr/local/lib/ollama` 約 2.2 GB，另加模型）。
+- 你知道 RP5 帳號的密碼：安裝腳本會用 `sudo`，終端機會問密碼。**密碼只輸入在自己的終端機。**
+- 這個安裝會新增一個背景服務並開機自動啟動；在共用的 RP5 上先和老師確認。
 
-## 實際操作
+## 主線實作：用官方腳本安裝 Ollama（2026-11-11 實測）
+
+### 第一步：確認還沒裝過
+
+在 RP5 的終端機輸入：
+
+```bash
+command -v ollama
+```
+
+沒有任何輸出，表示系統找不到 Ollama，需要安裝。本次的 RP5（既有 Trixie）就是這樣。如果印出 `/usr/local/bin/ollama`，代表已經裝過，可直接跳到第三步。
+
+### 第二步：下載官方安裝腳本並執行
+
+Ollama 官方提供一支安裝腳本。好習慣是**先下載成檔案、看過再執行**，而不是直接把網路上的內容丟給 shell：
+
+```bash
+curl -fsSL https://ollama.com/install.sh -o ollama-install.sh
+less ollama-install.sh      # 看一下內容，按 q 離開
+sh ollama-install.sh
+```
+
+腳本執行到需要管理員權限時會出現 `[sudo] password for pi:`，輸入密碼後按 Enter。它要下載 ARM64 版的程式包（數百 MB），網路慢時可能要等二、三十分鐘，進度列會慢慢前進。本次的完整訊息：
+
+```text
+>>> Installing ollama to /usr/local
+>>> Downloading ollama-linux-arm64.tar.zst
+（這裡會有一條慢慢前進的 # 進度列）
+>>> Creating ollama user...
+>>> Adding ollama user to render group...
+>>> Adding ollama user to video group...
+>>> Adding current user to ollama group...
+>>> Creating ollama systemd service...
+>>> Enabling and starting ollama service...
+Created symlink '/etc/systemd/system/default.target.wants/ollama.service' → '/etc/systemd/system/ollama.service'.
+>>> The Ollama API is now available at 127.0.0.1:11434.
+>>> Install complete. Run "ollama" from the command line.
+WARNING: No NVIDIA/AMD GPU detected. Ollama will run in CPU-only mode.
+```
+
+**這代表什麼：**腳本把程式放到 `/usr/local`，建立一個專門執行服務的 `ollama` 帳號，把它設成**開機自動啟動的系統服務**，並在 RP5 自己的 `127.0.0.1:11434` 開放 API（只有本機能連）。最後的 `WARNING` 是說 RP5 沒有 NVIDIA／AMD 顯示卡，所以用 CPU 計算；這在 RP5 是正常的，不是失敗。
+
+### 第三步：分別確認程式、服務與 API
 
 ```bash
 command -v ollama
 ollama --version
 systemctl is-active ollama
+systemctl is-enabled ollama
+curl -s http://127.0.0.1:11434/api/version
+ollama list
 ```
 
-## 本機實際輸出
+本次輸出（安裝完成後約一分鐘查詢）：
+
+```text
+/usr/local/bin/ollama
+ollama version is 0.40.16
+active
+enabled
+{"version":"0.40.16"}
+NAME    ID    SIZE    MODIFIED
+```
+
+| 指令 | 回答的問題 | 本次結果 |
+| --- | --- | --- |
+| `command -v ollama` | 系統找得到程式嗎？ | `/usr/local/bin/ollama` |
+| `ollama --version` | 程式能執行嗎？是哪一版？ | 0.40.16 |
+| `systemctl is-active` / `is-enabled` | 服務現在有在跑嗎？開機會自動啟動嗎？ | `active`、`enabled` |
+| `curl .../api/version` | Python 等程式能透過 API 連到它嗎？ | 回傳 JSON 版本 |
+| `ollama list` | 有哪些模型？ | 只有標題列：**還沒有任何模型** |
+
+如果在**安裝剛結束的那一瞬間**執行 `ollama --version`，可能看到 `Warning: could not connect to a running Ollama instance`：這只是服務還在啟動，等幾秒再查即可（本次安裝腳本最後就出現過這行，稍後再查就正常）。
+
+### 第四步：下載一個小模型並提問
+
+`ollama list` 是空的，表示服務雖然在跑，但還沒有模型可以回答。下載一個很小的練習模型 SmolLM2 135M（約 91 MB）：
+
+```bash
+ollama pull smollm2:135m-instruct-q4_0
+ollama list
+ollama run smollm2:135m-instruct-q4_0 "In one sentence, what does a temperature sensor do?"
+```
+
+本次輸出：
+
+```text
+success
+NAME                          ID              SIZE     MODIFIED
+smollm2:135m-instruct-q4_0    dbc9f6c89cb0    91 MB    Less than a second ago
+A temperature sensor measures temperature by converting heat from the environment into electrical signals that are then measured and interpreted by a computer.
+```
+
+本次下載花了約 4 分 28 秒（依網路速度而定），回答約 0.9 秒就出現。這個回答是模型生成的文字，**不是**讀到真實的感測器數值；小模型也可能答錯，重要內容要查證。
+
+### 安裝時的常見問題
+
+| 你看到的情況 | 可能原因 | 先試試看 |
+| --- | --- | --- |
+| `curl: (6) Could not resolve host` | RP5 沒有網路 | 先確認能上網，再下載腳本。 |
+| 進度列很久才動 | 程式包很大、網路慢 | 耐心等待；不要中途按 Ctrl+C。 |
+| `systemctl is-active ollama` 不是 `active` | 服務沒起來 | `sudo systemctl status ollama` 看訊息；`sudo systemctl restart ollama`。 |
+| `ollama run` 說找不到模型 | 模型名稱打錯或還沒 pull | 用 `ollama list` 確認名稱，再 `ollama pull`。 |
+| `No space left on device` | 儲存空間不足 | 用 `df -h` 查空間；刪除不用的模型：`ollama rm 模型名稱`。 |
+
+不需要時，可以用 `sudo systemctl disable --now ollama` 停止並取消開機啟動。
+
+## 補充：較早系統上的既有安裝紀錄
+
+較早在另一套已裝好 Ollama 的系統上查詢，得到：
 
 ```text
 /usr/local/bin/ollama
@@ -32,7 +137,7 @@ ollama version is 0.9.0
 active
 ```
 
-本機已安裝 0.9.0 且服務 active；當時此步驟沒有下載模型、更新版本或驗證聊天；後續下載及推論實測見下文。模型的空間與記憶體需求因版本而異。
+當時沒有重新安裝；下文的 TinyLlama 與 Thonny 實驗也是在那套環境完成的，版本與本次 0.40.16 不同。
 
 ## 背景與核心概念
 
@@ -227,6 +332,8 @@ total seconds: 0.69
 
 ## 與原文章的差異
 
+- 2026-11-11 新增從零安裝主線：既有 Trixie 原本沒有 Ollama，以官方 `install.sh` 安裝 0.40.16，確認程式、服務（active／enabled）、API 與空模型清單，再 `ollama pull` SmolLM2 135M（91 MB）並以 `ollama run` 回答一題；附實際輸出與排錯表。較早 0.9.0 的既有安裝紀錄改列補充。
+
 - 新增既有模型與新下載小模型的 Thonny 本機 API 推論；系統全新安裝尚未驗證。
 
 - 原文以安裝 Ollama 為主；本版先檢查既有服務，並以 Thonny 實測模型下載和推論。
@@ -237,6 +344,8 @@ total seconds: 0.69
 <details>
 <summary>給教師：原有實測範圍與版本備註</summary>
 
-> **部分實測。** 已在 Thonny 測模型下載及本機推論；Ollama 全新安裝仍待驗證。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 2026-11-11：RP5 主機 PR5、IP `192.168.1.78`、既有 Trixie。帳號持有人在 Windows 端終端機經 SSH 執行預先寫好的腳本並自行輸入 sudo 密碼；腳本把官方 `install.sh` 下載到 `/tmp`（SHA-256 `25f64b81…2c9f`）後以 `sh` 執行，完整輸出存於 RP5 `~/ba5077-validation-20261111/sudo-installs/install-20261111-193047.log`。`pull` 與 `run` 由 SSH 執行，非 Thonny。Thonny 的 API 範例（下文）是在較早 0.9.0 的系統上測的，未在 0.40.16 重測。安裝後 Ollama 保持啟用，SmolLM2 模型留在 RP5。
+>
+> 已在 Thonny 測模型下載及本機推論（較早系統）。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 </details>

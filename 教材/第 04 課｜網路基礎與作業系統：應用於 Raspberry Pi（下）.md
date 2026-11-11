@@ -4,7 +4,7 @@
 
 想像你坐在另一台電腦前，請 RP5 回答一個問題。我們先認識遠端登入，再用一個小網頁理解請求和回應。
 
-如果你使用 Trixie，我們先從[這一套系統的練習](#現有-trixie-實測windows-跨裝置-http2026-11-10)開始；前後的舊版例子可留到比較時閱讀。
+如果你使用 Trixie，可以先做[一次性 Python 跨裝置 HTTP](#現有-trixie-實測windows-跨裝置-http2026-11-10)理解請求與回應，再做本課主線[安裝 Apache 網頁伺服器](#主線實作安裝-apache讓別台電腦打開-rp5-的網頁2026-11-11-實測)；前後的舊版例子可留到比較時閱讀。
 
 ## 學習目標
 
@@ -64,7 +64,7 @@ APT 的套件來源、版本和網路狀況都會影響安裝結果。先確認�
 
 1. 解釋 `systemctl is-active ssh` 回傳 `active` 所表示的事，以及它不能保證什麼。
 2. 說明 `command -v apt` 找得到程式，和某個套件已安裝，為什麼不是同一件事。
-3. 設計一個本地網頁顯示感測資料的情境，寫出可能需要的輸入、處理方式與使用者；本次已測本機 Python HTTP 範例，原文 Apache 情境尚未完成。
+3. 設計一個本地網頁顯示感測資料的情境，寫出可能需要的輸入、處理方式與使用者；本次已測本機 Python HTTP 範例，Apache 安裝與跨裝置瀏覽見下方主線。
 
 遠端操作適用於沒有螢幕的感測節點，也讓維護人員能檢查狀態。正式部署還要考量帳號認證、連線範圍、軟體更新與裝置失聯時的處置。[Raspberry Pi 遠端存取文件](https://www.raspberrypi.com/documentation/computers/remote-access.html)可供後續學習。
 
@@ -207,8 +207,112 @@ Server closed
 
 若連線遭拒或逾時，先確認程式仍在等候、位址及埠號正確、兩台裝置可互通；網路隔離或防火牆可能限制連線。不要為了練習停用安全防護。此範例只提供暫時且未驗證的 HTTP，不能作為對外正式服務。
 
+## 主線實作：安裝 Apache，讓別台電腦打開 RP5 的網頁（2026-11-11 實測）
+
+前面的 Python 小服務只回應一次就關掉。真正的網站需要一個**一直在背景等候**的程式，這種程式叫做**網頁伺服器**。原文章用的是 Apache，它是世界上最常用的網頁伺服器之一。這一節我們用套件管理器 APT 把它裝起來，再從 Windows 的瀏覽器打開 RP5 的網頁。
+
+```mermaid
+flowchart LR
+    A["Windows 瀏覽器<br/>輸入 http://RP5的IP/"] -->|"HTTP 請求（埠 80）"| B["RP5 上的 Apache<br/>systemd 服務，一直在背景"]
+    B -->|"讀取"| C["/var/www/html/index.html"]
+    B -->|"HTTP 回應 200 與網頁"| A
+```
+
+這張流程圖是教學示意，不是操作截圖。
+
+### 事前準備
+
+- RP5 已連上網路；你知道 RP5 的 IP（本次是 `192.168.1.78`，你的會不同，可用 `hostname -I` 查）。
+- 另一台電腦（本次是 Windows）和 RP5 在**同一個區域網路**。
+- 你知道 RP5 帳號的密碼：安裝系統軟體要用 `sudo`，它會問密碼。**密碼只輸入在自己的終端機，不要貼到聊天、作業或截圖裡。**
+
+### 第一步：用 APT 安裝 Apache（在 RP5 的終端機）
+
+**為什麼：**Apache 是系統程式，不是 Python 套件，所以用 APT 安裝，不用 Thonny 的 pip。先 `update` 讓 APT 拿到最新的套件清單，再 `install`。
+
+```bash
+sudo apt update
+sudo apt install -y apache2
+```
+
+輸入第一行後會出現 `[sudo] password for pi:`，輸入密碼（畫面不會顯示字元）再按 Enter。`-y` 表示「安裝時的確認問題都回答是」。本次實際輸出的重點如下（中間的下載與解壓縮行省略）：
+
+```text
+Installing:
+  apache2
+
+Installing dependencies:
+  apache2-bin   apache2-utils  libaprutil1-dbd-sqlite3  libaprutil1t64
+  apache2-data  libapr1t64     libaprutil1-ldap
+
+Summary:
+  Upgrading: 0, Installing: 8, Removing: 0, Not Upgrading: 55
+  Download size: 2,126 kB
+  Space needed: 13.7 MB / 108 GB available
+...
+Setting up apache2 (2.4.69-1~deb13u1) ...
+Enabling module mpm_event.
+...
+Enabling site 000-default.
+Created symlink '/etc/systemd/system/multi-user.target.wants/apache2.service' → '/usr/lib/systemd/system/apache2.service'.
+```
+
+**這代表什麼：**APT 自動帶進 Apache 需要的 7 個相依套件；`Enabling site 000-default` 是預設網站；最後那行 `Created symlink ... multi-user.target.wants` 表示系統已把 Apache 設成**開機自動啟動**。`Not Upgrading: 55` 只是告訴你還有別的套件可以更新，這一課不需要全部升級。
+
+### 第二步：確認服務真的在跑（仍在 RP5）
+
+```bash
+systemctl is-active apache2
+systemctl is-enabled apache2
+/usr/sbin/apache2 -v
+curl -s -o /dev/null -w "localhost HTTP %{http_code}\n" http://localhost/
+hostname -I
+```
+
+本次輸出：
+
+```text
+active
+enabled
+Server version: Apache/2.4.69 (Debian)
+Server built:   2026-10-01T16:54:08
+localhost HTTP 200
+192.168.1.78
+```
+
+`active` 是「現在正在執行」，`enabled` 是「開機會自動啟動」，兩者不同。`curl` 在 RP5 自己身上要了一次首頁，得到 HTTP 狀態碼 `200`（成功）。`apache2` 這個指令放在 `/usr/sbin`，一般帳號直接打 `apache2 -v` 可能出現 `command not found`，寫完整路徑即可；這不代表安裝失敗。
+
+### 第三步：從另一台電腦打開網頁（在 Windows）
+
+在 Windows 的瀏覽器網址列輸入 `http://192.168.1.78/`（換成你的 RP5 IP），按 Enter。
+
+![Windows 的 Chrome 開啟 http://192.168.1.78/，顯示 Apache2 Debian Default Page 與紅色 It works! 橫幅](./圖檔/lesson04-apache-windows-browser-20261111.jpg)
+
+*圖：Windows 瀏覽器的操作截圖（2026-11-11）。網址列的「不安全」是因為用的是 HTTP 而不是 HTTPS，練習網路中可以接受，但不要在這種頁面輸入密碼。*
+
+看到 **Apache2 Debian Default Page** 和紅色的 **It works!**，就代表請求從 Windows 經過網路到達 RP5 的 Apache，Apache 把 `/var/www/html/index.html` 回傳給瀏覽器。也可以在 Windows 的 PowerShell 用 `curl.exe -I http://192.168.1.78/` 檢查，本次回應標頭中有 `Server: Apache/2.4.69 (Debian)`，狀態碼 200。
+
+### 讀懂結果與排錯
+
+| 你看到的情況 | 可能原因 | 先試試看 |
+| --- | --- | --- |
+| `E: Unable to locate package apache2` | 套件清單太舊或沒有網路 | 先執行 `sudo apt update`，確認 RP5 能上網。 |
+| `Could not get lock /var/lib/dpkg/lock-frontend` | 另一個 APT 或系統更新正在執行 | 等它結束再試；不要刪除鎖定檔。 |
+| `systemctl is-active apache2` 不是 `active` | 服務沒起來或設定有誤 | `sudo systemctl status apache2` 看紅字；`sudo systemctl restart apache2`。 |
+| RP5 上 `localhost HTTP 200`，Windows 卻連不上 | IP 打錯、兩台不在同一網路、網路有隔離 | 用 `hostname -I` 重新確認 IP；確認 Windows 和 RP5 連的是同一個網路。 |
+| 瀏覽器自動改成 `https://` 而打不開 | 瀏覽器預設升級到 HTTPS | 網址前面明確打 `http://`。 |
+
+### 練習與安全提醒
+
+1. 說明 `active` 和 `enabled` 的差別：如果只做 `sudo systemctl stop apache2`，重開機後 Apache 會不會又啟動？
+2. 預測：把 RP5 的網路線拔掉（或關 Wi-Fi）後，Windows 重新整理頁面會看到什麼？
+3. 進階（本次未實測）：用 `sudo nano /var/www/html/index.html` 把首頁改成自己的一行文字，存檔後在 Windows 重新整理。修改系統檔案前先備份：`sudo cp /var/www/html/index.html /var/www/html/index.html.bak`。
+
+裝好 Apache 等於讓同一個網路裡的**任何人**都能連到 RP5 的 80 埠。練習結束、不需要時，可以用 `sudo systemctl disable --now apache2` 停止並取消開機啟動；要移除則用 `sudo apt remove apache2`。在學校或公共網路開服務前，先確認是否被允許。
+
 ## 與原文章的差異
 
+- 2026-11-11 新增 Apache 主線：在既有 Trixie 以 `sudo apt install -y apache2` 安裝 Apache 2.4.69（8 個套件、13.7 MB），確認 `active`、`enabled`、本機 HTTP 200，並從 Windows 瀏覽器開啟 `http://192.168.1.78/` 看到預設頁，附 Windows 瀏覽器截圖。修改首頁的練習未實測。
 - 新增本機實測的 Linux、ARM64、APT 與 SSH 服務檢查。
 - 不將全面升級或啟動網頁伺服器視為閱讀文章的必要步驟。
 - 新增既有 Trixie 系統的 Thonny 本機 HTTP 實測及操作截圖；SSH 與 Apache 設定步驟未補拍，乾淨系統尚未驗證。
@@ -218,6 +322,8 @@ Server closed
 <details>
 <summary>給教師：原有實測範圍與版本備註</summary>
 
+> 2026-11-11 Apache 實測：RP5 主機 PR5、IP `192.168.1.78`、既有 Trixie。帳號持有人在 Windows 端終端機經 SSH 執行預先寫好的腳本 `~/ba5077-validation-20261111/sudo-tasks.sh` 並自行輸入 sudo 密碼，完整輸出存於 RP5 `~/ba5077-validation-20261111/sudo-installs/install-20261111-193047.log`。腳本中 `apache2 -v` 因不在一般使用者 PATH 而顯示 `command not found`，另以 `/usr/sbin/apache2 -v` 補查。Windows 截圖為 Chrome（獨立暫時設定檔）視窗裁切。Apache 目前保持 `active`／`enabled`，不需要時由教師決定停用。
+>
 > 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)。
 
 </details>

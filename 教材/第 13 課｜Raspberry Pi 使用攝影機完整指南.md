@@ -229,12 +229,18 @@ video.release()
 print("frames read", count, "shape", shape)
 ```
 
-本次以 SSH 用 `/home/pi/opencv-course-env/bin/python3` 執行（與 Thonny 相同直譯器，但不是在 Thonny 按 Run）的輸出：
+這支程式也可以直接下載：[第13課-讀回影片.py](./範例程式/第13課-讀回影片.py)。把它和 `lesson13-test.mp4` 放在同一個資料夾（本教材用 `~/lesson13`），因為程式只寫了檔名，Thonny 會到**程式所在的資料夾**找影片。
+
+操作順序：Thonny 選 **File → Open** 開啟 `~/lesson13/第13課-讀回影片.py` → 確認右下角是 `/home/pi/opencv-course-env/bin/python3`（不是的話點它，選 **Configure interpreter…** 後按 **…** 挑這個路徑）→ 按綠色 **Run**。Shell 的實際輸出：
 
 ```text
 opened True fps 30.01
 frames read 142 shape (720, 1280, 3)
 ```
+
+![第 13 課在 Thonny 按 Run 讀回影片：Shell 顯示 opened True fps 30.01 與 frames read 142](./圖檔/lesson13-thonny-readback-20261111.png)
+
+*圖：RP5 桌面的 Thonny 操作截圖（2026-11-11），右下角狀態列為 `opencv-course-env`。同一天較早以 SSH 用同一個直譯器執行，得到完全相同的兩行輸出。*
 
 讀回 142 張，和 `ffprobe` 的 `nb_frames=142` 相同，代表 OpenCV 能完整讀取這支影片。之後第 16 課會把「拍攝」和「處理」寫進同一支 Python 程式。
 
@@ -259,6 +265,7 @@ USB 攝影機的錄影方式不同，本機沒有 USB 攝影機，這部分尚�
 
 - 2026-11-11 新增 `rpicam-vid` 終端機錄影主線：列出相機、錄 5 秒 1280 × 720 H.264、`ffprobe` 檢查 142 影格約 30 FPS、OpenCV 讀回 142 張，並實測原文 `VideoCapture(0)` 在 RP5 CSI 相機上讀不到影格；附可公開的相機實拍畫面。編修前版本存於[歷史紀錄](./歷史紀錄/第13課-編修前-20261111.md)。
 - 新增以 Thonny 操作的實測與截圖：Picamera2 單張影格擷取；不含預覽或 USB 相機。
+- 2026-11-11 晚間補 Thonny 操作：讀回影片程式另存為[範例程式](./範例程式/第13課-讀回影片.py)，在 RP5 桌面 Thonny 選 `opencv-course-env` 按 Run，讀回 142 張（30.01 FPS），附操作截圖。錄影本身仍以終端機 `rpicam-vid` 完成，不屬 Thonny 操作。
 
 - 原文以持續執行的 `libcamera-vid` 接著使用 `VideoCapture(0)`；本版採 Picamera2 單張擷取，避免阻塞並配合本機 CSI 相機。
 - 上述文字輸出是本次實機紀錄，其他版本或環境可能不同。
@@ -269,6 +276,6 @@ USB 攝影機的錄影方式不同，本機沒有 USB 攝影機，這部分尚�
 
 > 本課已在 Thonny 實測：Picamera2 單張影格擷取；不含預覽或 USB 相機。完整原文情境及其他舊案例仍須依下文標示重測。
 >
-> 2026-11-11 錄影一節：既有 Trixie、rpicam-apps v1.14.0，從另一台電腦以 SSH 執行於 `/home/pi/ba5077-validation-20261111/lesson13/`；影片 SHA-256 `c9221320…1a72`，未入庫。錄影時相機對著螢幕上靜止的測試畫面；`--codec libav` 錄 5 秒得 142 影格。表中的錯誤訊息是常見類型的描述，本次未逐一重現。待補：桌面終端機不加 `-n` 的預覽、播放器畫面、USB 攝影機（需額外硬體）。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+> 2026-11-11 錄影一節：既有 Trixie、rpicam-apps v1.14.0，從另一台電腦以 SSH 執行於 `/home/pi/ba5077-validation-20261111/lesson13/`；影片 SHA-256 `c9221320…1a72`，未入庫。錄影時相機對著螢幕上靜止的測試畫面；`--codec libav` 錄 5 秒得 142 影格。表中的錯誤訊息是常見類型的描述，本次未逐一重現。同日晚間把 `lesson13-test.mp4` 複製到學生路徑 `~/lesson13/`，經 SSH 通道連到 RP5 上僅聽本機的臨時 wayvnc，在 Thonny 開檔、選直譯器並按 Run，截圖以 `grim` 擷取整個 RP5 桌面。待補：桌面終端機不加 `-n` 的預覽、播放器畫面、USB 攝影機（需額外硬體）。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
 
 </details>
