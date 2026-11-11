@@ -2,7 +2,11 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222886426) · 更新日期：2026-10-29
 
-> 本課已在 Thonny 實測：載入 Haar 偵測器並檢查空白圖。完整原文情境及其他舊案例仍須依下文標示重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+人臉偵測先回答「臉可能在哪裡」。我們先比較沒有臉的圖片和練習素材，看看方框出現的位置是否合理。
+
+第一次準備環境的同學，可以先讀[課前學習說明](./學習前先讀我.md)；操作遇到紅字時，我們用[排錯故事](./程式卡住時怎麼辦.md)一起找原因。
+
+如果你使用 Trixie，我們先從[這一套系統的練習](#2026-11-10既有-trixie-的-thonny-haar-偵測)開始；前後的舊版例子可留到比較時閱讀。
 
 ## 學習目標
 
@@ -12,7 +16,7 @@
 
 需要 OpenCV 及本機 Haar XML，程式以全黑圖像測試。
 
-本教學程式使用合成資料，沒有把私人相機影像上傳公開 repo；請在自己的練習目錄操作。
+
 
 ## 程式與執行
 
@@ -58,7 +62,7 @@ faces on blank image 0
 
 應用可能涉及敏感生物特徵資料；任何真實資料使用都需確認授權、保存方式與公平性。
 
-進一步閱讀：[相關官方文件](https://docs.opencv.org/4.x/db/d28/tutorial_cascade_classifier.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
+延伸閱讀：[官方文件](https://docs.opencv.org/4.x/db/d28/tutorial_cascade_classifier.html)。
 
 ## 概念流程圖
 
@@ -71,7 +75,7 @@ flowchart LR
     A --> B --> C --> D
 ```
 
-此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
+
 
 ## Thonny 進階實測：相機拍攝 AI 生成的人臉與手部素材
 
@@ -130,7 +134,7 @@ saved: lesson22-camera-face.png
 
 本次以既有 Trixie 的 Thonny 選用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0），使用先前[相機拍攝並校正的 AI 生成素材](./圖檔/facehand-board.png)。素材是虛構人物，並非真人測試；原始全景未公開。這不是全新系統測試。
 
-1. 將素材下載為 `facehand-board.png`，放入自己的空練習資料夾；[本次範例](./範例程式/第22課-生成素材人臉偵測-trixie.py)的 `folder` 是當次暫存路徑，使用時要改成自己資料夾。輸出的 `face-result.png` 若已存在會被覆寫，先確認位置。
+1. 將素材下載為 `facehand-board.png`，放入自己的空練習資料夾；[本次範例](./範例程式/第22課-生成素材人臉偵測-trixie.py)現在會從程式所在資料夾讀圖，請把程式與圖片放在一起。輸出的 `face-result.png` 若已存在會被覆寫，先確認位置。
 2. 在 Thonny 選擇含 OpenCV 和 NumPy 的解譯器，輸入或開啟以下程式並按 F5。這次用 `cv2.data.haarcascades` 找到所選 OpenCV 所附 XML；不同安裝若沒有此目錄或模型，需使用可取得的相容 XML 並檢查 `cascade.empty()`。
 3. 確認黑圖及生成素材的候選數量，查看綠框；點選視窗按任意鍵關閉，未按鍵則等候 60 秒。
 
@@ -139,7 +143,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-folder = Path('/tmp/ba5077-lesson22-SKocIi')
+folder = Path(__file__).resolve().parent
 image = cv2.imread(str(folder / 'facehand-board.png'))
 if image is None:
     raise RuntimeError('Cannot read image; check path')
@@ -192,3 +196,14 @@ Window closed
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
 - 本輪新增相機拍攝 AI 生成臉部素材後的 Haar 偵測；原文的真人相機即時視窗尚未完整測試。
+
+<details>
+<summary>給教師：原有實測範圍與版本備註</summary>
+
+> 本課已在 Thonny 實測：載入 Haar 偵測器並檢查空白圖。完整原文情境及其他舊案例仍須依下文標示重測。[逐篇進度](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)
+
+</details>
+
+## 給教師：本次路徑修正
+
+2026-11-11 將下載範例的圖片位置由老師當時的 `/tmp` 資料夾改為程式所在資料夾。學生將圖片與程式放在一起即可找到輸入；原始實測輸出及截圖保留。這項路徑調整尚未在 RP5 重新執行。

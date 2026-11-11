@@ -2,7 +2,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-folder = Path('/tmp/ba5077-lesson22-SKocIi')
+folder = Path(__file__).resolve().parent
 image = cv2.imread(str(folder / 'facehand-board.png'))
 if image is None:
     raise RuntimeError('Cannot read image; check path')

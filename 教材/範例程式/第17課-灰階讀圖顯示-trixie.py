@@ -1,7 +1,7 @@
 from pathlib import Path
 import cv2
 
-folder = Path('/tmp/ba5077-lesson17-tPp3k0')
+folder = Path(__file__).resolve().parent
 image = cv2.imread(str(folder / 'objects-board.png'), cv2.IMREAD_GRAYSCALE)
 if image is None:
     raise RuntimeError('Cannot read image; check path')

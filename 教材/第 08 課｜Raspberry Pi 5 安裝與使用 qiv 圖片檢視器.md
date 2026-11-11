@@ -2,7 +2,7 @@
 
 [原始文章](https://liusming.pixnet.net/blog/posts/14222855730) · 更新日期：2026-10-29
 
-> 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)。
+拍完照片後，我們想親眼看看它。這一課用 qiv 打開圖片，順便認識圖片檔與圖片視窗有什麼不同。
 
 ## 學習目標
 
@@ -38,7 +38,7 @@ command -v qiv
 
 人工檢視輸入和輸出可協助判斷 AI 視覺程式出錯的位置，但不要將私人照片直接公開。
 
-進一步閱讀：[相關官方文件](https://www.raspberrypi.com/documentation/computers/remote-access.html)。下方的程式與輸出以標明的本機實測範圍為準；沒有測過的部分不代表已完成。
+延伸閱讀：[官方文件](https://www.raspberrypi.com/documentation/computers/remote-access.html)。
 
 ## 概念流程圖
 
@@ -51,7 +51,7 @@ flowchart LR
     A --> B --> C --> D
 ```
 
-此圖用於說明文章的概念或完整目標流程，**不是操作截圖，也不代表每個步驟都已實測**；本機實測範圍請看文章中的標示。
+
 
 ## 實作前：檔案、程式與顯示環境
 
@@ -84,3 +84,10 @@ qiv objects-board.png
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
 - 新增圖片顯示所需條件與排錯練習；qiv 安裝畫面仍待實測。
+
+<details>
+<summary>給教師：原有實測範圍與版本備註</summary>
+
+> 本篇為基礎系統或獨立工具教學；Python 課程改用 Thonny 的整體進度請見[逐篇狀態](./Thonny逐篇實測狀態.md) · [圖片與程式下載方式](./練習素材/素材下載與使用.md)。
+
+</details>
