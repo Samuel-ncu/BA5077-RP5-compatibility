@@ -78,7 +78,7 @@ flowchart LR
 
 ## 2026-11-10：既有 Trixie 的生成素材 LBPH 流程
 
-本次使用現有 Trixie、Thonny 選用 `/home/pi/ba5077-contrib-trixie-20261109/bin/python3`、Python 3.13.5 和 OpenCV 4.12.0。此獨立環境支援 `cv2.face`；第 14 課的一般 OpenCV 環境不應假設具有相同擴充功能。此環境已存在，本次沒有驗證全新系統安裝。
+本次使用現有 Trixie、Thonny 選用 `/home/pi/ba5077-contrib-trixie-20261109/bin/python3`、Python 3.13.5 和 OpenCV 4.12.0。此獨立環境支援 `cv2.face`（安裝的是 `opencv-contrib-python`，建立方式見 [Thonny 環境指南：第 25～27 課擴充環境](./Thonny環境與套件安裝.md#第-2527-課在-thonny-建立-opencv-擴充環境)）；第 14 課的一般 OpenCV 環境不應假設具有相同擴充功能。此環境已存在，本次沒有驗證全新系統安裝。
 
 教材素材為[生成的人臉與手部圖片](./圖檔/facehand-board.png)：先將生成圖顯示於螢幕，再由 RP5 相機拍攝、裁切並校正，不是真人影像。下列流程先以 Haar 偵測這張圖的人臉，再用該區域訓練 LBPH，最後以**同一張區域**預測。這只用於驗證程式路徑，不是獨立測試、真人識別或準確率評估；只訓練一個標籤也不能證明能辨別陌生人。
 

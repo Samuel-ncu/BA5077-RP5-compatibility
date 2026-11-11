@@ -6,13 +6,62 @@
 
 第一次準備環境的同學，可以先讀[課前學習說明](./學習前先讀我.md)；操作遇到紅字時，我們用[排錯故事](./程式卡住時怎麼辦.md)一起找原因。
 
-開始前，請和老師一起確認這台 RP5 已有可使用舊版 MediaPipe `mp.solutions` 與 CVZone 的環境。下面的練習沿用當時 Python 3.11 的工具；Trixie／Python 3.13 的從零安裝路線還沒驗證，先不要把「安裝最新版」當成可直接開始的保證。
+## 先從這裡開始：在目前的 Trixie 準備 MediaPipe 與 CVZone（2026-11-12 實測）
+
+**為什麼要先讀這一節：**本篇後面的程式與輸出，是在先前 Bookworm（Python 3.11、MediaPipe 0.10.9）的 `/home/pi/myenv` 完成的。目前這台 RP5 是 Debian 13 Trixie、Python 3.13，`/home/pi/myenv` 已不存在；而 Python 3.13 的 ARM64 只能安裝 **MediaPipe 1.x**，它**已經移除舊的 `mp.solutions`**。所以後面舊程式在現在的系統會停在：
+
+```text
+AttributeError: module 'mediapipe' has no attribute 'solutions'
+```
+
+這不是你打錯字，而是版本換代。我們改用 **CVZone 2.0**：它內部改用 MediaPipe 新的 Tasks API，第一次執行會自動下載模型檔。
+
+### 第一步：在 Thonny 建立環境
+
+1. 在 RP5 桌面開 Thonny，右下角先選系統的 Python 3（`/usr/bin/python3`）。
+2. 開啟[環境建立程式](./範例程式/Thonny建立Trixie-MediaPipe環境.py)，把 `target` 改成你主目錄下**還不存在**的資料夾名稱，按綠色執行鈕。它會建立讀得到系統 Picamera2 的虛擬環境，再安裝 `mediapipe==1.2.2` 和 `cvzone==2.0.0`（需要網路，可能要數分鐘）。
+3. 看到 `Environment ready:` 才算完成。本次最後兩行實際輸出：
+
+   ```text
+   Picamera2 OK; OpenCV 5.0.0 MediaPipe 1.2.2 solutions: False
+   Environment ready: /home/pi/ba5077-mediapipe-trixie-20261112/bin/python3
+   ```
+
+   `solutions: False` 就是上面說的「舊 API 已移除」，是預期結果。
+4. 到「工具 → 選項 → 直譯器」選新環境的 `bin/python3`，確認 Thonny 右下角顯示這個路徑。
+
+### 第二步：找出圖片中的手和臉
+
+1. 建立新的練習資料夾，放入 [facehand-board.png](./圖檔/facehand-board.png) 和[新版共用程式](./範例程式/補充1-2-4-5-6-Trixie-CVZone.py)。圖片是 AI 生成的虛構人物，先顯示在螢幕上再由 RP5 相機拍攝並校正，不是真人照片。
+2. 在 Thonny 開啟程式並按綠色執行鈕。第一次執行會把 `hand_landmarker.task`（7,819,105 bytes）和 `face_landmarker.task`（3,758,596 bytes）下載到**目前工作資料夾**，需要網路。
+3. 本次實際輸出（2026-11-12，SSH 以同一直譯器執行）：
+
+   ```text
+   MediaPipe: 1.2.2 CVZone: 2.0.0
+   hands: 1 hand points: [21]
+   faces: 1 face points: [478]
+   finger states: [True, True, True, True]
+   gesture: paper
+   saved: supplement-cvzone-result.png
+   ```
+
+   ![CVZone 2.0 在 Trixie 標出的臉部特徵點與手部外框](./圖檔/supplement-cvzone-trixie-20261112.png)
+
+   *圖：程式輸出圖，不是操作截圖。綠點是臉部特徵點，洋紅框是手的範圍。*
+
+**讀懂結果：**手部仍是 21 點；臉部變成 **478 點**，因為新版 Face Landmarker 模型多了左右眼虹膜各 5 點，舊版 Face Mesh 是 468 點。`paper` 由程式規則判斷四指指尖比第二關節高；它只是這一張圖的結果，不代表真人或其他角度都正確。
+
+**卡住時：**`No module named 'cvzone'` 表示右下角選錯直譯器；下載模型失敗時檢查網路，刪掉不完整的 `.task` 檔再執行；程式結束後若看到 `Exception ignored ... __del__` 的長訊息，請確認用的是本頁最新版程式（最後有關閉模型的兩行）。
+
+### 本篇特別注意：遊戲還缺哪些手勢
+
+新版程式同樣只判出 `paper`（布）；剪刀、石頭與勝負流程需要真人手勢，尚未測試。判斷規則寫在共用程式的 `up` 與 `gesture` 段落，練習時可先用自己的手在相機前試，再記錄判斷錯誤的情況。
 
 ## 學習目標與背景
 
 本範例比較食指、中指、無名指和小指的指尖與關節高度。影像 y 軸向下增加，四根手指的指尖都較高時簡化判為 paper（布）；拇指不參與。手掌旋轉或遮擋可能使規則失效。
 
-## 準備素材和套件
+## 先前 Bookworm 的做法（保留比較；目前系統不能照做）
 
 此次在 RP5 的既有 `/home/pi/myenv/bin/python3` 執行，MediaPipe 0.10.9、OpenCV 和 CVZone 均可在此範例匯入。這個環境混合既有套件；從全新虛擬環境透過 Thonny 安裝 MediaPipe 和 CVZone 的完整流程尚未實測。若缺少 CVZone，共用範例會在匯入時停止；不要把匯入成功當作雙手功能驗證。
 
@@ -69,7 +118,7 @@ if not cv2.imwrite('supplement-mediapipe-result.png', image):
 print('saved: supplement-mediapipe-result.png')
 ```
 
-## 本次 Thonny 實際輸出
+## 先前 Bookworm 的 Thonny 實際輸出
 
 ```text
 MediaPipe: 0.10.9
@@ -96,7 +145,7 @@ saved: supplement-mediapipe-result.png
 
 ## 與原文章的差異
 
-- {delta}
+- 2026-11-12：新增 Trixie 的 CVZone 2.0 路線，新版同樣只判出 paper；剪刀、石頭與遊戲流程仍缺。修正殘留的範本字串。
 - 新增 Thonny 實測程式、輸出、截圖及相機拍攝生成圖的下載方式；全新環境安裝仍待驗證。
 
 <details>

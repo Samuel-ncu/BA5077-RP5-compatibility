@@ -72,12 +72,16 @@ Remote shell: allowed (0 sessions active)
 
 遠端終端機傳送文字指令，不提供整個桌面；X11 轉發讓支援的單一圖形程式視窗在另一台電腦顯示；Connect Screen sharing 分享整個遠端桌面。官方文件指出 Connect 桌面分享需要 Wayland，而遠端終端機是另一種連線方式。
 
-## 操作方式
+## 操作方式（MobaXterm 步驟尚未在本教材實測）
 
-1. 在 Windows 開啟 MobaXterm，建立指向 RP5 的 SSH 連線。
-2. 在連線設定中啟用 X11 forwarding，確認 Windows 端的 X server 正在運行。
-3. 登入後，使用支援 X11 的測試程式確認視窗是否出現在 Windows。若不能顯示，先確認 RP5 的 SSH 伺服器設定及兩端防火牆，再確認程式是否支援 X11 或 XWayland。
-4. 不需要圖形介面時，可以直接使用 SSH 終端機；若需要整個桌面，參考第 10 課的遠端桌面。
+> 下面第 1～4 步依 MobaXterm 官方說明整理，**本教材還沒有在 Windows 上實際完成**；畫面文字可能隨版本不同。第 0 步是 2026-11-12 在 RP5 端的實際檢查。
+
+0. **先確認 RP5 允許 X11 轉發（已實測）**：在 RP5 終端機輸入 `grep -i '^X11Forwarding' /etc/ssh/sshd_config`，本機輸出 `X11Forwarding yes`；`command -v xauth` 輸出 `/usr/bin/xauth`。2026-11-12 另從 Windows 以 OpenSSH 的 `ssh -Y` 連線，RP5 端的 `echo $DISPLAY` 顯示 `localhost:10.0`，表示 SSH 伺服器已替這次連線建立轉發用的顯示位置。因為這台 Windows 沒有 X server，**視窗本身沒有顯示出來**，這一步只證明 RP5 端設定正確。
+1. **在 Windows 安裝 MobaXterm**：從 [MobaXterm 官方網站](https://mobaxterm.mobatek.net/)下載 Home Edition（Installer 或 Portable 版皆可），只從官方網站取得。學校電腦不能安裝時請找老師。
+2. **建立 SSH 連線**：開啟 MobaXterm，按左上角 **Session → SSH**。在 **Remote host** 填 RP5 的 IP（在 RP5 用 `hostname -I` 查詢，見第 10 課），勾選 **Specify username** 並填 RP5 帳號（本教材是 `pi`）。在 **Advanced SSH settings** 分頁確認 **X11-Forwarding** 已勾選，按 OK。
+3. **登入並確認 X server**：第一次連線會詢問是否信任主機金鑰，確認是自己的 RP5 再接受；輸入 RP5 密碼。MobaXterm 右上角的 **X server** 圖示應顯示為啟動狀態。在 MobaXterm 的終端機輸入 `echo $DISPLAY`，應看到類似 `localhost:10.0` 的值；空白代表轉發沒有建立。
+4. **開一個圖形程式測試**：輸入 `qiv ~/Pictures/某張圖片.png &`（qiv 在第 08 課安裝），或輸入 `thonny &`。視窗應出現在 Windows 桌面上，但程式其實在 RP5 執行；關閉視窗即結束。若出現 `cannot open display`，回到第 2、3 步檢查 X11-Forwarding 與 X server。
+5. 不需要圖形介面時，可以直接使用 SSH 終端機；若需要整個桌面，參考第 10 課的遠端桌面。
 
 ## 背景與核心概念
 
@@ -128,6 +132,7 @@ flowchart LR
 - 新增初學者背景、概念、思考練習及後續應用，實測範圍仍以本文標示為準。
 - 加入教學流程示意；圖中的完整目標流程不代表已逐步實測。
 - 新增轉發原理和排查順序；仍未把本機工具存在誤認為端到端成功。
+- 2026-11-12 全面盤點：原「操作方式」沒有 MobaXterm 取得方式、連線設定位置與具體測試程式，學生無法照做；補上具體步驟（標示未實測）及 RP5 端 `X11Forwarding yes`、`ssh -Y` 取得 `DISPLAY=localhost:10.0` 的實際檢查。編修前版本存於[歷史紀錄](./歷史紀錄/第06課-全面盤點前-20261112.md)。
 
 <details>
 <summary>給教師：原有實測範圍與版本備註</summary>

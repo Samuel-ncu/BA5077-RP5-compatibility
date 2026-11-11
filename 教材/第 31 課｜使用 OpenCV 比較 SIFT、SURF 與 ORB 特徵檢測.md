@@ -87,7 +87,7 @@ print('SURF created', bool(surf))
 print('ORB created', bool(orb))
 ```
 
-在 Thonny 開啟 `第31課.py` 並按綠色執行鈕；此舊範例尚未在上述新環境重測。
+在 Thonny 開啟 `第31課.py` 並按綠色執行鈕；此舊範例直接建立 SURF，**在目前 Trixie 的擴充環境會因 SURF 不可用而在第 4 行停止**（2026-11-12 以 `/home/pi/ba5077-camera-contrib-trixie-20261110` 實際執行，出現 `cv2.error: ... This algorithm is patented and is excluded in this configuration`），請改用上方共同程式；只有啟用 nonfree 的舊建置才能跑完。
 
 ## 先前終端機實測輸出（非本次新環境）
 

@@ -147,7 +147,7 @@ PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
 ## 檢查與排除
 
 - 如果找不到 `/proc/device-tree/model`，先確認是否真的在 Raspberry Pi 上執行，而不是在 Windows PowerShell。
-- `Python 3.11.2` 是本機結果；其他系統版本可能顯示不同數字。
+- `Python 3.11.2` 是先前 Bookworm 的結果，目前 Trixie 顯示 `Python 3.13.5`；其他系統版本可能顯示不同數字。
 - 系統可用記憶體略低於標示容量屬常見情況；記憶體不是 microSD 儲存容量。
 
 ## 學生練習與後續應用

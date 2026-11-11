@@ -6,7 +6,7 @@
 
 ## 學習目標
 
-了解如何使用 Raspberry Pi Imager，為 Raspberry Pi 5 準備 Raspberry Pi OS。這台 RP5 已有可用的 Bookworm 系統；**本次沒有重新燒錄或驗證新安裝流程**。
+了解如何使用 Raspberry Pi Imager，為 Raspberry Pi 5 準備 Raspberry Pi OS。這台 RP5 目前使用既有的 Debian 13 Trixie（先前部分課程在 Bookworm 實測）；**本次沒有重新燒錄或驗證新安裝流程**。
 
 ## 背景與原理
 
@@ -38,9 +38,9 @@ flowchart LR
 
 ## 版本選擇
 
-目前這台機器使用 Bookworm，已用於既有的相機、OpenCV 和部分 AI 測試。若日後使用官方 AI HAT+ 2，請先確認 [官方 AI 軟體文件](https://www.raspberrypi.com/documentation/computers/ai.html)對 Raspberry Pi OS 版本的要求；本次沒有在現有卡上升級或測試 HAT。
+目前這台機器使用既有的 Trixie（2026-11-12 以 `/etc/os-release` 核對為 Debian GNU/Linux 13）；較早的相機、OpenCV 和部分 AI 測試則在 Bookworm 完成，兩者不能混用。若日後使用官方 AI HAT+ 2，請先確認 [官方 AI 軟體文件](https://www.raspberrypi.com/documentation/computers/ai.html)對 Raspberry Pi OS 版本的要求；本次沒有在現有卡上升級或測試 HAT。
 
-Raspberry Pi OS 有不同版本及桌面／Lite 選擇。官方文件列出的版本可能隨時間改變；不要把此教材已測試的 Bookworm 環境誤認為官方當前唯一版本。[Raspberry Pi OS 官方文件](https://www.raspberrypi.com/documentation/computers/os.html)提供最新版本資訊。
+Raspberry Pi OS 有不同版本及桌面／Lite 選擇。官方文件列出的版本可能隨時間改變；不要把此教材測試過的 Bookworm 或 Trixie 誤認為官方當前唯一版本。[Raspberry Pi OS 官方文件](https://www.raspberrypi.com/documentation/computers/os.html)提供最新版本資訊。
 
 ## 學生練習與後續應用
 

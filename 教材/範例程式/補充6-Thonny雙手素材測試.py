@@ -33,3 +33,4 @@ if len(hands) == 2:
     print('saved:', output)
 else:
     print('distance unavailable: need exactly two hands')
+detector.detector.close()  # CVZone 2.0：關閉 MediaPipe 模型，避免結束時的錯誤訊息

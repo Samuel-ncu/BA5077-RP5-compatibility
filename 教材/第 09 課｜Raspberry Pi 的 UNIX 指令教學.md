@@ -18,7 +18,7 @@ python3 --version
 command -v apt
 ```
 
-本機實際輸出：
+先前 Bookworm 系統的實際輸出（目前 Trixie 的 `python3 --version` 為 `Python 3.13.5`）：
 
 ```text
 aarch64

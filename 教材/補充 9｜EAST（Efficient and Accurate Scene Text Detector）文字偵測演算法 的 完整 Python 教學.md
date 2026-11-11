@@ -14,6 +14,26 @@
 
 需要 OpenCV、NumPy、EAST frozen graph 及 east_helpers.py。
 
+### 先看這裡：在目前的 Trixie 準備文字偵測與 OCR（2026-11-12 盤點補寫）
+
+這一篇下面的實測大多在**先前的 Bookworm 系統**完成，文中出現的 `/home/pi/myenv`、`/home/pi/ba5077-tflite-camera-20261029` 在目前的 Trixie 上已不存在，請不要照抄路徑。我們把準備工作分成兩件事：
+
+1. **EAST 找文字框只需要 OpenCV。**在 Thonny 的「工具 → 選項 → 直譯器」選第 14 課建立的 OpenCV 環境即可做靜態圖片的練習；要用相機時，改選同時能匯入 `cv2` 與 `picamera2` 的環境（建立方式見 [Thonny 環境指南的相機環境](./Thonny環境與套件安裝.md#既有-trixie同時使用-picamera2-與-opencv-擴充功能2026-11-10)）。
+2. **讀出文字內容（OCR）需要 Tesseract。**Tesseract 是系統程式，不是 Python 套件，要在 RP5 的**終端機**用 APT 安裝，需要輸入自己帳號的密碼：
+
+   ```bash
+   sudo apt update
+   sudo apt install -y tesseract-ocr tesseract-ocr-eng
+   tesseract --version
+   tesseract --list-langs
+   ```
+
+   `--list-langs` 應列出 `eng`。補充 11 的繁體中文練習還要加裝 `tesseract-ocr-chi-tra`，裝好後清單會多出 `chi_tra`。補充 11 的 `pytesseract` 是 Python 套件，請在 Thonny 選好環境後用「工具 → 管理套件」搜尋安裝。
+
+**2026-11-12 核對結果：**目前這台 Trixie **還沒有安裝 Tesseract**（`command -v tesseract` 沒有輸出；`apt-cache policy` 顯示 `tesseract-ocr` 候選版本 5.5.0-1+b1，`tesseract-ocr-eng`、`tesseract-ocr-chi-tra` 候選 1:4.1.0-2）。安裝需要帳號持有人輸入 sudo 密碼，本次沒有代為安裝，所以**下方所有 OCR 輸出都是先前 Bookworm 的結果，Trixie 的 OCR 尚未重測**。EAST 找框的部分在 Trixie 的結果見本節最後。
+
+**EAST 找框在 Trixie 的實測（2026-11-12）：**用第 14 課的 `/home/pi/opencv-course-env/bin/python3`（OpenCV 4.12.0），依下方步驟 1～4 的同一組程式重新下載模型並驗證（SSH 以同一直譯器執行）。下載 `bytes: 96662756`，SHA-256 與下方 Bookworm 紀錄相同；`text-board.png` 得到 `EAST boxes: 10`；全黑、全白空白圖都是 `0 boxes`，與先前結果一致。
+
 ### 在 Thonny 下載並檢查 EAST 模型
 
 模型是已訓練好的參數檔，EAST 用它尋找文字位置；辨認文字內容則需另外使用 OCR。模型約 96.7 MB，需要網路及足夠空間。先建立一個新的練習資料夾，下載[模型下載程式](./範例程式/補充9-Thonny下載EAST模型.py)、[模型驗證程式](./範例程式/補充9-Thonny驗證EAST模型.py)、[文字框處理程式 east_helpers.py](./範例程式/east_helpers.py)及[相機文字練習照片](./圖檔/text-board.png)放入同一資料夾。照片是相機拍攝顯示的練習文字後，經裁切及校正的素材；下載方式見[素材說明](./練習素材/素材下載與使用.md)。
@@ -249,6 +269,7 @@ saved: east-box-ocr-result.png
 
 ## 與原文章的差異
 
+- 2026-11-12 全面盤點：目前 Trixie 沒有 Tesseract、文中環境路徑屬已不存在的 Bookworm 環境；新增 Trixie 準備段落（APT 安裝指令、環境選擇），EAST 找框在 Trixie 重測一致；Tesseract 需 sudo 未代裝，OCR 未在 Trixie 重測。編修前版本存於歷史紀錄。
 - 新增 Thonny 單張相機校正照片的 EAST 框選與整圖英文 OCR 實測；已另測模型下載與載入；另以相機照片測試逐框英文 OCR；即時相機整合仍待測。
 
 - 新增對相機拍攝的英文測試板執行 EAST 及整圖 Tesseract；與原文即時流程的差異仍見下方。
