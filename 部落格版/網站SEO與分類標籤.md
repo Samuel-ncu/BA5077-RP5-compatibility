@@ -12,7 +12,9 @@ digithouse.net 上部落格版文章的 SEO、分類（Categories）與標籤（
 - SEO 圖片：從該篇已上傳的圖中挑最有代表性的一張；沒有合適的圖就留空。
 - 已發布的文章改 SEO 時，先存成草稿版本，再由使用者按「發佈」。
 
-## 各篇設定（2026-11-12 寫入草稿版本，待按「發佈」）
+## 各篇設定
+
+00～07 於 2026-11-12 寫入草稿版本；08～15 於 2026-11-12 建立草稿時一併填入。
 
 | 篇 | slug | 主題標籤 | SEO 標題 | SEO 描述 | SEO 圖片 |
 | --- | --- | --- | --- | --- | --- |
@@ -24,3 +26,11 @@ digithouse.net 上部落格版文章的 SEO、分類（Categories）與標籤（
 | 05 | `ba5077-raspberry-pi-ssh-apache` | Linux、Python | Raspberry Pi SSH 與 Apache 網頁伺服器入門教學 | DigitHouse | 確認 Raspberry Pi 的 SSH 服務，用 Python 理解 HTTP 請求與回應，再用 APT 安裝 Apache 2.4，讓另一台電腦打開 Pi 的網頁，附實測輸出與排錯表。 | `lesson04-trixie-cross-http-20261110.jpg` |
 | 06 | `ba5077-raspberry-pi-wayvnc-remote-desktop` | — | Raspberry Pi 5 遠端桌面：wayvnc 與 VNC Viewer 設定 | DigitHouse | 在 Raspberry Pi 5（Trixie）確認 wayvnc 服務，用 Windows 的 VNC Viewer 遠端操作桌面；另介紹不需要 IP 的 Raspberry Pi Connect 桌面分享，附排錯表。 | `lesson10-connect-screen-20261110.jpg` |
 | 07 | `ba5077-mobaxterm-x11-forwarding` | Linux | MobaXterm X11 轉發：把 Raspberry Pi 視窗顯示在 Windows | DigitHouse | 用 MobaXterm 的 X11 轉發，把 Raspberry Pi 上的程式視窗顯示在 Windows；說明 SSH、X11 與 VNC 的差別，並示範 Raspberry Pi Connect 遠端終端機。 | `lesson06-trixie-connect-status.png` |
+| 08 | `ba5077-linux-terminal-commands` | Linux | Raspberry Pi 終端機入門：常用 UNIX 指令實作 | DigitHouse | 在 Raspberry Pi 的練習資料夾裡實際操作 mkdir、mv、chmod、grep、tar、df 等 UNIX 指令，看懂 sudo、apt、systemctl，並學會哪些指令會覆寫或刪除資料。 | `lesson09-trixie-move-permission-20261110.jpg` |
+| 09 | `ba5077-nano-vi-text-editor` | Linux | nano 與 vi 編輯器入門：在終端機修改文字檔 | DigitHouse | 在 Raspberry Pi 終端機用 nano 與 vi 各寫一行文字、存檔、離開並讀回確認，搞懂 vi 的命令模式與插入模式，附兩個編輯器的操作比較表。 | `lesson11-output.png` |
+| 10 | `ba5077-qiv-image-viewer-apt` | Linux | Raspberry Pi 安裝 qiv：用 apt 安裝與終端機看圖 | DigitHouse | 在 Raspberry Pi OS Trixie 用 sudo apt install 從零安裝 qiv 3.0.1，看懂安裝訊息、用三種方法確認，再從桌面終端機一行指令開啟圖片，附排錯表。 | `lesson08-qiv-301-window-20261111.png` |
+| 11 | `ba5077-thonny-opencv-virtual-environment` | Python、OpenCV | Raspberry Pi 5 安裝 OpenCV：Thonny 虛擬環境教學 | DigitHouse | 在 Raspberry Pi 5（Trixie、Python 3.13）用 Thonny 建立虛擬環境，以固定版本安裝 OpenCV 4.12，排除 pkg_resources 錯誤，並畫圖、存檔、開視窗。 | `lesson14-trixie-demo.png` |
+| 12 | `ba5077-first-python-thonny-opencv` | Python、OpenCV | Thonny 入門：第一支 Python 程式與 OpenCV 影像陣列 | DigitHouse | 認識 Thonny 的編輯區、Shell 與直譯器，用 sys.executable 找出正在執行的 Python，再用 OpenCV 建立一張圖，讀懂影像的形狀與 BGR 顏色順序。 | `lesson12-trixie-thonny-20261110.jpg` |
+| 13 | `ba5077-raspberry-pi-camera-rpicam-hello` | Camera、Libcamera | Raspberry Pi 5 相機模組連接與 rpicam-hello 偵測 | DigitHouse | Raspberry Pi 5 相機排線要注意什麼？用 rpicam-hello --list-cameras 確認系統偵測到相機，再用 Picamera2 取得一張影格，並說明 libcamera 指令的改名。 | `lesson18-camera-board.png` |
+| 14 | `ba5077-picamera2-capture-photo` | Camera、Picamera2、Python | Picamera2 拍照教學：用 Python 拍照並存成 JPEG | DigitHouse | 用不到十五行的 Picamera2 程式在 Raspberry Pi 拍照並存成 JPEG，搞懂解析度、釋放相機與工作目錄，並用 os.getcwd() 找到照片存放的位置。 | `lesson18-camera-board.png` |
+| 15 | `ba5077-picamera2-opencv-frame` | Picamera2、OpenCV、Python | Picamera2 加 OpenCV：把相機影格轉成灰階陣列 | DigitHouse | 建立同時能用 Picamera2 與 OpenCV 的 Thonny 環境，用 capture_array 取得 Raspberry Pi 相機影格、cvtColor 轉成灰階，並讀懂影像陣列的形狀。 | `thonny2-camera-env-test.png` |
