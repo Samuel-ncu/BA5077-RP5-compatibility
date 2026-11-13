@@ -14,7 +14,7 @@ digithouse.net 上部落格版文章的 SEO、分類（Categories）與標籤（
 
 ## 各篇設定
 
-00～07 於 2026-11-12 寫入草稿版本；08～15 於 2026-11-12 建立草稿時一併填入。
+00～07 於 2026-11-12 寫入草稿版本；08～15 於 2026-11-12 建立草稿時一併填入。16～22 於 2026-11-13 寫好設定，尚未建立網站草稿。
 
 | 篇 | slug | 主題標籤 | SEO 標題 | SEO 描述 | SEO 圖片 |
 | --- | --- | --- | --- | --- | --- |
@@ -34,3 +34,10 @@ digithouse.net 上部落格版文章的 SEO、分類（Categories）與標籤（
 | 13 | `ba5077-raspberry-pi-camera-rpicam-hello` | Camera、Libcamera | Raspberry Pi 5 相機模組連接與 rpicam-hello 偵測 | DigitHouse | Raspberry Pi 5 相機排線要注意什麼？用 rpicam-hello --list-cameras 確認系統偵測到相機，再用 Picamera2 取得一張影格，並說明 libcamera 指令的改名。 | `lesson18-camera-board.png` |
 | 14 | `ba5077-picamera2-capture-photo` | Camera、Picamera2、Python | Picamera2 拍照教學：用 Python 拍照並存成 JPEG | DigitHouse | 用不到十五行的 Picamera2 程式在 Raspberry Pi 拍照並存成 JPEG，搞懂解析度、釋放相機與工作目錄，並用 os.getcwd() 找到照片存放的位置。 | `lesson18-camera-board.png` |
 | 15 | `ba5077-picamera2-opencv-frame` | Picamera2、OpenCV、Python | Picamera2 加 OpenCV：把相機影格轉成灰階陣列 | DigitHouse | 建立同時能用 Picamera2 與 OpenCV 的 Thonny 環境，用 capture_array 取得 Raspberry Pi 相機影格、cvtColor 轉成灰階，並讀懂影像陣列的形狀。 | `thonny2-camera-env-test.png` |
+| 16 | `ba5077-rpicam-vid-picamera2-capture` | Camera、Libcamera、Picamera2、OpenCV | Raspberry Pi 5 相機錄影：rpicam-vid 與 Picamera2 兩種取像 | DigitHouse | 在 Raspberry Pi 5 用 rpicam-vid 錄 5 秒影片、以 ffprobe 與 OpenCV 檢查 142 張影格，說明 CSI 相機為何不能用 VideoCapture(0)，並用 Picamera2 開限時預覽。 | `lesson13-thonny-readback-20261111.png` |
+| 17 | `ba5077-opencv-live-preview-recording` | Camera、Picamera2、OpenCV、Python | Picamera2 即時預覽與錄影：OpenCV VideoWriter 教學 | DigitHouse | 一支 Python 程式同時開相機預覽、做灰階與邊緣處理、用 VideoWriter 錄成 MJPG 影片再讀回；在 Raspberry Pi 5 實測 20 秒 202 張、每秒 10.1 張，附排錯表。 | `lesson16-thonny-preview-20261111.png` |
+| 18 | `ba5077-opencv-grayscale-image` | OpenCV、Python | OpenCV 讀取灰階圖片：imread 與 IMREAD_GRAYSCALE 入門 | DigitHouse | 用 OpenCV 的 imread 把圖片讀成灰階、存檔並開視窗顯示，讓程式到自己所在的資料夾找圖，讀懂灰階影像只有高與寬的形狀，並比較彩色與灰階留下了什麼。 | `lesson17-trixie-thonny-window-20261110.jpg` |
+| 19 | `ba5077-opencv-draw-shapes` | OpenCV、Python | OpenCV 繪圖教學：直線、矩形、圓、橢圓與多邊形 | DigitHouse | 在 OpenCV 畫布上畫直線、矩形、圓、橢圓與多邊形，搞懂左上角原點、x 向右 y 向下的座標與 BGR 顏色順序，並在 Raspberry Pi 的 Thonny 存檔、開視窗。 | `lesson19-thonny-result.png` |
+| 20 | `ba5077-opencv-fonts-text` | OpenCV、Python | OpenCV putText 教學：八種 Hershey 字型比較 | DigitHouse | 用 OpenCV 的 putText 把同一句英文以八種 Hershey 字型寫上畫布，看懂基準線座標、縮放與線寬，解決視窗超出畫面的問題，並說明為什麼不要假設它能寫中文。 | `lesson20-thonny-result.png` |
+| 21 | `ba5077-opencv-shapes-text-practice` | OpenCV、Python | OpenCV 圖形加文字：矩形、圓與 putText 綜合練習 | DigitHouse | 在同一張 OpenCV 畫布上畫矩形、圓形並寫上文字，理解繪製先後順序與文字對比，並在 Raspberry Pi 的 Thonny 存檔、開視窗確認結果，附練習題。 | `lesson21-drawing.png` |
+| 22 | `ba5077-opencv-roi` | Camera、Picamera2、OpenCV、Python | OpenCV ROI 教學：用 NumPy 切片處理即時相機畫面 | DigitHouse | 用 NumPy 切片取出影像的感興趣區域（ROI），搞懂先 y 後 x、上界不含與 copy 的差別，再把固定 ROI 放進 Raspberry Pi 相機的即時畫面，並說明固定座標的缺點。 | `lesson24-trixie-live-roi-20261110.png` |
