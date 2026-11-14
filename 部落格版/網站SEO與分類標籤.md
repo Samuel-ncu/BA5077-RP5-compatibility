@@ -14,7 +14,7 @@ digithouse.net 上部落格版文章的 SEO、分類（Categories）與標籤（
 
 ## 各篇設定
 
-00～07 於 2026-11-12 寫入草稿版本；08～15 於 2026-11-12 建立草稿時一併填入。16～22 於 2026-11-14 建立草稿時一併填入。
+00～07 於 2026-11-12 寫入草稿版本；08～15 於 2026-11-12 建立草稿時一併填入。16～22 於 2026-11-14 建立草稿時一併填入。23～28 於 2026-11-14 寫好設定，尚未建立網站草稿。
 
 | 篇 | slug | 主題標籤 | SEO 標題 | SEO 描述 | SEO 圖片 |
 | --- | --- | --- | --- | --- | --- |
@@ -41,3 +41,9 @@ digithouse.net 上部落格版文章的 SEO、分類（Categories）與標籤（
 | 20 | `ba5077-opencv-fonts-text` | OpenCV、Python | OpenCV putText 教學：八種 Hershey 字型比較 | DigitHouse | 用 OpenCV 的 putText 把同一句英文以八種 Hershey 字型寫上畫布，看懂基準線座標、縮放與線寬，解決視窗超出畫面的問題，並說明為什麼不要假設它能寫中文。 | `lesson20-thonny-result.png` |
 | 21 | `ba5077-opencv-shapes-text-practice` | OpenCV、Python | OpenCV 圖形加文字：矩形、圓與 putText 綜合練習 | DigitHouse | 在同一張 OpenCV 畫布上畫矩形、圓形並寫上文字，理解繪製先後順序與文字對比，並在 Raspberry Pi 的 Thonny 存檔、開視窗確認結果，附練習題。 | `lesson21-drawing.png` |
 | 22 | `ba5077-opencv-roi` | Camera、Picamera2、OpenCV、Python | OpenCV ROI 教學：用 NumPy 切片處理即時相機畫面 | DigitHouse | 用 NumPy 切片取出影像的感興趣區域（ROI），搞懂先 y 後 x、上界不含與 copy 的差別，再把固定 ROI 放進 Raspberry Pi 相機的即時畫面，並說明固定座標的缺點。 | `lesson24-trixie-live-roi-20261110.png` |
+| 23 | `ba5077-opencv-contour-detection` | OpenCV、Python | OpenCV 輪廓偵測教學：findContours 找出物體外框 | DigitHouse | 用 HSV 顏色遮罩把物體和背景分開，再用 OpenCV 的 findContours 找外框、算面積並依位置編號，說明面積門檻與相機照片透視校正的用法，附 Raspberry Pi 實測結果圖。 | `lesson29-trixie-public-contours-20261110.png` |
+| 24 | `ba5077-opencv-polygon-approximation` | OpenCV、Python | OpenCV approxPolyDP 教學：把輪廓簡化成多邊形 | DigitHouse | 用 OpenCV 的 approxPolyDP 以周長 2% 的誤差把輪廓簡化成多邊形，從頂點數分辨圓形、矩形與三角形，並說明為什麼圓形會得到 8 個頂點，附相機拍攝圖形的處理結果。 | `lesson34-camera-polygons.png` |
+| 25 | `ba5077-opencv-convex-hull-defects` | OpenCV、Python | OpenCV 凸包與凹缺點教學：convexHull 與 convexityDefects | DigitHouse | 用橡皮筋的比喻理解凸包，以 OpenCV 的 convexHull 與 convexityDefects 找出輪廓往內凹最深的位置，把深度換算成像素並用門檻過濾，附合成圖形與相機圖形的結果。 | `lesson35-camera-hull.png` |
+| 26 | `ba5077-opencv-hough-circles` | OpenCV、Python | OpenCV 霍夫圓偵測教學：HoughCircles 參數怎麼調 | DigitHouse | 用 OpenCV 的 HoughCircles 在相機拍攝的校正圖上找出圓心與半徑，逐一說明 dp、minDist、param1、param2 與半徑範圍的作用，以及沒找到圓時要處理的 None。 | `shapes-circles.png` |
+| 27 | `ba5077-opencv-hsv-color-tracking` | Camera、Picamera2、OpenCV、Python | Picamera2 顏色追蹤教學：OpenCV HSV 紅色偵測與框選 | DigitHouse | 用 Picamera2 連續取像，把影格轉成 HSV、以兩段紅色範圍做遮罩，框出最大的紅色區塊並畫出移動軌跡；Raspberry Pi 5 實測 20 秒 1606 張影格全部偵測到，附排錯表。 | `lesson28-thonny-camera-tracking-20261111.png` |
+| 28 | `ba5077-opencv-frame-difference-motion` | OpenCV、Python | OpenCV 影格差分教學：absdiff 找出畫面中的移動 | DigitHouse | 用 OpenCV 的 absdiff 與門檻比較前後兩張影格，找出畫面中改變的像素，說明移動物體為何在舊位置與新位置都留下白色，以及光線與文字變化造成的誤報。 | `lesson26-camera-diff.png` |
