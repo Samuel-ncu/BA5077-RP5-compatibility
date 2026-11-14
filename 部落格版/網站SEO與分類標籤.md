@@ -14,7 +14,7 @@ digithouse.net 上部落格版文章的 SEO、分類（Categories）與標籤（
 
 ## 各篇設定
 
-00～07 於 2026-11-12 寫入草稿版本；08～15 於 2026-11-12 建立草稿時一併填入。16～22 於 2026-11-14 建立草稿時一併填入。23～28 於 2026-11-14 建立草稿時一併填入。
+00～07 於 2026-11-12 寫入草稿版本；08～15 於 2026-11-12 建立草稿時一併填入。16～22 於 2026-11-14 建立草稿時一併填入。23～28 於 2026-11-14 建立草稿時一併填入。29～34 於 2026-11-14 寫好設定，尚未建立網站草稿。
 
 | 篇 | slug | 主題標籤 | SEO 標題 | SEO 描述 | SEO 圖片 |
 | --- | --- | --- | --- | --- | --- |
@@ -47,3 +47,9 @@ digithouse.net 上部落格版文章的 SEO、分類（Categories）與標籤（
 | 26 | `ba5077-opencv-hough-circles` | OpenCV、Python | OpenCV 霍夫圓偵測教學：HoughCircles 參數怎麼調 | DigitHouse | 用 OpenCV 的 HoughCircles 在相機拍攝的校正圖上找出圓心與半徑，逐一說明 dp、minDist、param1、param2 與半徑範圍的作用，以及沒找到圓時要處理的 None。 | `shapes-circles.png` |
 | 27 | `ba5077-opencv-hsv-color-tracking` | Camera、Picamera2、OpenCV、Python | Picamera2 顏色追蹤教學：OpenCV HSV 紅色偵測與框選 | DigitHouse | 用 Picamera2 連續取像，把影格轉成 HSV、以兩段紅色範圍做遮罩，框出最大的紅色區塊並畫出移動軌跡；Raspberry Pi 5 實測 20 秒 1606 張影格全部偵測到，附排錯表。 | `lesson28-thonny-camera-tracking-20261111.png` |
 | 28 | `ba5077-opencv-frame-difference-motion` | OpenCV、Python | OpenCV 影格差分教學：absdiff 找出畫面中的移動 | DigitHouse | 用 OpenCV 的 absdiff 與門檻比較前後兩張影格，找出畫面中改變的像素，說明移動物體為何在舊位置與新位置都留下白色，以及光線與文字變化造成的誤報。 | `lesson26-camera-diff.png` |
+| 29 | `ba5077-opencv-mog-background-subtraction` | OpenCV、Python | OpenCV MOG 背景減法教學：讓程式自己學習背景 | DigitHouse | 用 OpenCV 擴充模組的 MOG 背景減法處理 Raspberry Pi 相機短影片，理解背景模型如何隨影格更新、前景遮罩代表什麼，並說明原文程式其實使用 GMG。 | `lesson27-camera-mog.png` |
+| 30 | `ba5077-opencv-csrt-object-tracking` | OpenCV、Python | OpenCV CSRT 目標追蹤教學：框住目標一路跟隨 | DigitHouse | 用 OpenCV 的 CSRT 追蹤器在 Raspberry Pi 上追蹤短影片中的圓形，說明 init 與 update、追蹤框的 (x, y, 寬, 高)，以及回報成功不等於框得準。 | `lesson25-trixie-video-csrt-20261110.png` |
+| 31 | `ba5077-sift-surf-orb-features` | OpenCV、Python | SIFT、SURF、ORB 特徵點比較：OpenCV 特徵偵測入門 | DigitHouse | 認識特徵點與描述子，在 Raspberry Pi 用 OpenCV 比較 SIFT、SURF、ORB 找到的特徵點，並說明 SURF 因專利在目前環境無法使用、程式如何跳過它。 | `lesson31-features.png` |
+| 32 | `ba5077-opencv-feature-matching` | OpenCV、Python | OpenCV 特徵匹配教學：BFMatcher 與雙向檢查 | DigitHouse | 在 Raspberry Pi 用 SIFT 描述子與 BFMatcher 雙向檢查，配對兩張相機校正圖的特徵點，從結果圖找出配錯的連線，說明 L2 距離的用途，以及候選配對數為什麼不等於準確率。 | `lesson31-33-trixie-sift-20261110.png` |
+| 33 | `ba5077-opencv-orb-matching` | OpenCV、Python | OpenCV ORB 特徵匹配教學：免授權的二進位描述子 | DigitHouse | 用免授權的 ORB 在 Raspberry Pi 偵測並配對兩張圖的特徵點，理解二進位描述子與 Hamming 距離，並和 SIFT 比較時注意點數上限與重複圖案造成的錯配。 | `lesson31-33-trixie-orb-20261110.png` |
+| 34 | `ba5077-opencv-panorama-stitching` | OpenCV、Python | OpenCV 全景拼接教學：Stitcher 把相鄰照片接成全景 | DigitHouse | 在 Raspberry Pi 用 OpenCV 的 Stitcher 把三張相鄰照片拼成全景，看懂 status 0 與 1 的意思，並用重疊太少的照片示範失敗時該補照片而不是調程式。 | `lesson36-thonny-run-20261111.png` |
