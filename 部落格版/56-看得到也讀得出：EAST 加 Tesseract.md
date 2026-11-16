@@ -4,7 +4,7 @@
 
 digithouse.net 原文：[補充 11｜Raspberry Pi 5 上使用 EAST + Tesseract 進行即時文字辨識（含 PiCamera2 即時預覽）](https://digithouse.net/blog/supplement-11-east-tesseract-realtime-ocr?locale=zh-TW)
 
-> **本篇狀態**：**所有 OCR 結果都來自舊環境**（Bookworm，2026-10-29，Thonny）：整張圖辨識、逐框辨識、相機連續辨識 25 秒、繁體中文合成圖。**目前 Trixie 還沒有安裝 Tesseract**：安裝需要帳號持有人輸入 sudo 密碼，2026-11-12 只確認了套件的候選版本，沒有代為安裝，所以 **OCR 在目前 Trixie 尚未重測**；EAST 找框的部分在目前 Trixie 已重測（見[新 54](./54-%E6%89%BE%E5%87%BA%E5%9C%96%E4%B8%AD%E7%9A%84%E6%96%87%E5%AD%97%E6%A1%86%EF%BC%9AEAST.md)）。**尚未實測**：中文的相機即時辨識、真實街景、長時間運作、全新安裝的系統。
+> **本篇狀態**：2026-11-16 帳號持有人在**目前 Trixie** 安裝了 Tesseract 5.5.0（英文與繁體中文語言資料 4.1.0），隨後用終端機（Python 3.13.5、OpenCV 4.12.0）重測**整張圖辨識、逐框辨識、繁體中文合成圖**，輸出與舊環境（Bookworm，2026-10-29，Thonny）完全相同；這次不是在 Thonny 按 Run，文中的截圖仍是舊環境。**相機連續辨識**只有舊環境的結果。EAST 找框的部分在目前 Trixie 已重測（見[新 54](./54-%E6%89%BE%E5%87%BA%E5%9C%96%E4%B8%AD%E7%9A%84%E6%96%87%E5%AD%97%E6%A1%86%EF%BC%9AEAST.md)）。**尚未實測**：中文的相機即時辨識、真實街景、長時間運作、全新安裝的系統。
 
 新 54 找到了文字在哪裡，這篇要把字讀出來。負責讀字的是 **Tesseract**，一個開源的 OCR 程式。我們會比較兩種做法：把整張圖丟給 Tesseract，以及先用 EAST 找框、再一框一框交給 Tesseract。最後把相機也接上，做出「看得到也讀得出」的連續辨識，並試試繁體中文。這是本系列的最後一篇。
 
@@ -49,13 +49,13 @@ tesseract --list-langs
 
 `--list-langs` 應該列出 `eng`。要讀繁體中文，再加裝 `tesseract-ocr-chi-tra`，清單會多出 `chi_tra`。
 
-repo 在 2026-11-12 查過目前 Trixie 的候選版本：`tesseract-ocr` 是 5.5.0-1+b1，`tesseract-ocr-eng`、`tesseract-ocr-chi-tra` 是 1:4.1.0-2。這些指令**本次沒有在目前 Trixie 執行**，你安裝時請以自己看到的訊息為準。
+repo 在 2026-11-12 查過目前 Trixie 的候選版本：`tesseract-ocr` 是 5.5.0-1+b1，`tesseract-ocr-eng`、`tesseract-ocr-chi-tra` 是 1:4.1.0-2。2026-11-16 帳號持有人在目前 Trixie 執行了這些指令，裝到 `tesseract-ocr` 5.5.0-1+b1、`tesseract-ocr-eng` 與 `tesseract-ocr-chi-tra` 1:4.1.0-2，`--list-langs` 列出 `chi_tra`、`eng`、`osd`。你安裝時請以自己看到的訊息為準。
 
 ### 步驟 2：整張圖辨識
 
 **為什麼**：最簡單的做法，先看 Tesseract 能讀到什麼。
 
-整張圖辨識程式先用 EAST 畫框存成結果圖，再把**整張** `text-board.png` 交給 Tesseract（`-l eng --psm 6`），不是用 EAST 的框。舊環境的輸出：
+整張圖辨識程式先用 EAST 畫框存成結果圖，再把**整張** `text-board.png` 交給 Tesseract（`-l eng --psm 6`），不是用 EAST 的框。舊環境的輸出（2026-11-16 目前 Trixie 重測，輸出完全相同）：
 
 ```text
 EAST boxes: 10
@@ -122,7 +122,7 @@ print('saved:', output)
 - `cv2.imencode('.png', crop)` 把裁切影像壓成 PNG，透過 `stdin` 直接交給 Tesseract，不必另存檔案。
 - `--psm 7`：每個框當成一行字。
 
-舊環境的輸出：
+舊環境的輸出（2026-11-16 目前 Trixie 重測，輸出完全相同）：
 
 ```text
 EAST boxes: 10
@@ -181,7 +181,7 @@ OCR output (chi_tra+eng):
 溫度25 度
 ```
 
-兩種設定結果相同，中文都讀對，只有數字前後的空格和原圖不同。repo 還記錄了一個坑：第一次只用中文字型畫圖，那個字型**沒有數字的字形**，「25」被畫成方框，OCR 當然讀不出來；換成有數字的字型才成功。所以讀錯時，先看輸入圖本身對不對。
+2026-11-16 在目前 Trixie 用系統的 Python 3.13（Pillow 11.1.0）和套件安裝的語言資料重跑，輸出完全相同。兩種設定結果相同，中文都讀對，只有數字前後的空格和原圖不同。repo 還記錄了一個坑：第一次只用中文字型畫圖，那個字型**沒有數字的字形**，「25」被畫成方框，OCR 當然讀不出來；換成有數字的字型才成功。所以讀錯時，先看輸入圖本身對不對。
 
 ### 步驟 6：和原文比一比
 
@@ -234,7 +234,7 @@ OCR output (chi_tra+eng):
 
 ## 小結
 
-文字辨識分兩步：EAST 找出字在哪，Tesseract 讀出字是什麼。乾淨的圖整張丟給 Tesseract 就能讀對；逐框辨識的品質取決於框完不完整，`OPEN CV` 就因為框少了 `V` 被讀成 `OPEN C`。接上相機後每框都要呼叫 Tesseract，每秒只有約 0.58 張。本篇的 OCR 結果都來自舊環境；目前 Trixie 還沒裝 Tesseract，需要你自己輸入密碼安裝後重測。
+文字辨識分兩步：EAST 找出字在哪，Tesseract 讀出字是什麼。乾淨的圖整張丟給 Tesseract 就能讀對；逐框辨識的品質取決於框完不完整，`OPEN CV` 就因為框少了 `V` 被讀成 `OPEN C`。接上相機後每框都要呼叫 Tesseract，每秒只有約 0.58 張。整張圖、逐框和繁體中文的結果已在目前 Trixie 重測、與舊環境一致；相機連續辨識只有舊環境的結果。
 
 **練習**：
 

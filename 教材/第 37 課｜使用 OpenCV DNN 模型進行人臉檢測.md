@@ -149,6 +149,10 @@ saved: lesson37-camera-dnn.png
 
 比較[第 22 課的 Haar Cascade](./第%2022%20課｜使用%20OpenCV%20進行臉部檢測.md)與本課 DNN：兩者都回答「臉大約在哪裡」，模型輸入和演算法不同。自行調整門檻，記錄候選框變化；真實環境須以獲授權的多樣測試資料評估光線、角度與遮擋，不能只用這一張生成圖。實際人物照片涉及隱私，不要直接公開。
 
+## 既有 Trixie 終端機重測（2026-11-16）
+
+以 SSH 在這台 Trixie 用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0）於新的練習資料夾重跑本課下載與偵測程式：兩個模型檔大小 34,975 與 2,727,750 bytes，SHA-256 與上方紀錄相同；`output shape: (1, 1, 200, 7)`、`faces above threshold: 1`、`confidence scores: [0.967]`，與先前環境完全相同。素材仍是相機拍攝螢幕上的 AI 生成虛構人物。這次不是在 Thonny 按 Run，上方截圖仍是先前環境；即時相機與真人仍未測試。
+
 ## 與原文章的差異
 
 - 本次改以 Thonny 下載 OpenCV 模型，並對可下載的生成素材照片進行單張推論，保留實測畫面與輸出。
