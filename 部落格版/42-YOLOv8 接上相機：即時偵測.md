@@ -4,7 +4,7 @@
 
 digithouse.net 原文：[第 42 課｜YOLOv8 即時攝影機目標偵測教學](https://digithouse.net/blog/ba5077-lesson-38-yolov8-webcam?locale=zh-TW)
 
-> **本篇狀態**：在**目前 Trixie**（2026-11-12）用 Thonny 建立「相機＋YOLO」環境，已實測；四張影格測試和 20 秒即時預覽，是用同一個環境**從 SSH 在 RP5 桌面上啟動**，不是在 Thonny 按 Run，**Thonny 的操作截圖待補**。相機對著螢幕上的 AI 生成物件圖，預覽框出 apple、banana、cup。較早在**舊環境**（Bookworm 的 `myenv`）有 Thonny 操作截圖。**尚未實測**：實體物品、長時間運作、全新安裝的系統。
+> **本篇狀態**：在**目前 Trixie**（2026-11-12）用 Thonny 建立「相機＋YOLO」環境，已實測；四張影格測試和 20 秒即時預覽，是用同一個環境**從 SSH 在 RP5 桌面上啟動**，不是在 Thonny 按 Run。2026-11-16 在 Thonny 按 Run 重跑四張影格測試，每張 4 個框、2.1 FPS，附操作截圖；框數比 11-12 多 1 個，是因為取景不同。相機對著螢幕上的 AI 生成物件圖，預覽框出 apple、banana、cup。較早在**舊環境**（Bookworm 的 `myenv`）有 Thonny 操作截圖。**尚未實測**：實體物品、長時間運作、全新安裝的系統。
 
 前三篇的 YOLOv8 處理的都是存好的圖片和影片，可以慢慢算。這篇要讓 YOLOv8 直接看 RP5 的相機：拍一張、偵測一張、顯示一張，一直重複。第一步不是寫程式，而是準備一個**同時**能用相機和 YOLO 的 Python 環境，因為新 39 的 YOLO 環境沒有 Picamera2。
 
@@ -172,6 +172,10 @@ camera released
 ![Trixie 相機 YOLO 預覽視窗，框出螢幕上生成圖的蘋果、香蕉與杯子](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson42-trixie-camera-yolo-preview-20261112.jpg)
 
 *程式畫面（目前 Trixie，2026-11-12）：步驟 4 的預覽視窗，只裁切視窗部分。相機拍的是螢幕上的 AI 生成圖，框與分數是 YOLO 的輸出。*
+
+![目前 Trixie 在 Thonny 執行相機四影格 YOLOv8 偵測](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson42-camera-yolo-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是相機 YOLO 環境，相機對著螢幕上的 AI 生成物件圖，四張影格各 4 個框、平均 2.1 FPS。上方紅字是相機啟動訊息，不是錯誤。*
 
 ![Thonny 執行相機與 YOLO 的實際畫面](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson42-camera-thonny.png)
 

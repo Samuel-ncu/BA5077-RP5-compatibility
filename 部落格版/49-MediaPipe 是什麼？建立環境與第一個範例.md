@@ -4,7 +4,7 @@
 
 digithouse.net 原文：[補充 1｜MediaPipe 介紹：Google 開源的跨平台視覺 AI 框架](https://digithouse.net/blog/supplement-01-mediapipe-overview?locale=zh-TW)
 
-> **本篇狀態**：在**目前 Trixie**（2026-11-12，Python 3.13）用 Thonny 建立 MediaPipe 1.2.2 與 CVZone 2.0.0 的環境，已實測；對一張 AI 生成虛構人物圖找到 1 隻手（21 點）、1 張臉（478 點），手勢判斷為 paper。這次執行是用同一個環境**從 SSH 啟動**，不是在 Thonny 按 Run。舊版 `mp.solutions` 的程式在**舊環境**（Bookworm，MediaPipe 0.10.9）用 Thonny 實測過。**尚未實測**：真人、即時相機（下一篇）、其他手勢與角度、全新安裝的系統。
+> **本篇狀態**：在**目前 Trixie**（2026-11-12，Python 3.13）用 Thonny 建立 MediaPipe 1.2.2 與 CVZone 2.0.0 的環境，已實測；對一張 AI 生成虛構人物圖找到 1 隻手（21 點）、1 張臉（478 點），手勢判斷為 paper。這次執行是用同一個環境**從 SSH 啟動**；2026-11-16 在 Thonny 按 Run 重跑，結果相同，附操作截圖。舊版 `mp.solutions` 的程式在**舊環境**（Bookworm，MediaPipe 0.10.9）用 Thonny 實測過。**尚未實測**：真人、即時相機（下一篇）、其他手勢與角度、全新安裝的系統。
 
 YOLO 找的是「整個物體在哪裡」。如果想知道得更細，例如手指彎了沒、嘴巴開了沒，就需要**特徵點**：在手上、臉上標出一個個固定位置的小點。Google 的 MediaPipe 提供了現成的手部、臉部模型，能一次標出這些點。這篇是 MediaPipe 系列的第一篇：先建立環境，再對一張圖片找出手和臉的特徵點，最後用一條簡單的規則判斷手勢。
 
@@ -165,6 +165,10 @@ saved: supplement-cvzone-result.png
 ![CVZone 2.0 在 Trixie 標出的臉部特徵點與手部外框](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement-cvzone-trixie-20261112.png)
 
 *程式輸出（目前 Trixie，2026-11-12）：綠點是臉部特徵點，洋紅框是手的範圍。人物是 AI 生成的虛構人物。*
+
+![目前 Trixie 在 Thonny 執行 CVZone 手與臉特徵點](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement-cvzone-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 MediaPipe 環境，Shell 印出手 21 點、臉 478 點、`gesture: paper`。上方紅字是 MediaPipe 的 `W0000` 警告訊息，不是錯誤。*
 
 ![Thonny 實際顯示版本及模型測試](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supp-mediapipe-version-thonny.png)
 

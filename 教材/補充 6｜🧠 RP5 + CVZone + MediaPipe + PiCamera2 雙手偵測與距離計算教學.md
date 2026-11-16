@@ -49,13 +49,27 @@ AttributeError: module 'mediapipe' has no attribute 'solutions'
 
    *圖：程式輸出圖，不是操作截圖。綠點是臉部特徵點，洋紅框是手的範圍。*
 
+   2026-11-16 在 RP5 桌面的 Thonny 選同一直譯器按 Run，輸出相同：
+
+   ![目前 Trixie 在 Thonny 執行 CVZone 手與臉特徵點](./圖檔/supplement-cvzone-trixie-thonny-20261116.png)
+
+   *操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 MediaPipe 環境，Shell 印出手 21 點、臉 478 點、`gesture: paper`。上方紅字是 MediaPipe 的 `W0000` 警告訊息，不是錯誤。*
+
 **讀懂結果：**手部仍是 21 點；臉部變成 **478 點**，因為新版 Face Landmarker 模型多了左右眼虹膜各 5 點，舊版 Face Mesh 是 468 點。`paper` 由程式規則判斷四指指尖比第二關節高；它只是這一張圖的結果，不代表真人或其他角度都正確。
 
 **卡住時：**`No module named 'cvzone'` 表示右下角選錯直譯器；下載模型失敗時檢查網路，刪掉不完整的 `.task` 檔再執行；程式結束後若看到 `Exception ignored ... __del__` 的長訊息，請確認用的是本頁最新版程式（最後有關閉模型的兩行）。
 
 ### 第三步：鏡像雙手與相機負例
 
-- [雙手測試程式](./範例程式/補充6-Thonny雙手素材測試.py)（已加上 CVZone 2.0 的關閉模型一行）在同一環境的實際輸出：`blank hands: 0`、`synthetic pair hands: 2`、兩手各 21 點、`index fingertips: [266, 115] [494, 114]`、`distance pixels: 228.0`。舊版 Bookworm 是 227.0，模型版本不同時差 1 像素屬正常。
+- [雙手測試程式](./範例程式/補充6-Thonny雙手素材測試.py)（已加上 CVZone 2.0 的關閉模型一行）在同一環境的實際輸出：`blank hands: 0`、`synthetic pair hands: 2`、兩手各 21 點、`index fingertips: [266, 115] [494, 114]`、`distance pixels: 228.0`。舊版 Bookworm 是 227.0，模型版本不同時差 1 像素屬正常。2026-11-16 在 Thonny 按 Run 重跑雙手程式與相機無手程式，結果相同（相機 50 張全部 0 隻手、14.01 FPS）：
+
+![目前 Trixie 在 Thonny 執行鏡像雙手距離](./圖檔/supplement6-twohands-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：空白圖 0 隻手；鏡像素材 2 隻手各 21 點，距離 228.0 像素。*
+
+![目前 Trixie 在 Thonny 執行相機無手負例](./圖檔/lesson50-camera-hands-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：相機前沒有手，50 張全部 0 隻手、平均 14.01 FPS，相機已釋放。上方紅字是 Qt 字型警告，不是錯誤。截圖不含相機畫面。*
 - [相機手部程式](./範例程式/補充2和6-Thonny相機手部.py)：相機對著螢幕上的 AI 生成物件圖（沒有手），50 張全為 0 隻手，19.06 FPS，`camera released`。
 - 兩支程式都已改成 CVZone 2.0 寫法（`detector.detector.close()`），在舊版 CVZone 1.x 會出錯。**真人雙手的即時距離仍需參與者，尚未測試。**
 

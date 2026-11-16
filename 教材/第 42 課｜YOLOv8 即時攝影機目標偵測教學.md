@@ -32,7 +32,7 @@ CSI 相機由 Picamera2 擷取影格，YOLO 模型分析影格並回傳候選物
 
 ### 本次 Trixie 實際結果（2026-11-12）
 
-以下以 SSH 在 RP5 桌面用上面同一個直譯器執行；Thonny 按 Run 的操作截圖待補，步驟與按 Run 相同。
+以下以 SSH 在 RP5 桌面用上面同一個直譯器執行，步驟與按 Run 相同。2026-11-16 另在 Thonny 按 Run 重跑共用相機範例，截圖附在四張影格輸出之後。
 
 - 共用相機範例（四張影格）：
 
@@ -45,6 +45,12 @@ CSI 相機由 Picamera2 擷取影格，YOLO 模型分析影格並回傳候選物
   elapsed seconds: 1.91
   average FPS: 2.1
   ```
+
+- 2026-11-16 在 Thonny 按 Run 重跑共用相機範例：四張影格各 `detections: 4`、`elapsed seconds: 1.9`、`average FPS: 2.1`。速度和上面相同；框數多 1 個，是因為這次取景不同（相機重新對準過螢幕），偵測數量會隨取景、距離和亮度改變。
+
+  ![目前 Trixie 在 Thonny 執行相機四影格 YOLOv8 偵測](./圖檔/lesson42-camera-yolo-trixie-thonny-20261116.png)
+
+  *操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是相機 YOLO 環境，相機對著螢幕上的 AI 生成物件圖，四張影格各 4 個框、平均 2.1 FPS。上方紅字是相機啟動訊息，不是錯誤。*
 
 - 20 秒即時預覽：預覽視窗標示 `apple 0.85`、`banana 0.91`、`cup 0.89`，Shell 輸出 `frames: 162`、`elapsed seconds: 20.05`、`average FPS: 8.08`、`camera released`。
 

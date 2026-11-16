@@ -49,6 +49,12 @@ AttributeError: module 'mediapipe' has no attribute 'solutions'
 
    *圖：程式輸出圖，不是操作截圖。綠點是臉部特徵點，洋紅框是手的範圍。*
 
+   2026-11-16 在 RP5 桌面的 Thonny 選同一直譯器按 Run，輸出相同：
+
+   ![目前 Trixie 在 Thonny 執行 CVZone 手與臉特徵點](./圖檔/supplement-cvzone-trixie-thonny-20261116.png)
+
+   *操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 MediaPipe 環境，Shell 印出手 21 點、臉 478 點、`gesture: paper`。上方紅字是 MediaPipe 的 `W0000` 警告訊息，不是錯誤。*
+
 **讀懂結果：**手部仍是 21 點；臉部變成 **478 點**，因為新版 Face Landmarker 模型多了左右眼虹膜各 5 點，舊版 Face Mesh 是 468 點。`paper` 由程式規則判斷四指指尖比第二關節高；它只是這一張圖的結果，不代表真人或其他角度都正確。
 
 **卡住時：**`No module named 'cvzone'` 表示右下角選錯直譯器；下載模型失敗時檢查網路，刪掉不完整的 `.task` 檔再執行；程式結束後若看到 `Exception ignored ... __del__` 的長訊息，請確認用的是本頁最新版程式（最後有關閉模型的兩行）。

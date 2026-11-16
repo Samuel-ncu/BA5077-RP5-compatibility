@@ -4,7 +4,7 @@
 
 digithouse.net 原文：[第 43 課｜使用 PyCamera2 與 YOLOv8 實現即時目標偵測（Raspberry Pi 5）](https://digithouse.net/blog/ba5077-lesson-39-pycamera2-yolov8?locale=zh-TW)
 
-> **本篇狀態**：程式和[新 42](./42-YOLOv8%20%E6%8E%A5%E4%B8%8A%E7%9B%B8%E6%A9%9F%EF%BC%9A%E5%8D%B3%E6%99%82%E5%81%B5%E6%B8%AC.md) 相同。**目前 Trixie**（2026-11-12）的四張影格 2.1 FPS、20 秒預覽 8.08 FPS，是用同一個環境從 SSH 在 RP5 桌面上啟動的結果，Thonny 截圖待補。按 `q` 停止、重新開啟相機、兩分鐘連續預覽，是在**舊環境**（Bookworm 的 `myenv`，Python 3.11、Ultralytics 8.3.50）用 Thonny 實測（2026-10-29），目前 Trixie 尚未重跑。**尚未實測**：數小時的長時間運作、Hailo 加速、全新安裝的系統。
+> **本篇狀態**：程式和[新 42](./42-YOLOv8%20%E6%8E%A5%E4%B8%8A%E7%9B%B8%E6%A9%9F%EF%BC%9A%E5%8D%B3%E6%99%82%E5%81%B5%E6%B8%AC.md) 相同。**目前 Trixie**（2026-11-12）的四張影格 2.1 FPS、20 秒預覽 8.08 FPS，是用同一個環境從 SSH 在 RP5 桌面上啟動的結果；四張影格的程式已在 2026-11-16 用 Thonny 按 Run 重跑（截圖見新 42），20 秒預覽的 Thonny 截圖仍待補。按 `q` 停止、重新開啟相機、兩分鐘連續預覽，是在**舊環境**（Bookworm 的 `myenv`，Python 3.11、Ultralytics 8.3.50）用 Thonny 實測（2026-10-29），目前 Trixie 尚未重跑。**尚未實測**：數小時的長時間運作、Hailo 加速、全新安裝的系統。
 
 上一篇讓 YOLOv8 接上了相機。這篇不加新功能，而是**看懂整條流程**：每一張畫面都要經過「取像 → 推論 → 畫框 → 顯示」四段，任何一段慢下來，整體就跟著慢。我們用實測數字練習判讀速度，再練習兩件實際使用時一定會遇到的事：中途停止，以及停止後重新開啟相機。
 

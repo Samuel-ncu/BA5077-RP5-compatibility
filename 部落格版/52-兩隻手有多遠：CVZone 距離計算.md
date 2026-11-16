@@ -4,7 +4,7 @@
 
 digithouse.net 原文：[補充 6｜RP5 + CVZone + MediaPipe + PiCamera2 雙手偵測與距離計算教學](https://digithouse.net/blog/supplement-06-cvzone-two-hand-distance?locale=zh-TW)
 
-> **本篇狀態**：**目前 Trixie**（2026-11-12，MediaPipe 1.2.2、CVZone 2.0.0）：把同一隻 AI 生成的手裁切、鏡像，拼成「兩隻手」的測試圖，找到 2 隻手各 21 點，兩根食指尖相距 228.0 像素；全白圖 0 隻手。這次是用新 49 的環境從 SSH 啟動。**舊環境**（Bookworm）用 Thonny 跑同一支程式，距離 227.0 像素。**尚未實測**：兩隻真人的手在相機前的即時距離（需要參與者）、像素換算成公分。
+> **本篇狀態**：**目前 Trixie**（2026-11-12，MediaPipe 1.2.2、CVZone 2.0.0）：把同一隻 AI 生成的手裁切、鏡像，拼成「兩隻手」的測試圖，找到 2 隻手各 21 點，兩根食指尖相距 228.0 像素；全白圖 0 隻手。這次是用新 49 的環境從 SSH 啟動；2026-11-16 在 Thonny 按 Run 重跑，結果相同，附操作截圖。**舊環境**（Bookworm）用 Thonny 跑同一支程式，距離 227.0 像素。**尚未實測**：兩隻真人的手在相機前的即時距離（需要參與者）、像素換算成公分。
 
 前兩篇都只找一隻手。這篇同時找**兩隻手**，再用國中學過的畢氏定理，算出兩根食指指尖相距多遠。答案的單位是**像素**，不是公分，這點很重要。因為本次沒有真人參與，我們用一個小技巧做出兩隻手：把 AI 生成圖上的那隻手裁下來，左右翻轉後並排。
 
@@ -126,6 +126,10 @@ distance pixels: 228.0
 ![鏡像雙手素材的 CVZone 偵測與距離線](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/two-hands-mirror-result.png)
 
 *程式輸出（舊環境）：同一隻 AI 生成的手鏡像並排，洋紅線連接兩根食指指尖。*
+
+![目前 Trixie 在 Thonny 執行鏡像雙手距離](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement6-twohands-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：空白圖 0 隻手；鏡像素材 2 隻手各 21 點，距離 228.0 像素。*
 
 ![Thonny 執行雙手偵測及距離的實際畫面](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/two-hands-thonny.png)
 

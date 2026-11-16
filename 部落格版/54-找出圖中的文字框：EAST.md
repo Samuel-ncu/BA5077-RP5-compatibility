@@ -4,7 +4,7 @@
 
 digithouse.net 原文：[補充 9｜EAST 文字偵測演算法的完整 Python 教學](https://digithouse.net/blog/supplement-09-east-text-detection?locale=zh-TW)
 
-> **本篇狀態**：**目前 Trixie**（2026-11-12，[新 11](./11-%E5%9C%A8%20Thonny%20%E6%BA%96%E5%82%99%20OpenCV%20%E5%B7%A5%E5%85%B7%E7%AE%B1%EF%BC%9A%E8%99%9B%E6%93%AC%E7%92%B0%E5%A2%83%E8%88%87%E5%AE%89%E8%A3%9D.md) 的 OpenCV 環境、OpenCV 4.12.0）：下載 EAST 模型（SHA-256 與舊紀錄相同），對相機拍下的英文練習板找到 10 個文字框，全黑、全白圖都是 0 個框。這次是用同一個環境**從 SSH 啟動**，不是在 Thonny 按 Run。**舊環境**（Bookworm，2026-10-29）用 Thonny 做過同樣的下載、驗證與負例，結果一致，並有操作截圖。**尚未實測**：中文、旋轉或模糊的文字、真實街景、全新安裝的系統。
+> **本篇狀態**：**目前 Trixie**（2026-11-12，[新 11](./11-%E5%9C%A8%20Thonny%20%E6%BA%96%E5%82%99%20OpenCV%20%E5%B7%A5%E5%85%B7%E7%AE%B1%EF%BC%9A%E8%99%9B%E6%93%AC%E7%92%B0%E5%A2%83%E8%88%87%E5%AE%89%E8%A3%9D.md) 的 OpenCV 環境、OpenCV 4.12.0）：下載 EAST 模型（SHA-256 與舊紀錄相同），對相機拍下的英文練習板找到 10 個文字框，全黑、全白圖都是 0 個框。這次是用同一個環境**從 SSH 啟動**；2026-11-16 在 Thonny 按 Run 重跑驗證步驟，同樣 10 個框，附操作截圖。**舊環境**（Bookworm，2026-10-29）用 Thonny 做過同樣的下載、驗證與負例，結果一致，並有操作截圖。**尚未實測**：中文、旋轉或模糊的文字、真實街景、全新安裝的系統。
 
 照片裡的文字對人來說一眼就看得到，但電腦要分兩步：先找出「哪裡有字」，再讀出「寫了什麼」。這篇只做第一步。EAST 是一個專門找文字區域的神經網路，它會在圖上框出可能有字的地方。至於框裡寫的是什麼，要交給 OCR，在新 56 才會碰到。這篇也會再用一次新 37 學過的 OpenCV DNN 模組。
 
@@ -159,6 +159,10 @@ white blank: 0 boxes
 ![RP5 Thonny 下載 EAST 模型的實際畫面](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/east-download-thonny.png)
 
 *操作截圖（舊環境，2026-10-29）：步驟 1 下載模型，SHA-256 和目前 Trixie 相同。*
+
+![目前 Trixie 在 Thonny 驗證 EAST 模型](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement9-east-verify-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 `opencv-course-env`，練習板找到 10 個文字框。*
 
 ![RP5 Thonny 驗證下載模型的實際畫面](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/east-verify-thonny.png)
 

@@ -4,7 +4,7 @@
 
 digithouse.net 原文：[補充 11｜Raspberry Pi 5 上使用 EAST + Tesseract 進行即時文字辨識（含 PiCamera2 即時預覽）](https://digithouse.net/blog/supplement-11-east-tesseract-realtime-ocr?locale=zh-TW)
 
-> **本篇狀態**：2026-11-16 帳號持有人在**目前 Trixie** 安裝了 Tesseract 5.5.0（英文與繁體中文語言資料 4.1.0），隨後用終端機（Python 3.13.5、OpenCV 4.12.0）重測**整張圖辨識、逐框辨識、繁體中文合成圖**，輸出與舊環境（Bookworm，2026-10-29，Thonny）完全相同；這次不是在 Thonny 按 Run，文中的截圖仍是舊環境。**相機連續辨識**只有舊環境的結果。EAST 找框的部分在目前 Trixie 已重測（見[新 54](./54-%E6%89%BE%E5%87%BA%E5%9C%96%E4%B8%AD%E7%9A%84%E6%96%87%E5%AD%97%E6%A1%86%EF%BC%9AEAST.md)）。**尚未實測**：中文的相機即時辨識、真實街景、長時間運作、全新安裝的系統。
+> **本篇狀態**：2026-11-16 帳號持有人在**目前 Trixie** 安裝了 Tesseract 5.5.0（英文與繁體中文語言資料 4.1.0），隨後用終端機（Python 3.13.5、OpenCV 4.12.0）重測**整張圖辨識、逐框辨識、繁體中文合成圖**，輸出與舊環境（Bookworm，2026-10-29，Thonny）完全相同；同日也在目前 Trixie 的 Thonny 按 Run 重跑這三項，結果相同，附操作截圖（繁體中文那支要選有 Pillow 的系統 Python）。**相機連續辨識**只有舊環境的結果。EAST 找框的部分在目前 Trixie 已重測（見[新 54](./54-%E6%89%BE%E5%87%BA%E5%9C%96%E4%B8%AD%E7%9A%84%E6%96%87%E5%AD%97%E6%A1%86%EF%BC%9AEAST.md)）。**尚未實測**：中文的相機即時辨識、真實街景、長時間運作、全新安裝的系統。
 
 新 54 找到了文字在哪裡，這篇要把字讀出來。負責讀字的是 **Tesseract**，一個開源的 OCR 程式。我們會比較兩種做法：把整張圖丟給 Tesseract，以及先用 EAST 找框、再一框一框交給 Tesseract。最後把相機也接上，做出「看得到也讀得出」的連續辨識，並試試繁體中文。這是本系列的最後一篇。
 
@@ -200,6 +200,14 @@ OCR output (chi_tra+eng):
 
 *程式輸出（舊環境）：步驟 3 的逐框辨識，綠框加紅色編號。注意第 10 框沒有包住 `V`。*
 
+![目前 Trixie 在 Thonny 執行 EAST 與整張圖 OCR](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement9-11-whole-ocr-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：EAST 10 個框；Tesseract 讀整張圖得到 5 行英文。*
+
+![目前 Trixie 在 Thonny 執行逐框 OCR](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement9-11-perbox-ocr-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：Shell 只容得下後段，第 10 框仍是 `OPEN C`。*
+
 ![Thonny 顯示逐框辨識輸出上半部](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/east-box-ocr-top.png)
 
 *操作截圖（舊環境）：步驟 3 的 Shell 輸出。*
@@ -215,6 +223,10 @@ OCR output (chi_tra+eng):
 ![用兩種字型建立的合成輸入圖片](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement11-chinese-input.png)
 
 *程式輸出（舊環境）：步驟 5 的繁體中文合成輸入圖。*
+
+![目前 Trixie 在 Thonny 執行繁體中文 OCR](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement11-chinese-ocr-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是系統的 `/usr/bin/python3`（有 Pillow）；`chi_tra` 與 `chi_tra+eng` 都讀出三行中文。*
 
 ![初次測試中數字字型缺字的合成輸入](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/supplement11-missing-glyphs.png)
 

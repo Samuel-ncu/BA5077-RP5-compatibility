@@ -4,7 +4,7 @@
 
 digithouse.net 原文：[第 37 課｜使用 OpenCV DNN 模型進行人臉檢測](https://digithouse.net/blog/ba5077-lesson-33-opencv-dnn-face?locale=zh-TW)
 
-> **本篇狀態**：在 Thonny 下載 OpenCV 人臉模型、對 AI 生成虛構人物素材做單張偵測，已實測，但用的是**舊環境**（Python 3.11、NumPy 1.26.4、opencv-contrib-python 4.11.0.86）。2026-11-16 在**目前 Trixie**（Python 3.13.5、OpenCV 4.12.0）用終端機重跑下載與偵測，模型 SHA-256 與舊紀錄相同，結果也相同（1 張臉、0.967）；這次不是在 Thonny 按 Run，Thonny 截圖仍是舊環境。空白圖的模型載入測試是較早用終端機執行的。**尚未實測**：原文的即時相機版本、真人、不同光線與角度、全新安裝的系統。
+> **本篇狀態**：在 Thonny 下載 OpenCV 人臉模型、對 AI 生成虛構人物素材做單張偵測，已實測，但用的是**舊環境**（Python 3.11、NumPy 1.26.4、opencv-contrib-python 4.11.0.86）。2026-11-16 在**目前 Trixie**（Python 3.13.5、OpenCV 4.12.0）用終端機重跑下載與偵測，模型 SHA-256 與舊紀錄相同，結果也相同（1 張臉、0.967）；同日也在目前 Trixie 的 Thonny 按 Run 重跑，附操作截圖。空白圖的模型載入測試是較早用終端機執行的。**尚未實測**：原文的即時相機版本、真人、不同光線與角度、全新安裝的系統。
 
 新 35 的 Haar 方法是工程師事先設計好「臉應該長怎樣」的明暗特徵。另一種做法是：準備大量的臉部照片，讓**神經網路**自己學出什麼樣子是臉。學好的模型存成檔案，我們只要載入它、把圖片丟進去，就能得到候選的臉部位置和信心分數。這篇我們用 OpenCV 的 DNN 模組載入一個訓練好的人臉模型，在和新 35 相同的素材上找臉。
 
@@ -125,6 +125,10 @@ saved: lesson37-camera-dnn.png
 ![在 Thonny 下載第 37 課 DNN 模型的實際畫面](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson37-download-thonny.png)
 
 *操作截圖（舊環境）：步驟 1 在 Thonny 下載兩個模型檔。*
+
+![目前 Trixie 在 Thonny 執行第 37 課 DNN 人臉偵測](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson37-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 `opencv-course-env`，Shell 印出 1 張臉、信心 0.967。*
 
 ![第 37 課在 Thonny 的 DNN 程式與 Shell 截圖](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson37-thonny-clean.png)
 

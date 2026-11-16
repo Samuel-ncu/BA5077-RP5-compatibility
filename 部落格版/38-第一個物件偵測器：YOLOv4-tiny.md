@@ -5,7 +5,7 @@
 digithouse.net 原文：[第 38 課｜使用 YOLOv4-tiny 與 OpenCV 進行即時物件檢測](https://digithouse.net/blog/ba5077-lesson-34-yolov4-tiny?locale=zh-TW)
 
 > **本篇狀態**：
-> - **單張圖偵測**：AI 生成物件圖找到香蕉、杯子、蘋果，Thonny 實測在**舊環境**（Python 3.11、OpenCV 4.11）。2026-11-16 在**目前 Trixie**（OpenCV 4.12.0）用終端機重跑，三個模型檔的 SHA-256 與舊紀錄相同，結果完全一樣；Thonny 截圖仍是舊環境。
+> - **單張圖偵測**：AI 生成物件圖找到香蕉、杯子、蘋果，Thonny 實測在**舊環境**（Python 3.11、OpenCV 4.11）。2026-11-16 在**目前 Trixie**（OpenCV 4.12.0）用終端機重跑，三個模型檔的 SHA-256 與舊紀錄相同，結果完全一樣；同日也在目前 Trixie 的 Thonny 按 Run 重跑，附操作截圖。
 > - **即時相機**：在**目前 Trixie** 的 Thonny 實測（2026-11-10～11）。對著電腦螢幕跑 70 張、59 張，最後一張都沒有標籤；2026-11-11 對著螢幕上的生成物件圖跑 109 張，最後一張是 cup、apple、banana，**那次沒有另存截圖**。
 > - **尚未實測**：實體物品、移動中的物體、速度與準確率評估、全新安裝的系統。
 
@@ -144,6 +144,10 @@ saved: lesson38-camera-yolov4.png
 ![在 Thonny 下載 YOLO 模型與類別檔的實際畫面](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson38-download-thonny.png)
 
 *操作截圖（舊環境）：步驟 1 下載三個檔案。*
+
+![目前 Trixie 在 Thonny 執行 YOLOv4-tiny 單張偵測](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson38-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 `opencv-course-env`，Shell 印出 banana、cup、apple 與三個分數。*
 
 ![RP5 相機素材的 YOLOv4-tiny 偵測結果](https://raw.githubusercontent.com/Samuel-ncu/BA5077-RP5-compatibility/main/%E6%95%99%E6%9D%90/%E5%9C%96%E6%AA%94/lesson38-camera-yolov4.png)
 

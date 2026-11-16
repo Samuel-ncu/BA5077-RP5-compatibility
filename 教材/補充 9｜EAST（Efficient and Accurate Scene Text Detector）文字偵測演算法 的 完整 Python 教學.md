@@ -32,7 +32,19 @@
 
 **2026-11-12 核對結果：**目前這台 Trixie **還沒有安裝 Tesseract**（`command -v tesseract` 沒有輸出；`apt-cache policy` 顯示 `tesseract-ocr` 候選版本 5.5.0-1+b1，`tesseract-ocr-eng`、`tesseract-ocr-chi-tra` 候選 1:4.1.0-2）。安裝需要帳號持有人輸入 sudo 密碼，本次沒有代為安裝，所以**下方所有 OCR 輸出都是先前 Bookworm 的結果，Trixie 的 OCR 尚未重測**。EAST 找框的部分在 Trixie 的結果見本節最後。
 
-**2026-11-16 更新：**帳號持有人已在這台 Trixie 安裝 `tesseract-ocr` 5.5.0-1+b1、`tesseract-ocr-eng` 與 `tesseract-ocr-chi-tra` 1:4.1.0-2（`--list-langs` 列出 `chi_tra`、`eng`、`osd`）。隨後以 SSH 用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0）重跑：EAST 模型沿用 2026-11-12 下載、SHA-256 相同的檔案；驗證 `EAST boxes: 10`、全黑與全白 `0 boxes`；整張圖 Tesseract 讀出 5 行英文；逐框辨識 10 框，第 10 框仍是 `'OPEN C'`；繁體中文合成圖以系統 Python 3.13（Pillow 11.1.0）與套件的語言資料執行，`chi_tra` 與 `chi_tra+eng` 都讀出三行中文。以上輸出與下方 Bookworm 紀錄完全相同。這次不是在 Thonny 按 Run，下方截圖仍是先前環境；相機連續辨識未在 Trixie 重測。
+**2026-11-16 更新：**帳號持有人已在這台 Trixie 安裝 `tesseract-ocr` 5.5.0-1+b1、`tesseract-ocr-eng` 與 `tesseract-ocr-chi-tra` 1:4.1.0-2（`--list-langs` 列出 `chi_tra`、`eng`、`osd`）。隨後以 SSH 用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0）重跑：EAST 模型沿用 2026-11-12 下載、SHA-256 相同的檔案；驗證 `EAST boxes: 10`、全黑與全白 `0 boxes`；整張圖 Tesseract 讀出 5 行英文；逐框辨識 10 框，第 10 框仍是 `'OPEN C'`；繁體中文合成圖以系統 Python 3.13（Pillow 11.1.0）與套件的語言資料執行，`chi_tra` 與 `chi_tra+eng` 都讀出三行中文。以上輸出與下方 Bookworm 紀錄完全相同。同日也在 RP5 桌面的 Thonny 按 Run 重跑驗證、整張圖與逐框三項，結果相同（下圖）；相機連續辨識沒有在 Trixie 重測，因為 EAST、Tesseract 與相機都已個別重測，連續辨識沿用下方舊環境的實測。
+
+![目前 Trixie 在 Thonny 驗證 EAST 模型](./圖檔/supplement9-east-verify-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 `opencv-course-env`，練習板找到 10 個文字框。*
+
+![目前 Trixie 在 Thonny 執行 EAST 與整張圖 OCR](./圖檔/supplement9-11-whole-ocr-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：EAST 10 個框；Tesseract 讀整張圖得到 5 行英文。*
+
+![目前 Trixie 在 Thonny 執行逐框 OCR](./圖檔/supplement9-11-perbox-ocr-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：Shell 只容得下後段，第 10 框仍是 `OPEN C`。*
 
 **EAST 找框在 Trixie 的實測（2026-11-12）：**用第 14 課的 `/home/pi/opencv-course-env/bin/python3`（OpenCV 4.12.0），依下方步驟 1～4 的同一組程式重新下載模型並驗證（SSH 以同一直譯器執行）。下載 `bytes: 96662756`，SHA-256 與下方 Bookworm 紀錄相同；`text-board.png` 得到 `EAST boxes: 10`；全黑、全白空白圖都是 `0 boxes`，與先前結果一致。
 

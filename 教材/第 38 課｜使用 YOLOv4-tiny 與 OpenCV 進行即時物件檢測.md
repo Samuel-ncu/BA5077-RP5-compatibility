@@ -282,7 +282,11 @@ elapsed seconds: 17.0
 
 ## 既有 Trixie 終端機重測單張偵測（2026-11-16）
 
-以 SSH 在這台 Trixie 用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0）於新的練習資料夾重跑單張偵測程式；三個模型檔沿用 2026-11-11 在這台 Trixie 下載、SHA-256 與上方紀錄相同的檔案。輸出 `detections: 3`、`classes: ['banana', 'cup', 'apple']`、`scores: [0.993, 0.991, 0.941]`，與先前環境完全相同。這次不是在 Thonny 按 Run；素材是 AI 生成物件圖，不是實物。
+以 SSH 在這台 Trixie 用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0）於新的練習資料夾重跑單張偵測程式；三個模型檔沿用 2026-11-11 在這台 Trixie 下載、SHA-256 與上方紀錄相同的檔案。輸出 `detections: 3`、`classes: ['banana', 'cup', 'apple']`、`scores: [0.993, 0.991, 0.941]`，與先前環境完全相同。同日也在 RP5 桌面的 Thonny 選同一直譯器按 Run，輸出相同（下圖）；素材是 AI 生成物件圖，不是實物。
+
+![目前 Trixie 在 Thonny 執行 YOLOv4-tiny 單張偵測](./圖檔/lesson38-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 `opencv-course-env`，Shell 印出 banana、cup、apple 與三個分數。*
 
 ## 與原文章的差異
 

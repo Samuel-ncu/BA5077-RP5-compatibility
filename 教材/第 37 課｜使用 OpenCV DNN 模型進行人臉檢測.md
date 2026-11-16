@@ -151,7 +151,11 @@ saved: lesson37-camera-dnn.png
 
 ## 既有 Trixie 終端機重測（2026-11-16）
 
-以 SSH 在這台 Trixie 用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0）於新的練習資料夾重跑本課下載與偵測程式：兩個模型檔大小 34,975 與 2,727,750 bytes，SHA-256 與上方紀錄相同；`output shape: (1, 1, 200, 7)`、`faces above threshold: 1`、`confidence scores: [0.967]`，與先前環境完全相同。素材仍是相機拍攝螢幕上的 AI 生成虛構人物。這次不是在 Thonny 按 Run，上方截圖仍是先前環境；即時相機與真人仍未測試。
+以 SSH 在這台 Trixie 用 `/home/pi/opencv-course-env/bin/python3`（Python 3.13.5、OpenCV 4.12.0）於新的練習資料夾重跑本課下載與偵測程式：兩個模型檔大小 34,975 與 2,727,750 bytes，SHA-256 與上方紀錄相同；`output shape: (1, 1, 200, 7)`、`faces above threshold: 1`、`confidence scores: [0.967]`，與先前環境完全相同。素材仍是相機拍攝螢幕上的 AI 生成虛構人物。同日也在 RP5 桌面的 Thonny 選同一直譯器按 Run，輸出相同（下圖）；即時相機與真人仍未測試。
+
+![目前 Trixie 在 Thonny 執行第 37 課 DNN 人臉偵測](./圖檔/lesson37-trixie-thonny-20261116.png)
+
+*操作截圖（目前 Trixie，2026-11-16）：右下角直譯器是 `opencv-course-env`，Shell 印出 1 張臉、信心 0.967。*
 
 ## 與原文章的差異
 
